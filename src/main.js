@@ -12,6 +12,7 @@ class Example extends Phaser.Scene
     {
         this.load.image('me', 'assets/druid_base.png');
         this.load.image('ally', 'assets/bush-v1.png');
+        this.load.image('attackingAlly', 'assets/bomb.png');
         this.load.spritesheet('enemy', 'assets/bug-move.png', { frameWidth: 32, frameHeight: 32});
         this.load.image('ground', 'assets/desert-block.png')
     }
@@ -33,22 +34,29 @@ class Example extends Phaser.Scene
         const { wasd, arrowkeys } = this.createCursors()
         this.wasd = wasd
         this.arrowkeys = arrowkeys
-        console.log(wasd, arrowkeys)
 
         this.player = this.physics.add.image(400, 300, 'me');
 
         this.player.setCollideWorldBounds(true);
 
-        this.cameras.main.startFollow(this.player, true, 0.05, 0.05);
+        this.cameras.main.startFollow(this.player, true, 0.1, 0.1);
 
+        // Allies are stationary helpers
         this.allies = this.physics.add.group();
+        
+        // Attacking allies engage with enemies
+        this.attackingAllies = this.physics.add.group();
+
+        this.input.mouse.disableContextMenu();
 
         this.input.on('pointerdown', e => {
-            console.log(e.worldX, e.worldY);
-            this.health -= 10;
-            console.log(this.health);
-            this.allies.create(e.worldX, e.worldY, 'ally')
-        })
+            if(e.rightButtonDown()) {
+                this.attackingAllies.create(e.worldX, e.worldY, 'attackingAlly')
+            } else {
+                this.allies.create(e.worldX, e.worldY, 'ally')
+            }
+            
+        });
 
         console.log(this.health);
 
@@ -70,6 +78,7 @@ class Example extends Phaser.Scene
 
         this.physics.add.collider(this.player, this.enemies);
         this.physics.add.collider(this.enemies, this.enemies);  
+        this.physics.add.collider(this.attackingAllies, this.enemies); 
     }
 
     /**
@@ -94,6 +103,25 @@ class Example extends Phaser.Scene
         this.player.setVelocity(0);
         this.updateMovement(this.wasd)
         this.updateMovement(this.arrowkeys)
+
+        for (let ally of this.attackingAllies.getChildren()) {
+            let min_distance = Infinity;
+            let min_enemy = null;
+            for(let enemy of this.enemies.getChildren())
+            {
+                let diff = Phaser.Math.Distance.Squared(enemy.x, enemy.y, ally.x, ally.y);
+                if(diff < min_distance)
+                {
+                    min_distance = diff;
+                    min_enemy = enemy;
+                }
+            }
+            if(min_enemy)
+            {
+                this.physics.moveToObject(ally, min_enemy, 60);
+            }
+        }
+    
 
         for(const enemy of this.enemies.getChildren()) {
             this.enemyDealDamage({
