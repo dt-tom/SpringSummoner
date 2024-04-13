@@ -1,5 +1,6 @@
 import * as constants from '../constants.js'
 import { Player } from '../lib/player.js'
+import { Oasis } from '../lib/oasis.js'
 
 let allowSpawnEnemy = false;
 
@@ -12,6 +13,7 @@ export class GameScene extends Phaser.Scene {
     constructor () {
         super('GameScene');
         this.player = new Player(this)
+        this.oasis = new Oasis(this)
     }
 
     preload () {
@@ -22,7 +24,6 @@ export class GameScene extends Phaser.Scene {
             frameWidth: 32, frameHeight: 32
         });
         this.load.image('sand', 'assets/desert-block.png')
-        this.load.image('oasis', 'assets/oasis-inuse.png')
         this.load.spritesheet('dirtParticle', 'assets/dirt-particle.png', {
             frameWidth: 6, frameHeight: 6,
         });
@@ -33,12 +34,14 @@ export class GameScene extends Phaser.Scene {
             frameWidth: 64, frameHeight: 64,
         });
         this.load.audio('leavesSound', 'assets/sounds/bush-sound.mp3');
-        this.player.preload(this);
+
+        this.player.preload();
+        this.oasis.preload();
     }
 
     createEnemy(posX, posY)
     {
-        console.log("creating enemy");
+        // console.log("creating enemy");
         const enemy = this.enemies.create(posX, posY, 'bugSpawn');
         this.add.particles(posX, posY, 'dirtParticle', {
             speed: { min: 1, max: 20 },
@@ -61,8 +64,10 @@ export class GameScene extends Phaser.Scene {
         this.cameras.main.setZoom(2);  // 2x our assets visually
         this.physics.world.setBounds(0, 0, 1920 * 2, 1080 * 2);
 
-        this.createWorld()
+        //  Background/desert tiles
+        this.add.tileSprite(0, 0, constants.mapWidth, constants.mapHeight, 'sand').setOrigin(0, 0);
 
+        this.oasis.create()
 
         this.player.create()
         this.cameras.main.startFollow(this.player.gameObject, true, 0.1, 0.1);  // Should this be in player.js?
@@ -156,15 +161,10 @@ export class GameScene extends Phaser.Scene {
 
         console.log(allowSpawnEnemy);
 
-        
-        
-
         // spawn new enemy near the player every ENEMY_SPAWN_TIMER milliseconds
         // make sure they always spawn off screen
-        const playerObjRef = this.player.gameObject
-        function spawnEnemy()
-        {
-            console.log("spawning enemy");
+        function spawnEnemy() {
+            // console.log("spawning enemy");
             allowSpawnEnemy = true;
         }
         setInterval(
@@ -188,19 +188,6 @@ export class GameScene extends Phaser.Scene {
         return min_item;
     }
 
-    /**
-     * Create the tiled background and static foreground elements. Expects
-     * assets named sand (tileable) and oasis (sprite) to be preloaded
-     */
-    createWorld() {
-        //  Background/desert tiles
-        this.add.tileSprite(0, 0, constants.mapWidth, constants.mapHeight, 'sand').setOrigin(0, 0);
-
-        // Oasis
-        let oasis = this.add.sprite(400, 300, 'oasis');
-        oasis.setOrigin(0.5, 0.5);  // use the center of the sprite as the reference point for positioning
-    }
-
     update () {
         if(allowSpawnEnemy == true)
         {
@@ -211,6 +198,7 @@ export class GameScene extends Phaser.Scene {
             allowSpawnEnemy = false;
         }
         this.player.update()
+        this.oasis.update()
 
         for (let ally of this.attackingAllies.getChildren()) {
             let closestEnemy = this.getClosestObject(ally, this.enemies);
