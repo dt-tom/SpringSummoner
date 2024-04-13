@@ -10,7 +10,7 @@ class Example extends Phaser.Scene
     preload ()
     {
         this.load.image('me', 'assets/druid_base.png');
-        this.load.image('ally', 'assets/bomb.png');
+        this.load.image('ally', 'assets/bush-v1.png');
         this.load.spritesheet('enemy', 'assets/bug-move.png', { frameWidth: 32, frameHeight: 32});
         this.load.image('ground', 'assets/desert-block.png')
     }
