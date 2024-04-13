@@ -1,5 +1,5 @@
 import * as constants from '../constants.js'
-import { HealthBar } from '../lib/healthbar.js'
+import { Player } from '../lib/player.js'
 
 let allowSpawnEnemy = false;
 
@@ -11,12 +11,11 @@ let allowSpawnEnemy = false;
 export class GameScene extends Phaser.Scene {
     constructor () {
         super('GameScene');
-        this.health = 100;
+        this.player = new Player(this)
     }
 
     preload () {
-        this.load.image('me', 'assets/main-character-inuse.png');
-        this.load.image('bush', 'assets/bush-v1.png');
+        this.load.image('ally', 'assets/bush-v1.png');
         this.load.image('attackingAlly', 'assets/bomb.png');
         this.load.spritesheet('enemy', 'assets/bug-move.png', {
             frameWidth: 32, frameHeight: 32
@@ -35,6 +34,7 @@ export class GameScene extends Phaser.Scene {
         this.load.audio('leavesSound', 'assets/sounds/bush-sound.mp3');
         this.load.audio('soundtrack', 'assets/sounds/soundtrack.mp3');
 
+        this.player.preload(this)
     }
 
     createEnemy(posX, posY)
@@ -64,19 +64,9 @@ export class GameScene extends Phaser.Scene {
 
         this.createWorld()
 
-        const { wasd, arrowkeys } = this.createCursors()
-        this.wasd = wasd
-        this.arrowkeys = arrowkeys
 
-        this.player = this.physics.add.image(400, 300, 'me');
-
-        const playerRef = this.player;
-
-        this.player.setCollideWorldBounds(true);
-
-        this.hp = new HealthBar(this, this.health, this.player.x - 300, this.player.y - 300);
-
-        this.cameras.main.startFollow(this.player, true, 0.1, 0.1);
+        this.player.create()
+        this.cameras.main.startFollow(this.player.gameObject, true, 0.1, 0.1);  // Should this be in player.js?
 
         // Allies are stationary helpers
         this.allies = this.physics.add.group({
@@ -165,13 +155,8 @@ export class GameScene extends Phaser.Scene {
 
         this.physics.add.collider(this.enemies, this.enemies); 
         this.physics.add.collider(this.attackingAllies, this.enemies); 
-        this.physics.add.collider(this.player, this.enemies, (player, enemy) => {
-            this.health -= 1;
-            this.hp.decrease(1);
-            if(this.health <= 0)
-            {
-                this.player.destroy();
-            }
+        this.physics.add.collider(this.player.gameObject, this.enemies, (_player, enemy) => {
+            this.player.collide(enemy)
         }, null, this);
 
         console.log(allowSpawnEnemy);
@@ -181,12 +166,11 @@ export class GameScene extends Phaser.Scene {
 
         // spawn new enemy near the player every ENEMY_SPAWN_TIMER milliseconds
         // make sure they always spawn off screen
+        const playerObjRef = this.player.gameObject
         function spawnEnemy()
         {
             console.log("spawning enemy");
             allowSpawnEnemy = true;
-            
-            
         }
         setInterval(
             spawnEnemy,
@@ -209,24 +193,6 @@ export class GameScene extends Phaser.Scene {
         return min_item;
     }
 
-   
-
-    /**f.log
-     * @return an object containing two cursor objects, arrowkeys and wasd which
-     * each have up down left and right key inputs.
-     */
-    createCursors() {  // TODO: could make this (game object) a parameter and move this elsewhere
-        return {
-            wasd: {
-                up: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.W),
-                down: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.S),
-                left: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.A),
-                right: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.D),
-            },
-            arrowkeys: this.input.keyboard.createCursorKeys(),
-        }
-    }
-
     /**
      * Create the tiled background and static foreground elements. Expects
      * assets named sand (tileable) and oasis (sprite) to be preloaded
@@ -241,7 +207,6 @@ export class GameScene extends Phaser.Scene {
     }
 
     update () {
-
         if(allowSpawnEnemy == true)
         {
             let direction = Math.random < 0.5 ? 1 : -1;
@@ -250,11 +215,7 @@ export class GameScene extends Phaser.Scene {
                 this.player.y + (constants.canvasHeight * direction) + Math.random() * 400);
             allowSpawnEnemy = false;
         }
-        // Since we have multiple inputs doing the same thing, setup (set
-        // velocity to 0 must be done first)
-        this.player.setVelocity(0);
-        this.updateMovement(this.wasd)
-        this.updateMovement(this.arrowkeys)
+        this.player.update()
 
         for (let ally of this.attackingAllies.getChildren()) {
             let closestEnemy = this.getClosestObject(ally, this.enemies);
@@ -267,8 +228,8 @@ export class GameScene extends Phaser.Scene {
 
         for(const enemy of this.enemies.getChildren()) {
             const vector = new Phaser.Math.Vector2(
-                this.player.x - enemy.x,
-                this.player.y - enemy.y
+                this.player.gameObject.x - enemy.x,
+                this.player.gameObject.y - enemy.y
             );
             vector.normalizeRightHand();
             enemy.rotation = vector.angle();
@@ -284,36 +245,8 @@ export class GameScene extends Phaser.Scene {
                 }
             }
             if (enemy.isSpawned) {
-                this.physics.moveTo(enemy, this.player.x + Math.random() * 100, this.player.y + Math.random() * 100, moveSpeed)
+                this.physics.moveTo(enemy, this.player.gameObject.x + Math.random() * 100, this.player.gameObject.y + Math.random() * 100, moveSpeed)
             }
-        }
-
-        this.updatePlayerState();
-    }
-
-    updatePlayerState() {
-        this.hp.reposition(this.player.x - 25, this.player.y - 30);
-    }
-
-    /**
-     * @param cursors is an object with up down left and right as properties where the
-     * value of each is an input key
-     */
-    updateMovement(cursor) {
-        if (cursor.left.isDown) {
-            this.player.setVelocityX(-500);
-        }
-
-        if (cursor.right.isDown) {
-            this.player.setVelocityX(500);
-        }
-
-        if (cursor.up.isDown) {
-            this.player.setVelocityY(-500);
-        }
-
-        if (cursor.down.isDown) {
-            this.player.setVelocityY(500);
         }
     }
 }
