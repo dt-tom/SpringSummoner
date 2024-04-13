@@ -1,5 +1,71 @@
 import * as constants from '../constants.js'
 
+class HealthBar {
+
+    constructor (scene, startingHealth, x, y)
+    {
+        this.bar = new Phaser.GameObjects.Graphics(scene);
+
+        this.x = x;
+        this.y = y;
+        this.value = startingHealth;
+        this.p = 38 / 100;
+
+        this.draw();
+
+        scene.add.existing(this.bar);
+    }
+
+    decrease (amount)
+    {
+        this.value -= amount;
+
+        if (this.value < 0)
+        {
+            this.value = 0;
+        }
+
+        this.draw();
+
+        return (this.value === 0);
+    }
+
+    draw ()
+    {
+        this.bar.clear();
+
+        //  BG
+        this.bar.fillStyle(0x000000);
+        this.bar.fillRect(this.x, this.y, 42, 10);
+
+        //  Health
+
+        this.bar.fillStyle(0xffffff);
+        this.bar.fillRect(this.x + 2, this.y + 2, 38, 6);
+
+        if (this.value < 30)
+        {
+            this.bar.fillStyle(0xff0000);
+        }
+        else
+        {
+            this.bar.fillStyle(0x00ff00);
+        }
+
+        var d = Math.floor(this.p * this.value);
+
+        this.bar.fillRect(this.x + 2, this.y + 2, d, 6);
+    }
+
+    reposition(x, y)
+    {
+        this.x = x;
+        this.y = y;
+        this.draw();
+    }
+
+}
+
 /**
  * GameScene is the main scene of Spring Summoner; it's where the actual game
  * lives
@@ -39,6 +105,8 @@ export class GameScene extends Phaser.Scene {
 
         this.player.setCollideWorldBounds(true);
 
+        this.hp = new HealthBar(this, this.health, this.player.x - 300, this.player.y - 300);
+
         this.cameras.main.startFollow(this.player, true, 0.1, 0.1);
 
         // Allies are stationary helpers
@@ -51,17 +119,19 @@ export class GameScene extends Phaser.Scene {
 
         this.input.on('pointerdown', e => {
             if(e.rightButtonDown()) {
-                this.attackingAllies.create(e.worldX, e.worldY, 'attackingAlly')
+                this.attackingAllies.create(e.worldX, e.worldY, 'attackingAlly');
+                this.attackingAllies.playAnimation('scorpion-move');
             } else {
-                this.allies.create(e.worldX, e.worldY, 'ally')
+                this.allies.create(e.worldX, e.worldY, 'ally');
             }
             
         });
 
-        console.log(this.health);
-
         // make enemies
         this.enemies = this.physics.add.group();
+        // make enemies
+        // need to use this sometimes since this is finicky in js
+        let enemiesList = this.enemies;
 
         for(let i = 0; i < NUMBER_OF_ENEMIES; i++) {
             this.enemies.create(Math.random() * 400, Math.random() * 400, 'enemy');
@@ -75,9 +145,52 @@ export class GameScene extends Phaser.Scene {
         })
         this.enemies.playAnimation('bug-move');
 
-        this.physics.add.collider(this.player, this.enemies);
+        // ally animations
+        this.anims.create({
+            key: 'scorpion-move',
+            frames: this.anims.generateFrameNumbers('attackingAlly', { start: 0, end: 5}),
+            frameRate: 20,
+            repeat: -1,
+        });
+
         this.physics.add.collider(this.enemies, this.enemies);  
         this.physics.add.collider(this.attackingAllies, this.enemies); 
+        this.physics.add.collider(this.player, this.enemies, (player, enemy) => {
+            this.health -= 1;
+            this.hp.decrease(1);
+            if(this.health <= 0)
+            {
+                this.player.destroy();
+            }
+        }, null, this);
+
+        // spawn new enemy near the player every ENEMY_SPAWN_TIMER milliseconds
+        // make sure they always spawn off screen
+        function spawnEnemy()
+        {
+            console.log("spawning enemy");
+            let direction = Math.random < 0.5 ? 1 : -1
+            enemiesList.create(
+                playerRef.x + (constants.canvasWidth * direction) + Math.random() * 400, 
+                playerRef.y + (constants.canvasHeight * direction) + Math.random() * 400, 
+                'enemy');
+        }
+        setInterval(spawnEnemy, constants.ENEMY_SPAWN_TIMER);
+    }
+
+    getClosestObject(object, group) {
+        let min_distance = Infinity;
+        let min_item = null;
+        for(let item of group.getChildren())
+        {
+            let diff = Phaser.Math.Distance.Squared(item.x, item.y, object.x, object.y);
+            if(diff < min_distance)
+            {
+                min_distance = diff;
+                min_item = item;
+            }
+        }
+        return min_item;
     }
 
     /**
@@ -117,30 +230,15 @@ export class GameScene extends Phaser.Scene {
         this.updateMovement(this.arrowkeys)
 
         for (let ally of this.attackingAllies.getChildren()) {
-            let min_distance = Infinity;
-            let min_enemy = null;
-            for(let enemy of this.enemies.getChildren()) {
-                let diff = Phaser.Math.Distance.Squared(enemy.x, enemy.y, ally.x, ally.y);
-                if(diff < min_distance)
-                {
-                    min_distance = diff;
-                    min_enemy = enemy;
-                }
+            let closestEnemy = this.getClosestObject(ally, this.enemies);
+            if (closestEnemy){
+                this.physics.moveToObject(ally, closestEnemy, 60);
             }
-            if(min_enemy) {
-                this.physics.moveToObject(ally, min_enemy, 60);
-            }
+            
         }
     
 
         for(const enemy of this.enemies.getChildren()) {
-            this.enemyDealDamage({
-                pX: this.player.x,
-                pY: this.player.y,
-                eX: enemy.x,
-                eY: enemy.y
-            })
-
             const vector = new Phaser.Math.Vector2(
                 this.player.x - enemy.x,
                 this.player.y - enemy.y
@@ -161,14 +259,8 @@ export class GameScene extends Phaser.Scene {
         this.updatePlayerState();
     }
 
-    enemyDealDamage(positions, baseDamage = 1) {
-        let dX = Math.sqrt((positions.pX - positions.eX) ** 2 + (positions.pY - positions.eY) ** 2);
-        console.log(this.health, dX);
-        if (dX < 50) this.health -= baseDamage;
-    }
-
     updatePlayerState() {
-        if (this.health <= 0) this.player.destroy();
+        this.hp.reposition(this.player.x - 25, this.player.y - 30);
     }
 
     /**
