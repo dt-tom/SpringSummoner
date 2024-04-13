@@ -29,7 +29,10 @@ class Example extends Phaser.Scene
         //  Background/desert tiles
         this.add.tileSprite(0, 0, constants.mapWidth, constants.mapHeight, 'ground').setOrigin(0, 0);
 
-        this.cursors = this.input.keyboard.createCursorKeys();
+        const { wasd, arrowkeys } = this.createCursors()
+        this.wasd = wasd
+        this.arrowkeys = arrowkeys
+        console.log(wasd, arrowkeys)
 
         this.player = this.physics.add.image(400, 300, 'me');
 
@@ -65,27 +68,28 @@ class Example extends Phaser.Scene
         this.physics.add.collider(this.enemies, this.enemies);  
     }
 
-    update ()
-    {
+    /**
+     * @return an object containing two cursor objects, arrowkeys and wasd which
+     * each have up down left and right key inputs.
+     */
+    createCursors() {  // TODO: could make this (game object) a parameter and move this elsewhere
+        return {
+            wasd: {
+                up: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.W),
+                down: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.S),
+                left: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.A),
+                right: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.D),
+            },
+            arrowkeys: this.input.keyboard.createCursorKeys(),
+        }
+    }
+
+    update () {
+        // Since we have multiple inputs doing the same thing, setup (set
+        // velocity to 0 must be done first)
         this.player.setVelocity(0);
-
-        if (this.cursors.left.isDown)
-        {
-            this.player.setVelocityX(-500);
-        }
-        else if (this.cursors.right.isDown)
-        {
-            this.player.setVelocityX(500);
-        }
-
-        if (this.cursors.up.isDown)
-        {
-            this.player.setVelocityY(-500);
-        }
-        else if (this.cursors.down.isDown)
-        {
-            this.player.setVelocityY(500);
-        }
+        this.updateMovement(this.wasd)
+        this.updateMovement(this.arrowkeys)
 
         for (let entity of this.allies.getChildren()) {
             this.physics.moveToObject(entity, this.player, 150);
@@ -101,8 +105,28 @@ class Example extends Phaser.Scene
             member.rotation = vector.angle();
             this.physics.moveTo(member, this.player.x + Math.random() * 100, this.player.y + Math.random() * 100, 150)
         }
+    }
 
+    /**
+     * @param cursors is an object with up down left and right as properties where the
+     * value of each is an input key
+     */
+    updateMovement(cursor) {
+        if (cursor.left.isDown) {
+            this.player.setVelocityX(-500);
+        }
 
+        if (cursor.right.isDown) {
+            this.player.setVelocityX(500);
+        }
+
+        if (cursor.up.isDown) {
+            this.player.setVelocityY(-500);
+        }
+
+        if (cursor.down.isDown) {
+            this.player.setVelocityY(500);
+        }
     }
 }
 
