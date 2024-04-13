@@ -12,6 +12,7 @@ class Example extends Phaser.Scene
     {
         this.load.image('me', 'assets/druid_base.png');
         this.load.image('ally', 'assets/bush-v1.png');
+        this.load.image('attackingAlly', 'assets/bomb.png');
         this.load.spritesheet('enemy', 'assets/bug-move.png', { frameWidth: 32, frameHeight: 32});
         this.load.image('ground', 'assets/desert-block.png')
     }
@@ -50,7 +51,7 @@ class Example extends Phaser.Scene
 
         this.input.on('pointerdown', e => {
             if(e.rightButtonDown()) {
-                this.attackingAllies.create(e.worldX, e.worldY, 'ally')
+                this.attackingAllies.create(e.worldX, e.worldY, 'attackingAlly')
             } else {
                 this.allies.create(e.worldX, e.worldY, 'ally')
             }
