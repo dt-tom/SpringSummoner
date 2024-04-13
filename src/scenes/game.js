@@ -12,7 +12,7 @@ export class GameScene extends Phaser.Scene {
     }
 
     preload () {
-        this.load.image('me', 'assets/druid_base.png');
+        this.load.image('me', 'assets/main-character-inuse.png');
         this.load.image('ally', 'assets/bush-v1.png');
         this.load.image('attackingAlly', 'assets/bomb.png');
         this.load.spritesheet('enemy', 'assets/bug-move.png', {
