@@ -1,4 +1,4 @@
-import { mapWidth, mapHeight } from './constants.js';
+import * as constants from './constants.js';
 
 class Example extends Phaser.Scene
 {
@@ -27,7 +27,7 @@ class Example extends Phaser.Scene
         this.physics.world.setBounds(0, 0, 1920 * 2, 1080 * 2);
 
         //  Background/desert tiles
-        this.add.tileSprite(0, 0, mapWidth, mapHeight, 'ground').setOrigin(0, 0);
+        this.add.tileSprite(0, 0, constants.mapWidth, constants.mapHeight, 'ground').setOrigin(0, 0);
 
         this.cursors = this.input.keyboard.createCursorKeys();
 
@@ -108,6 +108,8 @@ class Example extends Phaser.Scene
 
 const config = {
     type: Phaser.AUTO,
+    width: constants.canvasWidth,
+    height: constants.canvasHeight,
     parent: 'phaser-example',
     physics: {
         default: 'arcade',

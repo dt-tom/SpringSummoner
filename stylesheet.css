@@ -1,0 +1,19 @@
+/* Canvas is centered vertically and horizontally */
+body {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+}
+
+h1 {
+    font-family: Menlo, Monaco, 'Courier New', monospace;
+    font-size: 1.5rem;
+    font-weight: 700;
+    text-align: center;
+    color: #3b82f6;
+    margin: 0.5rem;
+    margin-bottom: 2rem;
+}
