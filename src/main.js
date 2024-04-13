@@ -11,7 +11,7 @@ class Example extends Phaser.Scene
     {
         this.load.image('block', 'assets/star.png');
         this.load.image('ally', 'assets/bomb.png');
-        this.load.image('enemy', 'assets/bomb.png');
+        this.load.spritesheet('enemy', 'assets/bug-move.png', { frameWidth: 32, frameHeight: 32});
         this.load.image('ground', 'assets/desert-block.png')
     }
 
@@ -53,6 +53,14 @@ class Example extends Phaser.Scene
             this.enemies.create(Math.random() * 400, Math.random() * 400, 'enemy');
         }
 
+        this.anims.create({
+            key: 'bug-move',
+            frames: this.anims.generateFrameNumbers('enemy', { start: 0, end: 4}),
+            frameRate: 20,
+            repeat: -1,
+        })
+        this.enemies.playAnimation('bug-move');
+
         this.physics.add.collider(this.player, this.enemies);
         this.physics.add.collider(this.enemies, this.enemies);  
     }
@@ -85,7 +93,12 @@ class Example extends Phaser.Scene
     
         for(const member of this.enemies.getChildren())
         {
-            //this.physics.moveTo(member, Math.random() * 10, Math.random() * 10);
+            const vector = new Phaser.Math.Vector2(
+                this.player.x - member.x,
+                this.player.y - member.y
+            );
+            vector.normalizeRightHand();
+            member.rotation = vector.angle();
             this.physics.moveTo(member, this.player.x + Math.random() * 100, this.player.y + Math.random() * 100, 150)
         }
 
