@@ -91,19 +91,35 @@ class Example extends Phaser.Scene
         this.updateMovement(this.wasd)
         this.updateMovement(this.arrowkeys)
 
-        for (let entity of this.allies.getChildren()) {
-            this.physics.moveToObject(entity, this.player, 150);
+        for (let ally of this.allies.getChildren()) {
+            // this.physics.moveToObject(entity, this.player, 150);
         }
+
+        //             for (const enemy of this.enemies.getChildren()) {
+
+            //     if (Phaser.Geom.Intersects.RectangleToRectangle(allyBounds, enemyBounds)) {
+            //         this.physics.moveTo(enemy, this.player.x + Math.random() * 100, this.player.y + Math.random() * 100, 10)
+            //     } else {
+            //         this.physics.moveTo(enemy, this.player.x + Math.random() * 100, this.player.y + Math.random() * 100, 150)
+            //     }
+            // }
     
-        for(const member of this.enemies.getChildren())
-        {
+        for(const enemy of this.enemies.getChildren()) {
             const vector = new Phaser.Math.Vector2(
-                this.player.x - member.x,
-                this.player.y - member.y
+                this.player.x - enemy.x,
+                this.player.y - enemy.y
             );
             vector.normalizeRightHand();
-            member.rotation = vector.angle();
-            this.physics.moveTo(member, this.player.x + Math.random() * 100, this.player.y + Math.random() * 100, 150)
+            enemy.rotation = vector.angle();
+            var moveSpeed = constants.bugMovespeed;
+            for (let ally of this.allies.getChildren()) {
+                const allyBounds = ally.getBounds();
+                const enemyBounds = enemy.getBounds();
+                if (Phaser.Geom.Intersects.RectangleToRectangle(allyBounds, enemyBounds)) {
+                    moveSpeed = constants.bugMovespeed * constants.bushSlow;
+                }
+            }
+            this.physics.moveTo(enemy, this.player.x + Math.random() * 100, this.player.y + Math.random() * 100, moveSpeed)
         }
     }
 
