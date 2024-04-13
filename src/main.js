@@ -37,13 +37,24 @@ class Example extends Phaser.Scene
 
         this.player.setCollideWorldBounds(true);
 
-        this.cameras.main.startFollow(this.player, true, 0.05, 0.05);
+        this.cameras.main.startFollow(this.player, true, 0.1, 0.1);
 
+        // Allies are stationary helpers
         this.allies = this.physics.add.group();
+        
+        // Attacking allies engage with enemies
+        this.attackingAllies = this.physics.add.group();
+
+        this.input.mouse.disableContextMenu();
 
         this.input.on('pointerdown', e => {
-            this.allies.create(e.worldX, e.worldY, 'ally')
-        })
+            if(e.rightButtonDown()) {
+                this.attackingAllies.create(e.worldX, e.worldY, 'ally')
+            } else {
+                this.allies.create(e.worldX, e.worldY, 'ally')
+            }
+            
+        });
 
         // make enemies
         this.enemies = this.physics.add.group();
@@ -63,7 +74,7 @@ class Example extends Phaser.Scene
 
         this.physics.add.collider(this.player, this.enemies);
         this.physics.add.collider(this.enemies, this.enemies);  
-        this.physics.add.collider(this.allies, this.enemies); 
+        this.physics.add.collider(this.attackingAllies, this.enemies); 
     }
 
     /**
@@ -89,7 +100,7 @@ class Example extends Phaser.Scene
         this.updateMovement(this.wasd)
         this.updateMovement(this.arrowkeys)
 
-        for (let ally of this.allies.getChildren()) {
+        for (let ally of this.attackingAllies.getChildren()) {
             let min_distance = Infinity;
             let min_enemy = null;
             for(let enemy of this.enemies.getChildren())
@@ -103,18 +114,9 @@ class Example extends Phaser.Scene
             }
             if(min_enemy)
             {
-                this.physics.moveToObject(ally, min_enemy, 150);
+                this.physics.moveToObject(ally, min_enemy, 60);
             }
         }
-
-        //             for (const enemy of this.enemies.getChildren()) {
-
-            //     if (Phaser.Geom.Intersects.RectangleToRectangle(allyBounds, enemyBounds)) {
-            //         this.physics.moveTo(enemy, this.player.x + Math.random() * 100, this.player.y + Math.random() * 100, 10)
-            //     } else {
-            //         this.physics.moveTo(enemy, this.player.x + Math.random() * 100, this.player.y + Math.random() * 100, 150)
-            //     }
-            // }
     
         for(const enemy of this.enemies.getChildren()) {
             const vector = new Phaser.Math.Vector2(
@@ -124,13 +126,13 @@ class Example extends Phaser.Scene
             vector.normalizeRightHand();
             enemy.rotation = vector.angle();
             var moveSpeed = constants.bugMovespeed;
-            // for (let ally of this.allies.getChildren()) {
-            //     const allyBounds = ally.getBounds();
-            //     const enemyBounds = enemy.getBounds();
-            //     if (Phaser.Geom.Intersects.RectangleToRectangle(allyBounds, enemyBounds)) {
-            //         moveSpeed = constants.bugMovespeed * constants.bushSlow;
-            //     }
-            // }
+            for (let ally of this.allies.getChildren()) {
+                const allyBounds = ally.getBounds();
+                const enemyBounds = enemy.getBounds();
+                if (Phaser.Geom.Intersects.RectangleToRectangle(allyBounds, enemyBounds)) {
+                    moveSpeed = constants.bugMovespeed * constants.bushSlow;
+                }
+            }
             this.physics.moveTo(enemy, this.player.x + Math.random() * 100, this.player.y + Math.random() * 100, moveSpeed)
         }
     }
