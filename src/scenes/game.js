@@ -269,41 +269,13 @@ export class GameScene extends Phaser.Scene {
     updateTiles()
     {
         let currentTile = this.grassMap.getTileAtWorldXY(this.player.gameObject.x, this.player.gameObject.y);
-        let otherTile1 = this.grassMap.getTileAt(currentTile.x + 1, currentTile.y);
-        let otherTile2 = this.grassMap.getTileAt(currentTile.x - 1, currentTile.y);
-        let otherTile3 = this.grassMap.getTileAt(currentTile.x, currentTile.y + 1);
-        let otherTile4 = this.grassMap.getTileAt(currentTile.x, currentTile.y - 1);
-        if(currentTile && this.tick % constants.GRASS_GROW_SPEED == 0){
-            
-            if(currentTile.index < 5)
-            {
-                this.grassMap.putTileAt(currentTile.index + 1, currentTile.x, currentTile.y);
-            }
 
-        }
-        if(otherTile1 && this.tick % constants.GRASS_GROW_SPEED == 0){ 
-            if(otherTile1.index < 5)
-            {
-                this.grassMap.putTileAt(otherTile1.index + 1, otherTile1.x, otherTile1.y);
-            }
-        }
-        if(otherTile2 && this.tick % constants.GRASS_GROW_SPEED == 0){ 
-            if(otherTile2.index < 5)
-            {
-                this.grassMap.putTileAt(otherTile2.index + 1, otherTile2.x, otherTile2.y);
-            }
-        }
-        if(otherTile3 && this.tick % constants.GRASS_GROW_SPEED == 0){ 
-            if(otherTile3.index < 5)
-            {
-                this.grassMap.putTileAt(otherTile3.index + 1, otherTile3.x, otherTile3.y);
-            }
-        }
-        if(otherTile4 && this.tick % constants.GRASS_GROW_SPEED == 0){ 
-            if(otherTile4.index < 5)
-            {
-                this.grassMap.putTileAt(otherTile4.index + 1, otherTile4.x, otherTile4.y);
-            }
+        if(currentTile && this.tick % constants.GRASS_GROW_SPEED == 0)
+        {
+            this.grassMap
+                .getTilesWithin(currentTile.x-1, currentTile.y-1, 3, 3) // find all tiles around the player
+                .filter(t => t.index < 5) // filter out grass then increment tile stage
+                .map(tile => this.grassMap.replaceByIndex(tile.index, tile.index + 1, tile.x, tile.y, 1, 1));
         }
     }
 
