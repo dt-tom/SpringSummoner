@@ -188,8 +188,6 @@ export class GameScene extends Phaser.Scene {
             this.player.collide(enemy)
         }, null, this);
 
-        console.log(allowSpawnEnemy);
-
         // spawn new enemy near the player every ENEMY_SPAWN_TIMER milliseconds
         // make sure they always spawn off screen
         const playerObjRef = this.player.gameObject
@@ -281,43 +279,36 @@ export class GameScene extends Phaser.Scene {
         let otherTile2 = this.grassMap.getTileAt(currentTile.x - 1, currentTile.y);
         let otherTile3 = this.grassMap.getTileAt(currentTile.x, currentTile.y + 1);
         let otherTile4 = this.grassMap.getTileAt(currentTile.x, currentTile.y - 1);
-        // let currentTile2 = this.grassMap.getTileAtWorldXY(this.player.gameObject.x, this.player.gameObject.y);
-        // let currentTile3 = this.grassMap.getTileAtWorldXY(this.player.gameObject.x, this.player.gameObject.y);
-        if(currentTile && this.tick % 10 == 0){
+        if(currentTile && this.tick % constants.GRASS_GROW_SPEED == 0){
             
             if(currentTile.index < 5)
             {
                 this.grassMap.putTileAt(currentTile.index + 1, currentTile.x, currentTile.y);
-                //this.grassMap.replaceByIndex(currentTile.index, currentTile.index + 1, currentTile.x, currentTile.y, 1, 1);
             }
 
         }
-        if(otherTile1 && this.tick % 5 == 0){ 
+        if(otherTile1 && this.tick % constants.GRASS_GROW_SPEED == 0){ 
             if(otherTile1.index < 5)
             {
                 this.grassMap.putTileAt(otherTile1.index + 1, otherTile1.x, otherTile1.y);
-                //this.grassMap.replaceByIndex(currentTile.index, currentTile.index + 1, currentTile.x, currentTile.y, 1, 1);
             }
         }
-        if(otherTile2 && this.tick % 5 == 0){ 
+        if(otherTile2 && this.tick % constants.GRASS_GROW_SPEED == 0){ 
             if(otherTile2.index < 5)
             {
                 this.grassMap.putTileAt(otherTile2.index + 1, otherTile2.x, otherTile2.y);
-                //this.grassMap.replaceByIndex(currentTile.index, currentTile.index + 1, currentTile.x, currentTile.y, 1, 1);
             }
         }
-        if(otherTile3 && this.tick % 5 == 0){ 
+        if(otherTile3 && this.tick % constants.GRASS_GROW_SPEED == 0){ 
             if(otherTile3.index < 5)
             {
                 this.grassMap.putTileAt(otherTile3.index + 1, otherTile3.x, otherTile3.y);
-                //this.grassMap.replaceByIndex(currentTile.index, currentTile.index + 1, currentTile.x, currentTile.y, 1, 1);
             }
         }
-        if(otherTile4 && this.tick % 5 == 0){ 
+        if(otherTile4 && this.tick % constants.GRASS_GROW_SPEED == 0){ 
             if(otherTile4.index < 5)
             {
                 this.grassMap.putTileAt(otherTile4.index + 1, otherTile4.x, otherTile4.y);
-                //this.grassMap.replaceByIndex(currentTile.index, currentTile.index + 1, currentTile.x, currentTile.y, 1, 1);
             }
         }
     }
@@ -333,10 +324,7 @@ export class GameScene extends Phaser.Scene {
             allowSpawnEnemy = false;
         }
         this.updateTiles();
-        
-        //this.levelArray[currentTile.x][currentTile.y] += 1;
-        //this.grassMap.putTileAtWorldXY(0, currentTile.x, currentTile.y);
-        //this.grassLayer.removeTileAtWorldXY(currentTile.x, currentTile.y);
+
         this.player.update()
         this.oasis.update()
 
