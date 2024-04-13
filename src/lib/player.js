@@ -1,4 +1,5 @@
 import { HealthBar } from '../lib/healthbar.js'
+import { playerSpawn, playerSpeed } from '../constants.js'
 
 /**
  *
@@ -24,12 +25,10 @@ export class Player {
     // Create is called when the scene becomes active, once, after assets are
     // preloaded. It's expected that this scene will have aleady called preload
     create() {
-        const startingX = 400
-        const startingY = 300
-        this.gameObject = this.scene.physics.add.image(startingX, startingY, 'me');
+        this.gameObject = this.scene.physics.add.image(playerSpawn.x, playerSpawn.y, 'me');
         this.gameObject.setCollideWorldBounds(true);
 
-        this.hp = new HealthBar(this.scene, this.health, startingX - 300, startingY - 300);
+        this.hp = new HealthBar(this.scene, this.health, playerSpawn.x - 300, playerSpawn.y - 300);
 
         let { wasd, arrowkeys } = createCursors(this.scene)
         this.wasd = wasd
@@ -59,19 +58,19 @@ export class Player {
      */
     updateMovement(cursor) {
         if (cursor.left.isDown) {
-            this.gameObject.setVelocityX(-500);
+            this.gameObject.setVelocityX(-playerSpeed);
         }
 
         if (cursor.right.isDown) {
-            this.gameObject.setVelocityX(500);
+            this.gameObject.setVelocityX(playerSpeed);
         }
 
         if (cursor.up.isDown) {
-            this.gameObject.setVelocityY(-500);
+            this.gameObject.setVelocityY(-playerSpeed);
         }
 
         if (cursor.down.isDown) {
-            this.gameObject.setVelocityY(500);
+            this.gameObject.setVelocityY(playerSpeed);
         }
     }
 
