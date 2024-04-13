@@ -87,8 +87,6 @@ export class GameScene extends Phaser.Scene {
         // Attacking allies engage with enemies
         this.attackingAllies = this.physics.add.group();
 
-        this.input.mouse.disableContextMenu();
-
         // make enemies
         this.enemies = this.physics.add.group();
 
@@ -125,24 +123,6 @@ export class GameScene extends Phaser.Scene {
             frameRate: 20,
             repeat: -1,
         });
-
-        this.input.on('pointerdown', e => {
-            if(e.rightButtonDown()) {
-                this.attackingAllies.create(e.worldX, e.worldY, 'attackingAlly');
-                this.attackingAllies.playAnimation('scorpion-move');
-            } else {
-                let ally = this.allies.create(e.worldX, e.worldY, 'bush');
-                ally.play('bushSpawnAnimation');
-                ally.on('animationcomplete', () => { 
-                    ally.isSpawned = true;
-                    ally.setTexture('bush');
-                }, this);
-                ally.setDepth(0);
-                bushSound.play('bushMarker');
-                bushSound.setVolume(0.05);
-
-            }
-        });
     
         // make enemies
         this.enemies = this.physics.add.group({
@@ -177,9 +157,10 @@ export class GameScene extends Phaser.Scene {
             constants.ENEMY_SPAWN_TIMER
         );
 
-        // TEMPORARY TODO: remove
-        this.physics.world.createDebugGraphic()
-        this.physics.world.drawDebug = true
+        if (constants.devMode) {
+            this.physics.world.createDebugGraphic()
+            this.physics.world.drawDebug = true
+        }
 
         for (let callable of this.postCreateHooks) {
             callable()

@@ -1,5 +1,5 @@
-import { HealthBar, HealthbarV2 } from '../lib/healthbar.js'
-import { playerSpawn, playerSpeed } from '../constants.js'
+import { HealthbarV2 } from '../lib/healthbar.js'
+import { playerSpawn, playerSpeed, summoningCostsMana } from '../constants.js'
 
 /**
  *
@@ -57,8 +57,35 @@ export class Player {
             frameRate: 12,
         });
 
-        console.log('Player:', 'created', this.gameObject)
-        return this
+        // Mouseclicks for summoning
+        this.scene.input.mouse.disableContextMenu();
+        this.scene.input.on('pointerdown', this.clickHandler.bind(this))  // maybe this has a context param??
+
+        console.log('Player:', 'created')
+    }
+
+    clickHandler(e) {
+        if (this.mana >= 50) {
+          if (!summonForFree)  {
+            this.mana -= 50; // TODO: configurable summon costs
+          }
+        } else {
+          return;  // TODO: signal this to the player
+        }
+        if(e.rightButtonDown()) {
+            this.scene.attackingAllies.create(e.worldX, e.worldY, 'attackingAlly');
+            this.scene.attackingAllies.playAnimation('scorpion-move');
+        } else {
+            let ally = this.scene.allies.create(e.worldX, e.worldY, 'bush');
+            ally.play('bushSpawnAnimation');
+            ally.on('animationcomplete', () => { 
+                ally.isSpawned = true;
+                ally.setTexture('bush');
+            }, this.scene);
+            ally.setDepth(0);
+            bushSound.play('bushMarker');
+            bushSound.setVolume(0.05);
+        }
     }
 
     // Update is called once per tick

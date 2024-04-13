@@ -16,3 +16,7 @@ export const ENEMY_SPAWN_TIMER = 1000;
 
 // Startup values
 export const playerSpawn = { x: 400, y: 300 }
+
+// Killswitches (development tools)
+export const summonForFree = false;
+export const devMode = true;
