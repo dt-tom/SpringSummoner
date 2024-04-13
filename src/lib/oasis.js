@@ -16,16 +16,18 @@ export class Oasis {
         this.gameObject = this.scene.physics.add.image(400, 300, 'oasis');
         this.gameObject.setOrigin(0.5, 0.5);  // use the center of the sprite as the reference point for positioning
 
-        if (this.scene.player !== undefined) {
+        this.scene.postCreateHooks.push(this.addPlayerOverlapHandler.bind(this))
+    }
+
+    addPlayerOverlapHandler() {
+        if (this.scene.player !== undefined && this.scene.player.gameObject !== undefined) {
             console.log('Oasis:', 'adding player overlap handler')
             this.scene.physics.add.overlap(
-                this.gameObject, this.scene.player.gameObject, this.overlapPlayer, null, this
+                this.scene.player.gameObject, this.gameObject, this.overlapPlayer, null, this
             )
+        } else {
+            console.log('Oasis:', "couldn't find a player to heal")
         }
-
-        // TEMP
-        this.scene.physics.world.createDebugGraphic()
-        this.scene.physics.world.drawDebug = true
     }
 
     update() {}

@@ -57,6 +57,11 @@ export class GameScene extends Phaser.Scene {
     }
 
     create () {
+        // Will call each of these after everything is initialized
+        // Useful for adding collision handlers when everything is ready to go
+        // (make sure to bind them if they're instance methods)
+        this.postCreateHooks = []
+
         // consts
         const NUMBER_OF_ENEMIES = 10;
         //  Set the camera and physics bounds to be the size of 4x4 bg images
@@ -68,8 +73,8 @@ export class GameScene extends Phaser.Scene {
         this.add.tileSprite(0, 0, constants.mapWidth, constants.mapHeight, 'sand').setOrigin(0, 0);
 
         this.oasis.create()
-
         this.player.create()
+
         this.cameras.main.startFollow(this.player.gameObject, true, 0.1, 0.1);  // Should this be in player.js?
 
         // Allies are stationary helpers
@@ -171,6 +176,14 @@ export class GameScene extends Phaser.Scene {
             spawnEnemy,
             constants.ENEMY_SPAWN_TIMER
         );
+
+        // TEMPORARY TODO: remove
+        this.scene.physics.world.createDebugGraphic()
+        this.scene.physics.world.drawDebug = true
+
+        for (let callable of this.postCreateHooks) {
+            callable()
+        }
     }
 
     getClosestObject(object, group) {
