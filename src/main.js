@@ -9,7 +9,7 @@ class Example extends Phaser.Scene
 
     preload ()
     {
-        this.load.image('block', 'assets/star.png');
+        this.load.image('me', 'assets/druid_base.png');
         this.load.image('ally', 'assets/bomb.png');
         this.load.spritesheet('enemy', 'assets/bug-move.png', { frameWidth: 32, frameHeight: 32});
         this.load.image('ground', 'assets/desert-block.png')
@@ -31,7 +31,7 @@ class Example extends Phaser.Scene
 
         this.cursors = this.input.keyboard.createCursorKeys();
 
-        this.player = this.physics.add.image(400, 300, 'block');
+        this.player = this.physics.add.image(400, 300, 'me');
 
         this.player.setCollideWorldBounds(true);
 
