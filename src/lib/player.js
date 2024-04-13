@@ -1,5 +1,5 @@
 import { HealthbarV2 } from '../lib/healthbar.js'
-import { playerSpawn, playerSpeed, summoningCostsMana } from '../constants.js'
+import { playerSpawn, playerSpeed, summonForFree } from '../constants.js'
 
 /**
  *
