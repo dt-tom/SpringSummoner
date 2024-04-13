@@ -178,8 +178,8 @@ export class GameScene extends Phaser.Scene {
         );
 
         // TEMPORARY TODO: remove
-        this.scene.physics.world.createDebugGraphic()
-        this.scene.physics.world.drawDebug = true
+        this.physics.world.createDebugGraphic()
+        this.physics.world.drawDebug = true
 
         for (let callable of this.postCreateHooks) {
             callable()
