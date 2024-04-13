@@ -1,45 +1,68 @@
 class Example extends Phaser.Scene
 {
+    constructor ()
+    {
+        super();
+    }
+
     preload ()
     {
-        //this.load.setBaseURL('https://labs.phaser.io');
-
-        this.load.image('sky', '../assets/sky.png');
-        // this.load.image('logo', '../assets/sprites/phaser3-logo.png');
-        // this.load.image('red', '../assets/particles/red.png');
+        this.load.image('bg', 'assets/sky.png');
+        this.load.image('block', 'assets/star.png');
     }
 
     create ()
     {
-        this.add.image(400, 300, 'sky');
+        //  Set the camera and physics bounds to be the size of 4x4 bg images
+        this.cameras.main.setBounds(0, 0, 1920 * 2, 1080 * 2);
+        this.physics.world.setBounds(0, 0, 1920 * 2, 1080 * 2);
 
-        // const particles = this.add.particles(0, 0, 'red', {
-        //     speed: 100,
-        //     scale: { start: 1, end: 0 },
-        //     blendMode: 'ADD'
-        // });
+        //  Mash 4 images together to create our background
+        this.add.image(0, 0, 'bg').setOrigin(0);
+        this.add.image(1920, 0, 'bg').setOrigin(0).setFlipX(true);
+        this.add.image(0, 1080, 'bg').setOrigin(0).setFlipY(true);
+        this.add.image(1920, 1080, 'bg').setOrigin(0).setFlipX(true).setFlipY(true);
 
-        // const logo = this.physics.add.image(400, 100, 'logo');
+        this.cursors = this.input.keyboard.createCursorKeys();
 
-        // logo.setVelocity(100, 200);
-        // logo.setBounce(1, 1);
-        // logo.setCollideWorldBounds(true);
+        this.player = this.physics.add.image(400, 300, 'block');
 
-        // particles.startFollow(logo);
+        this.player.setCollideWorldBounds(true);
+
+        this.cameras.main.startFollow(this.player, true, 0.05, 0.05);
+    }
+
+    update ()
+    {
+        this.player.setVelocity(0);
+
+        if (this.cursors.left.isDown)
+        {
+            this.player.setVelocityX(-500);
+        }
+        else if (this.cursors.right.isDown)
+        {
+            this.player.setVelocityX(500);
+        }
+
+        if (this.cursors.up.isDown)
+        {
+            this.player.setVelocityY(-500);
+        }
+        else if (this.cursors.down.isDown)
+        {
+            this.player.setVelocityY(500);
+        }
     }
 }
 
 const config = {
     type: Phaser.AUTO,
-    width: 800,
-    height: 600,
-    scene: Example,
+    parent: 'phaser-example',
     physics: {
         default: 'arcade',
-        arcade: {
-            gravity: { y: 200 }
-        }
-    }
+    },
+    scene: Example
 };
 
 const game = new Phaser.Game(config);
