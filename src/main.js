@@ -1,26 +1,21 @@
 import * as constants from './constants.js';
 
-class Example extends Phaser.Scene
-{
-    constructor ()
-    {
+class GameScene extends Phaser.Scene {
+    constructor () {
         super();
         this.health = 100;
     }
 
-    preload ()
-    {
+    preload () {
         this.load.image('me', 'assets/druid_base.png');
         this.load.image('ally', 'assets/bush-v1.png');
         this.load.image('attackingAlly', 'assets/bomb.png');
         this.load.spritesheet('enemy', 'assets/bug-move.png', { frameWidth: 32, frameHeight: 32});
-        this.load.image('ground', 'assets/desert-block.png')
+        this.load.image('sand', 'assets/desert-block.png')
+        this.load.image('oasis', 'assets/oasis-inuse.png')
     }
 
-  
-
-    create ()
-    {
+    create () {
         // consts
         const NUMBER_OF_ENEMIES = 10;
         //  Set the camera and physics bounds to be the size of 4x4 bg images
@@ -28,8 +23,7 @@ class Example extends Phaser.Scene
         this.cameras.main.setZoom(2);  // 2x our assets visually
         this.physics.world.setBounds(0, 0, 1920 * 2, 1080 * 2);
 
-        //  Background/desert tiles
-        this.add.tileSprite(0, 0, constants.mapWidth, constants.mapHeight, 'ground').setOrigin(0, 0);
+        this.createWorld()
 
         const { wasd, arrowkeys } = this.createCursors()
         this.wasd = wasd
@@ -63,8 +57,7 @@ class Example extends Phaser.Scene
         // make enemies
         this.enemies = this.physics.add.group();
 
-        for(let i = 0; i < NUMBER_OF_ENEMIES; i++) 
-        {
+        for(let i = 0; i < NUMBER_OF_ENEMIES; i++) {
             this.enemies.create(Math.random() * 400, Math.random() * 400, 'enemy');
         }
 
@@ -97,6 +90,19 @@ class Example extends Phaser.Scene
         }
     }
 
+    /**
+     * Create the tiled background and static foreground elements. Expects
+     * assets named sand (tileable) and oasis (sprite) to be preloaded
+     */
+    createWorld() {
+        //  Background/desert tiles
+        this.add.tileSprite(0, 0, constants.mapWidth, constants.mapHeight, 'sand').setOrigin(0, 0);
+
+        // Oasis
+        let oasis = this.add.sprite(400, 300, 'oasis');
+        oasis.setOrigin(0.5, 0.5);  // use the center of the sprite as the reference point for positioning
+    }
+
     update () {
         // Since we have multiple inputs doing the same thing, setup (set
         // velocity to 0 must be done first)
@@ -107,8 +113,7 @@ class Example extends Phaser.Scene
         for (let ally of this.attackingAllies.getChildren()) {
             let min_distance = Infinity;
             let min_enemy = null;
-            for(let enemy of this.enemies.getChildren())
-            {
+            for(let enemy of this.enemies.getChildren()) {
                 let diff = Phaser.Math.Distance.Squared(enemy.x, enemy.y, ally.x, ally.y);
                 if(diff < min_distance)
                 {
@@ -116,8 +121,7 @@ class Example extends Phaser.Scene
                     min_enemy = enemy;
                 }
             }
-            if(min_enemy)
-            {
+            if(min_enemy) {
                 this.physics.moveToObject(ally, min_enemy, 60);
             }
         }
@@ -192,7 +196,7 @@ const config = {
     physics: {
         default: 'arcade',
     },
-    scene: Example
+    scene: GameScene
 };
 
 const game = new Phaser.Game(config);
