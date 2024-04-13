@@ -41,8 +41,6 @@ export class GameScene extends Phaser.Scene {
         this.load.spritesheet('bushSpawn', 'assets/bush-spawn.png', {
             frameWidth: 64, frameHeight: 64,
         });
-        this.load.audio('leavesSound', 'assets/sounds/bush-sound.mp3');
-
         this.player.preload();
         this.oasis.preload();
     }
@@ -133,10 +131,6 @@ export class GameScene extends Phaser.Scene {
 
         // make enemies
         this.enemies = this.physics.add.group();
-
-        let bushSound = this.sound.add('leavesSound');
-        // Add a marker that starts at 12 second into the sound and lasts for 1 seconds
-        bushSound.addMarker({name: 'bushMarker', start: 3, duration: 1});
 
         this.anims.create({
             key: 'bugMoveAnimation',

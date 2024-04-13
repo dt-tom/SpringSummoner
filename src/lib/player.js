@@ -22,13 +22,20 @@ export class Player {
         this.scene.load.spritesheet('death', 'assets/main-character-death-animation-inuse.png', {
             frameWidth: 32, frameHeight: 32,
         })
+        this.scene.load.spritesheet('walkFront', 'assets/main-character_walking_front_v1.png', {
+            frameWidth: 32, frameHeight: 32,
+        })
+        this.scene.load.spritesheet('walkBack', 'assets/main_character_walking_back_v1.png', {
+            frameWidth: 32, frameHeight: 32,
+        })
+        this.scene.load.audio('leavesSound', 'assets/sounds/bush-sound.mp3');
         console.log('Player:', 'preloaded')
     }
 
     // Create is called when the scene becomes active, once, after assets are
     // preloaded. It's expected that this scene will have aleady called preload
     create() {
-        this.gameObject = this.scene.physics.add.sprite(playerSpawn.x, playerSpawn.y, 'me');
+        this.gameObject = this.scene.physics.add.sprite(playerSpawn.x, playerSpawn.y, 'walkBack');
         this.gameObject.setCollideWorldBounds(true);
 
         this.health = 100;
@@ -53,10 +60,24 @@ export class Player {
         this.wasd = wasd
         this.arrowkeys = arrowkeys
 
+        let bushSound = this.scene.sound.add('leavesSound');
+        // Add a marker that starts at 12 second into the sound and lasts for 1 seconds
+        bushSound.addMarker({name: 'bushMarker', start: 3, duration: 1});
+
         this.gameObject.anims.create({
             key: 'deathAnimation',
             frames: this.gameObject.anims.generateFrameNumbers('death', { start: 0, end: 26}),
             frameRate: 12,
+        });
+        this.gameObject.anims.create({
+            key: 'walkFrontAnimation',
+            frames: this.gameObject.anims.generateFrameNumbers('walkFront', { start: 0, end: 3}),
+            frameRate: 8,
+        });
+        this.gameObject.anims.create({
+            key: 'walkBackAnimation',
+            frames: this.gameObject.anims.generateFrameNumbers('walkBack', { start: 0, end: 3}),
+            frameRate: 8,
         });
 
         // Mouseclicks for summoning
@@ -107,19 +128,29 @@ export class Player {
      */
     updateMovement(cursor) {
         if (cursor.left.isDown) {
+            this.gameObject.setFlipX(true);
             this.gameObject.setVelocityX(-playerSpeed);
+            this.gameObject.anims.play('walkFrontAnimation', true)
         }
 
         if (cursor.right.isDown) {
+            this.gameObject.setFlipX(false);
             this.gameObject.setVelocityX(playerSpeed);
+            this.gameObject.anims.play('walkFrontAnimation', true)
         }
 
         if (cursor.up.isDown) {
+            this.gameObject.anims.play('walkBackAnimation', true)
             this.gameObject.setVelocityY(-playerSpeed);
         }
 
         if (cursor.down.isDown) {
             this.gameObject.setVelocityY(playerSpeed);
+            this.gameObject.anims.play('walkFrontAnimation', true)
+        }
+
+        if (!cursor.left.isDown && !cursor.right.isDown && !cursor.up.isDown && !cursor.down.isDown) {
+            // this.gameObject.setTexture('me')
         }
     }
 
