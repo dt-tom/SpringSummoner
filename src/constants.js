@@ -3,8 +3,8 @@ export const mapHeight = 256;
 export const mapWidth = 256;
 
 // On-webpage canvas dimensions
-export const canvasWidth = 1280;
-export const canvasHeight = 960;
+export const canvasWidth = 1024;
+export const canvasHeight = 768;
 
 // Speeds
 export const playerSpeed = 250;
