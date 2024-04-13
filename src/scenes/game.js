@@ -92,11 +92,6 @@ export class GameScene extends Phaser.Scene {
 
         // make enemies
         this.enemies = this.physics.add.group();
-        // make enemies
-        // need to use this sometimes since this is finicky in js
-        let enemiesList = this.enemies;
-
-        
 
         let bushSound = this.sound.add('leavesSound');
         // Add a marker that starts at 12 second into the sound and lasts for 1 seconds
