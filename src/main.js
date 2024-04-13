@@ -1,7 +1,6 @@
 import { TitleScene } from './scenes/title.js'
 import { GameScene } from './scenes/game.js'
 import * as constants from './constants.js'
-
 const config = {
     type: Phaser.AUTO,
     width: constants.canvasWidth,
