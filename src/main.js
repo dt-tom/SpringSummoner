@@ -17,6 +17,7 @@ class Example extends Phaser.Scene
         this.load.image('ground', 'assets/desert-block.png')
     }
 
+    
   
 
     create ()
@@ -36,6 +37,8 @@ class Example extends Phaser.Scene
         this.arrowkeys = arrowkeys
 
         this.player = this.physics.add.image(400, 300, 'me');
+
+        let playerRef = this.player;
 
         this.player.setCollideWorldBounds(true);
 
@@ -58,16 +61,40 @@ class Example extends Phaser.Scene
             
         });
 
-        console.log(this.health);
+        //console.log(this.health);
 
         // make enemies
         this.enemies = this.physics.add.group();
+
+        // need to use this sometimes since this is finicky in js
+        let enemiesList = this.enemies;
 
         for(let i = 0; i < NUMBER_OF_ENEMIES; i++) 
         {
             this.enemies.create(Math.random() * 400, Math.random() * 400, 'enemy');
         }
 
+
+        // add colliders
+        this.physics.add.collider(this.player, this.enemies);
+        this.physics.add.collider(this.enemies, this.enemies);  
+        this.physics.add.collider(this.attackingAllies, this.enemies); 
+
+        // spawn new enemy near the player every ENEMY_SPAWN_TIMER milliseconds
+        // make sure they always spawn off screen
+        function spawnEnemy()
+        {
+            console.log("spawning enemy");
+            let direction = Math.random < 0.5 ? 1 : -1
+            enemiesList.create(
+                playerRef.x + (constants.canvasWidth * direction) + Math.random() * 400, 
+                playerRef.y + (constants.canvasHeight * direction) + Math.random() * 400, 
+                'enemy');
+        }
+        setInterval(spawnEnemy, constants.ENEMY_SPAWN_TIMER);
+
+        // enemy animations
+        // TODO: different animations for moving, attacking, dying, etc
         this.anims.create({
             key: 'bug-move',
             frames: this.anims.generateFrameNumbers('enemy', { start: 0, end: 4}),
@@ -75,10 +102,6 @@ class Example extends Phaser.Scene
             repeat: -1,
         })
         this.enemies.playAnimation('bug-move');
-
-        this.physics.add.collider(this.player, this.enemies);
-        this.physics.add.collider(this.enemies, this.enemies);  
-        this.physics.add.collider(this.attackingAllies, this.enemies); 
     }
 
     /**
@@ -97,6 +120,21 @@ class Example extends Phaser.Scene
         }
     }
 
+    getClosestObject(object, group) {
+        let min_distance = Infinity;
+        let min_item = null;
+        for(let item of group.getChildren())
+        {
+            let diff = Phaser.Math.Distance.Squared(item.x, item.y, object.x, object.y);
+            if(diff < min_distance)
+            {
+                min_distance = diff;
+                min_item = item;
+            }
+        }
+        return min_item;
+    }
+
     update () {
         // Since we have multiple inputs doing the same thing, setup (set
         // velocity to 0 must be done first)
@@ -104,22 +142,13 @@ class Example extends Phaser.Scene
         this.updateMovement(this.wasd)
         this.updateMovement(this.arrowkeys)
 
+        // Right click allies move towards closest enemy
         for (let ally of this.attackingAllies.getChildren()) {
-            let min_distance = Infinity;
-            let min_enemy = null;
-            for(let enemy of this.enemies.getChildren())
-            {
-                let diff = Phaser.Math.Distance.Squared(enemy.x, enemy.y, ally.x, ally.y);
-                if(diff < min_distance)
-                {
-                    min_distance = diff;
-                    min_enemy = enemy;
-                }
+            let closestEnemy = this.getClosestObject(ally, this.enemies);
+            if (closestEnemy){
+                this.physics.moveToObject(ally, closestEnemy, 60);
             }
-            if(min_enemy)
-            {
-                this.physics.moveToObject(ally, min_enemy, 60);
-            }
+            
         }
     
 
