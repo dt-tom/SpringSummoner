@@ -91,19 +91,6 @@ class Example extends Phaser.Scene
         this.updateMovement(this.wasd)
         this.updateMovement(this.arrowkeys)
 
-        for (let ally of this.allies.getChildren()) {
-            // this.physics.moveToObject(entity, this.player, 150);
-        }
-
-        //             for (const enemy of this.enemies.getChildren()) {
-
-            //     if (Phaser.Geom.Intersects.RectangleToRectangle(allyBounds, enemyBounds)) {
-            //         this.physics.moveTo(enemy, this.player.x + Math.random() * 100, this.player.y + Math.random() * 100, 10)
-            //     } else {
-            //         this.physics.moveTo(enemy, this.player.x + Math.random() * 100, this.player.y + Math.random() * 100, 150)
-            //     }
-            // }
-    
         for(const enemy of this.enemies.getChildren()) {
             const vector = new Phaser.Math.Vector2(
                 this.player.x - enemy.x,
