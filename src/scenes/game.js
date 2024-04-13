@@ -1,6 +1,11 @@
 import * as constants from '../constants.js'
 import { Player } from '../lib/player.js'
+<<<<<<< HEAD
 import { Oasis } from '../lib/oasis.js'
+=======
+import { HealthBar } from '../lib/healthbar.js'
+//import AnimatedTiles from '../../node_modules/phaser-animated-tiles-phaser3.5/dist/AnimatedTiles.min.js'
+>>>>>>> 0389944 (tiles)
 
 let allowSpawnEnemy = false;
 
@@ -17,13 +22,21 @@ export class GameScene extends Phaser.Scene {
     }
 
     preload () {
-        this.load.image('ally', 'assets/bush-v1.png');
+        this.load.scenePlugin('AnimatedTiles', 'https://raw.githubusercontent.com/nkholski/phaser-animated-tiles/master/dist/AnimatedTiles.js', 'animatedTiles', 'animatedTiles'); 
+        this.load.image('me', 'assets/main-character-inuse.png');
+        this.load.image('bush', 'assets/bush-v1.png');
         this.load.image('attackingAlly', 'assets/bomb.png');
         this.load.image('bush', 'assets/bush-v1.png');
         this.load.spritesheet('enemy', 'assets/bug-move.png', {
             frameWidth: 32, frameHeight: 32
         });
+<<<<<<< HEAD
         this.load.image('sand', 'assets/desert-block.png')
+=======
+        this.load.image('sand', 'assets/desert-block.png');
+        this.load.image('oasis', 'assets/oasis-inuse.png');
+        this.load.image('tiles', 'assets/grass-block.png');
+>>>>>>> 0389944 (tiles)
         this.load.spritesheet('dirtParticle', 'assets/dirt-particle.png', {
             frameWidth: 6, frameHeight: 6,
         });
@@ -57,11 +70,40 @@ export class GameScene extends Phaser.Scene {
     }
 
     create () {
+<<<<<<< HEAD
         // Will call each of these after everything is initialized
         // Useful for adding collision handlers when everything is ready to go
         // (make sure to bind them if they're instance methods)
         this.postCreateHooks = []
 
+=======
+
+        const level = [
+            [  0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0 ],
+            [  0,   1,   2,   3,   0,   0,   0,   1,   2,   3,   0 ],
+            [  0,   5,   6,   7,   0,   0,   0,   5,   6,   7,   0 ],
+            [  0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0 ],
+            [  0,   0,   0,  14,  13,  14,   0,   0,   0,   0,   0 ],
+            [  0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0 ],
+            [  0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0 ],
+            [  0,   0,  14,  14,  14,  14,  14,   0,   0,   0,  15 ],
+            [  0,   0,   0,   0,   0,   0,   0,   0,   0,  15,  15 ],
+            [ 35,  36,  37,   0,   0,   0,   0,   0,  15,  15,  15 ],
+            [ 39,  39,  39,  39,  39,  39,  39,  39,  39,  39,  39 ]
+          ];
+
+          var levelArray = [[]];
+          // construct level array
+          for(let i = 0; i < constants.mapWidth; i++)
+          {
+            levelArray += [  0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0 ];
+          }
+        
+          // When loading from an array, make sure to specify the tileWidth and tileHeight
+          const map = this.make.tilemap({ data: level, tileWidth: 32, tileHeight: 32 });
+          const tiles = map.addTilesetImage("tiles");
+          const layer = map.createLayer(0, tiles, 0, 0);
+>>>>>>> 0389944 (tiles)
         // consts
         const NUMBER_OF_ENEMIES = 10;
         //  Set the camera and physics bounds to be the size of 4x4 bg images
@@ -182,6 +224,33 @@ export class GameScene extends Phaser.Scene {
         return min_item;
     }
 
+<<<<<<< HEAD
+=======
+    /**
+     * Create the tiled background and static foreground elements. Expects
+     * assets named sand (tileable) and oasis (sprite) to be preloaded
+     */
+    createWorld() {
+        //  Background/desert tiles
+        // this.add.tileSprite(0, 0, constants.mapWidth, constants.mapHeight, 'sand').setOrigin(0, 0);
+
+        // const array=[[0,1,2,22],
+        //             [17,18,19],
+        //             [34,35,36]];
+
+        // this.map = this.make.tilemap({ key: 'map' });
+        // const tiles = this.map.addTilesetImage('Desert', 'tiles');
+        // const layer = this.map.createLayer('Ground', tiles, 0, 0);
+
+        //this.sys.animatedTiles.init(map);
+
+
+        // Oasis
+       // let oasis = this.add.sprite(400, 300, 'oasis');
+       // oasis.setOrigin(0.5, 0.5);  // use the center of the sprite as the reference point for positioning
+    }
+
+>>>>>>> 0389944 (tiles)
     update () {
         if(allowSpawnEnemy == true)
         {
