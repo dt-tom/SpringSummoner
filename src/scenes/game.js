@@ -1,6 +1,9 @@
 import * as constants from '../constants.js'
 import { HealthBar } from '../lib/healthbar.js'
 
+let allowSpawnEnemy = false;
+
+
 /**
  * GameScene is the main scene of Spring Summoner; it's where the actual game
  * lives
@@ -34,6 +37,23 @@ export class GameScene extends Phaser.Scene {
 
     }
 
+    createEnemy(posX, posY)
+    {
+        console.log("creating enemy");
+        const enemy = this.enemies.create(posX, posY, 'bugSpawn');
+        this.add.particles(posX, posY, 'dirtParticle', {
+            speed: { min: 1, max: 20 },
+            maxParticles: 20,
+            anim: 'dirtTumble',
+            duration: 3000,
+            emitZone: { source: new Phaser.Geom.Circle(0, 0, 30) }  // Emit particles within a 4 pixel radius
+        });
+        this.time.delayedCall(1000, (e) => { 
+            e.isSpawned = true;
+            this.enemies.playAnimation('bugMoveAnimation');
+            }, [enemy], this);
+    }
+
     create () {
         // consts
         const NUMBER_OF_ENEMIES = 10;
@@ -49,6 +69,8 @@ export class GameScene extends Phaser.Scene {
         this.arrowkeys = arrowkeys
 
         this.player = this.physics.add.image(400, 300, 'me');
+
+        const playerRef = this.player;
 
         this.player.setCollideWorldBounds(true);
 
@@ -74,9 +96,7 @@ export class GameScene extends Phaser.Scene {
         // need to use this sometimes since this is finicky in js
         let enemiesList = this.enemies;
 
-        for(let i = 0; i < NUMBER_OF_ENEMIES; i++) {
-            this.enemies.create(Math.random() * 400, Math.random() * 400, 'enemy');
-        }
+        
 
         let bushSound = this.sound.add('leavesSound');
         // Add a marker that starts at 12 second into the sound and lasts for 1 seconds
@@ -144,19 +164,7 @@ export class GameScene extends Phaser.Scene {
         for(let i = 0; i < NUMBER_OF_ENEMIES; i++) {
             const spawnX = Math.random() * 400;
             const spawnY = Math.random() * 400;
-            const enemy = this.enemies.create(spawnX, spawnY, 'bugSpawn');
-            enemy.setDepth(5);
-            this.add.particles(spawnX, spawnY, 'dirtParticle', {
-                speed: { min: 1, max: 20 },
-                maxParticles: 20,
-                anim: 'dirtTumble',
-                duration: 3000,
-                emitZone: { source: new Phaser.Geom.Circle(0, 0, 30) }  // Emit particles within a 4 pixel radius
-            });
-            this.time.delayedCall(1000, (e) => { 
-                e.isSpawned = true;
-                this.enemies.playAnimation('bugMoveAnimation');
-             }, [enemy], this);
+            this.createEnemy(spawnX, spawnY);
         }
         this.enemies.playAnimation('bugSpawnAnimation');
 
@@ -171,18 +179,24 @@ export class GameScene extends Phaser.Scene {
             }
         }, null, this);
 
+        console.log(allowSpawnEnemy);
+
+        
+        
+
         // spawn new enemy near the player every ENEMY_SPAWN_TIMER milliseconds
         // make sure they always spawn off screen
         function spawnEnemy()
         {
             console.log("spawning enemy");
-            let direction = Math.random < 0.5 ? 1 : -1
-            enemiesList.create(
-                playerRef.x + (constants.canvasWidth * direction) + Math.random() * 400, 
-                playerRef.y + (constants.canvasHeight * direction) + Math.random() * 400, 
-                'enemy');
+            allowSpawnEnemy = true;
+            
+            
         }
-        setInterval(spawnEnemy, constants.ENEMY_SPAWN_TIMER);
+        setInterval(
+            spawnEnemy,
+            constants.ENEMY_SPAWN_TIMER
+        );
     }
 
     getClosestObject(object, group) {
@@ -199,6 +213,8 @@ export class GameScene extends Phaser.Scene {
         }
         return min_item;
     }
+
+   
 
     /**f.log
      * @return an object containing two cursor objects, arrowkeys and wasd which
@@ -230,6 +246,15 @@ export class GameScene extends Phaser.Scene {
     }
 
     update () {
+
+        if(allowSpawnEnemy == true)
+        {
+            let direction = Math.random < 0.5 ? 1 : -1;
+            this.createEnemy(
+                this.player.x + (constants.canvasWidth * direction) + Math.random() * 400, 
+                this.player.y + (constants.canvasHeight * direction) + Math.random() * 400);
+            allowSpawnEnemy = false;
+        }
         // Since we have multiple inputs doing the same thing, setup (set
         // velocity to 0 must be done first)
         this.player.setVelocity(0);

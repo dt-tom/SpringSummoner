@@ -9,4 +9,4 @@ export const canvasHeight = 960;
 export const bugMovespeed = 75;
 export const bushSlow = 0.25;
 
-export const ENEMY_SPAWN_TIMER = 5000;
+export const ENEMY_SPAWN_TIMER = 1000;
