@@ -29,6 +29,9 @@ export class GameScene extends Phaser.Scene {
         this.load.spritesheet('bushSpawn', 'assets/bush-spawn.png', {
             frameWidth: 64, frameHeight: 64,
         });
+        this.load.audio('leavesSound', 'assets/sounds/bush-sound.mp3');
+        this.load.audio('soundtrack', 'assets/sounds/soundtrack.mp3');
+
     }
 
     create () {
@@ -75,6 +78,16 @@ export class GameScene extends Phaser.Scene {
             this.enemies.create(Math.random() * 400, Math.random() * 400, 'enemy');
         }
 
+        let bushSound = this.sound.add('leavesSound');
+        // Add a marker that starts at 12 second into the sound and lasts for 1 seconds
+        bushSound.addMarker({name: 'bushMarker', start: 3, duration: 1});
+        bushSound.setVolume(0.0);
+
+        this.load.audio('soundtrack', 'assets/sounds/soundtrack.mp3');
+        let soundtrack = this.sound.add('soundtrack');
+        soundtrack.setLoop(true);
+        soundtrack.play();
+        soundtrack.setVolume(0.3);
         this.anims.create({
             key: 'bugMoveAnimation',
             frames: this.anims.generateFrameNumbers('enemy', { start: 0, end: 3}),
@@ -115,8 +128,9 @@ export class GameScene extends Phaser.Scene {
                 ally.on('animationcomplete', () => { 
                     ally.isSpawned = true;
                     ally.setTexture('bush');
-                 }, this);
-                 ally.setDepth(0);
+                }, this);
+                ally.setDepth(0);
+                bushSound.play('bushMarker');
             }
         });
     
