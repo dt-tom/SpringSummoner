@@ -48,6 +48,7 @@ class Example extends Phaser.Scene
 
     update ()
     {
+        const ENEMY_RANDOMNESS_FACTOR = 100;
         this.player.setVelocity(0);
 
         if (this.cursors.left.isDown)
@@ -71,8 +72,10 @@ class Example extends Phaser.Scene
     
         for(const member of this.enemies.getChildren())
         {
-            //this.physics.moveTo(member, Math.random() * 10, Math.random() * 10);
-            this.physics.moveTo(member, this.player.x + Math.random() * 100, this.player.y + Math.random() * 100, 150)
+            this.physics.moveTo(member, 
+                this.player.x + Math.random() * ENEMY_RANDOMNESS_FACTOR, 
+                this.player.y + Math.random() * ENEMY_RANDOMNESS_FACTOR, 
+                150)
         }
 
 
