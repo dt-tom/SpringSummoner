@@ -40,9 +40,9 @@ class Example extends Phaser.Scene
         this.allies = this.physics.add.group();
 
         this.input.on('pointerdown', e => {
-            console.log(e.downX, e.downY);
+            console.log(e.worldX, e.worldY);
 
-            this.allies.create(e.downX, e.downY, 'ally')
+            this.allies.create(e.worldX, e.worldY, 'ally')
         })
 
         // make enemies
