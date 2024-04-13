@@ -13,7 +13,7 @@ export class GameScene extends Phaser.Scene {
 
     preload () {
         this.load.image('me', 'assets/main-character-inuse.png');
-        this.load.image('ally', 'assets/bush-v1.png');
+        this.load.image('bush', 'assets/bush-v1.png');
         this.load.image('attackingAlly', 'assets/bomb.png');
         this.load.spritesheet('enemy', 'assets/bug-move.png', {
             frameWidth: 32, frameHeight: 32
@@ -25,6 +25,9 @@ export class GameScene extends Phaser.Scene {
         });
         this.load.spritesheet('bugSpawn', 'assets/bug-spawn.png', {
             frameWidth: 32, frameHeight: 32,
+        });
+        this.load.spritesheet('bushSpawn', 'assets/bush-spawn.png', {
+            frameWidth: 64, frameHeight: 64,
         });
     }
 
@@ -51,22 +54,16 @@ export class GameScene extends Phaser.Scene {
         this.cameras.main.startFollow(this.player, true, 0.1, 0.1);
 
         // Allies are stationary helpers
-        this.allies = this.physics.add.group();
+        this.allies = this.physics.add.group({
+            createCallback: (ally) => {
+                ally.isSpawned = false;
+            },
+        });
         
         // Attacking allies engage with enemies
         this.attackingAllies = this.physics.add.group();
 
         this.input.mouse.disableContextMenu();
-
-        this.input.on('pointerdown', e => {
-            if(e.rightButtonDown()) {
-                this.attackingAllies.create(e.worldX, e.worldY, 'attackingAlly');
-                this.attackingAllies.playAnimation('scorpion-move');
-            } else {
-                this.allies.create(e.worldX, e.worldY, 'ally');
-            }
-            
-        });
 
         // make enemies
         this.enemies = this.physics.add.group();
@@ -83,19 +80,45 @@ export class GameScene extends Phaser.Scene {
             frames: this.anims.generateFrameNumbers('enemy', { start: 0, end: 3}),
             frameRate: 20,
             repeat: -1,
-        })
+        });
         this.anims.create({
             key: 'bugSpawnAnimation',
             frames: this.anims.generateFrameNumbers('bugSpawn', { start: 0, end: 8}),
             frameRate: 10,
             repeat: -1,
-        })
+        });
         this.anims.create({
             key: 'dirtTumble',
             frames: this.anims.generateFrameNumbers('dirtParticle', { start: 0, end: 7}),
             frameRate: 10,
             repeat: -1,
-        })
+        });
+        this.anims.create({
+            key: 'bushSpawnAnimation',
+            frames: this.anims.generateFrameNumbers('bushSpawn', { start: 0, end: 10}),
+            frameRate: 15,
+        });
+        this.anims.create({
+            key: 'scorpion-move',
+            frames: this.anims.generateFrameNumbers('attackingAlly', { start: 0, end: 5}),
+            frameRate: 20,
+            repeat: -1,
+        });
+
+        this.input.on('pointerdown', e => {
+            if(e.rightButtonDown()) {
+                this.attackingAllies.create(e.worldX, e.worldY, 'attackingAlly');
+                this.attackingAllies.playAnimation('scorpion-move');
+            } else {
+                let ally = this.allies.create(e.worldX, e.worldY, 'bush');
+                ally.play('bushSpawnAnimation');
+                ally.on('animationcomplete', () => { 
+                    ally.isSpawned = true;
+                    ally.setTexture('bush');
+                 }, this);
+                 ally.setDepth(0);
+            }
+        });
     
         // make enemies
         this.enemies = this.physics.add.group({
@@ -104,18 +127,11 @@ export class GameScene extends Phaser.Scene {
             }
         });
 
-        // ally animations
-        this.anims.create({
-            key: 'scorpion-move',
-            frames: this.anims.generateFrameNumbers('attackingAlly', { start: 0, end: 5}),
-            frameRate: 20,
-            repeat: -1,
-        });
-
         for(let i = 0; i < NUMBER_OF_ENEMIES; i++) {
             const spawnX = Math.random() * 400;
             const spawnY = Math.random() * 400;
             const enemy = this.enemies.create(spawnX, spawnY, 'bugSpawn');
+            enemy.setDepth(5);
             this.add.particles(spawnX, spawnY, 'dirtParticle', {
                 speed: { min: 1, max: 20 },
                 maxParticles: 20,
@@ -224,6 +240,9 @@ export class GameScene extends Phaser.Scene {
             enemy.rotation = vector.angle();
             var moveSpeed = constants.bugMovespeed;
             for (let ally of this.allies.getChildren()) {
+                if (!ally.isSpawned) {
+                    continue;
+                }
                 const allyBounds = ally.getBounds();
                 const enemyBounds = enemy.getBounds();
                 if (Phaser.Geom.Intersects.RectangleToRectangle(allyBounds, enemyBounds)) {
