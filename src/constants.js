@@ -1,6 +1,6 @@
 // Ingame map dimensions
-export const mapHeight = 4096;
-export const mapWidth = 4096;
+export const mapHeight = 256;
+export const mapWidth = 256;
 
 // On-webpage canvas dimensions
 export const canvasWidth = 1280;

@@ -18,7 +18,11 @@ export class GameScene extends Phaser.Scene {
     constructor () {
         super('GameScene');
         this.player = new Player(this)
+<<<<<<< HEAD
         this.oasis = new Oasis(this)
+=======
+        this.tick = 0;
+>>>>>>> 0e0e92f (grass)
     }
 
     preload () {
@@ -31,12 +35,19 @@ export class GameScene extends Phaser.Scene {
             frameWidth: 32, frameHeight: 32
         });
 <<<<<<< HEAD
+<<<<<<< HEAD
         this.load.image('sand', 'assets/desert-block.png')
 =======
         this.load.image('sand', 'assets/desert-block.png');
         this.load.image('oasis', 'assets/oasis-inuse.png');
         this.load.image('tiles', 'assets/grass-block.png');
 >>>>>>> 0389944 (tiles)
+=======
+        
+        this.load.image('oasis', 'assets/oasis-inuse.png');
+        this.load.image('grassTiles', 'assets/grass-block-sheet-v2.png');
+        this.load.image('desertTile', 'assets/desert-block.png');
+>>>>>>> 0e0e92f (grass)
         this.load.spritesheet('dirtParticle', 'assets/dirt-particle.png', {
             frameWidth: 6, frameHeight: 6,
         });
@@ -54,7 +65,10 @@ export class GameScene extends Phaser.Scene {
 
     createEnemy(posX, posY)
     {
+<<<<<<< HEAD
         // console.log("creating enemy");
+=======
+>>>>>>> 0e0e92f (grass)
         const enemy = this.enemies.create(posX, posY, 'bugSpawn');
         this.add.particles(posX, posY, 'dirtParticle', {
             speed: { min: 1, max: 20 },
@@ -78,32 +92,49 @@ export class GameScene extends Phaser.Scene {
 
 =======
 
-        const level = [
-            [  0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0 ],
-            [  0,   1,   2,   3,   0,   0,   0,   1,   2,   3,   0 ],
-            [  0,   5,   6,   7,   0,   0,   0,   5,   6,   7,   0 ],
-            [  0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0 ],
-            [  0,   0,   0,  14,  13,  14,   0,   0,   0,   0,   0 ],
-            [  0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0 ],
-            [  0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0 ],
-            [  0,   0,  14,  14,  14,  14,  14,   0,   0,   0,  15 ],
-            [  0,   0,   0,   0,   0,   0,   0,   0,   0,  15,  15 ],
-            [ 35,  36,  37,   0,   0,   0,   0,   0,  15,  15,  15 ],
-            [ 39,  39,  39,  39,  39,  39,  39,  39,  39,  39,  39 ]
-          ];
-
-          var levelArray = [[]];
+          this.levelArray = [];
           // construct level array
-          for(let i = 0; i < constants.mapWidth; i++)
+          for(let i = 0; i < constants.mapHeight; i++)
           {
-            levelArray += [  0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0 ];
+            let thisRow = [];
+            for(let j = 0; j < constants.mapWidth; j++)
+            {
+                thisRow.push([0]);
+            }
+            this.levelArray.push(thisRow);
+          }
+
+          var levelArray2 = [];
+          // construct level array
+          for(let i = 0; i < constants.mapHeight; i++)
+          {
+            let thisRow = [];
+            for(let j = 0; j < constants.mapWidth; j++)
+            {
+                thisRow.push([0]);
+            }
+            levelArray2.push(thisRow);
           }
         
           // When loading from an array, make sure to specify the tileWidth and tileHeight
+<<<<<<< HEAD
           const map = this.make.tilemap({ data: level, tileWidth: 32, tileHeight: 32 });
           const tiles = map.addTilesetImage("tiles");
           const layer = map.createLayer(0, tiles, 0, 0);
 >>>>>>> 0389944 (tiles)
+=======
+          this.grassMap = this.make.tilemap({ data: this.levelArray, tileWidth: 32, tileHeight: 32 });
+          var tiles = this.grassMap.addTilesetImage("grassTiles");
+          //const grassTiles = map.addTilesetImage("grassTile");
+          this.grassLayer = this.grassMap.createLayer(0, tiles, 0, 0);
+          this.grassLayer.setDepth(-1);
+          
+          var desertMap = this.make.tilemap({ data: levelArray2, tileWidth: 32, tileHeight: 32 });
+          var desertTiles = desertMap.addTilesetImage("desertTile");
+          //const grassTiles = map.addTilesetImage("grassTile");
+          var desertLayer = desertMap.createLayer(0, desertTiles, 0, 0);
+          desertLayer.setDepth(-2);
+>>>>>>> 0e0e92f (grass)
         // consts
         const NUMBER_OF_ENEMIES = 10;
         //  Set the camera and physics bounds to be the size of 4x4 bg images
@@ -190,8 +221,14 @@ export class GameScene extends Phaser.Scene {
 
         // spawn new enemy near the player every ENEMY_SPAWN_TIMER milliseconds
         // make sure they always spawn off screen
+<<<<<<< HEAD
         function spawnEnemy() {
             // console.log("spawning enemy");
+=======
+        const playerObjRef = this.player.gameObject
+        function spawnEnemy()
+        {
+>>>>>>> 0e0e92f (grass)
             allowSpawnEnemy = true;
         }
         setInterval(
@@ -252,6 +289,7 @@ export class GameScene extends Phaser.Scene {
 
 >>>>>>> 0389944 (tiles)
     update () {
+        this.tick += 1;
         if(allowSpawnEnemy == true)
         {
             let direction = Math.random < 0.5 ? 1 : -1;
@@ -260,6 +298,54 @@ export class GameScene extends Phaser.Scene {
                 this.player.gameObject.y + (constants.canvasHeight * direction) + Math.random() * 400);
             allowSpawnEnemy = false;
         }
+        let currentTile = this.grassMap.getTileAtWorldXY(this.player.gameObject.x, this.player.gameObject.y);
+        let otherTile1 = this.grassMap.getTileAt(currentTile.x + 1, currentTile.y);
+        let otherTile2 = this.grassMap.getTileAt(currentTile.x - 1, currentTile.y);
+        let otherTile3 = this.grassMap.getTileAt(currentTile.x, currentTile.y + 1);
+        let otherTile4 = this.grassMap.getTileAt(currentTile.x, currentTile.y - 1);
+        // let currentTile2 = this.grassMap.getTileAtWorldXY(this.player.gameObject.x, this.player.gameObject.y);
+        // let currentTile3 = this.grassMap.getTileAtWorldXY(this.player.gameObject.x, this.player.gameObject.y);
+        if(currentTile && this.tick % 10 == 0){
+            
+            if(currentTile.index < 5)
+            {
+                this.grassMap.putTileAt(currentTile.index + 1, currentTile.x, currentTile.y);
+                //this.grassMap.replaceByIndex(currentTile.index, currentTile.index + 1, currentTile.x, currentTile.y, 1, 1);
+            }
+
+        }
+        if(otherTile1 && this.tick % 5 == 0){ 
+            if(otherTile1.index < 5)
+            {
+                this.grassMap.putTileAt(otherTile1.index + 1, otherTile1.x, otherTile1.y);
+                //this.grassMap.replaceByIndex(currentTile.index, currentTile.index + 1, currentTile.x, currentTile.y, 1, 1);
+            }
+        }
+        if(otherTile2 && this.tick % 5 == 0){ 
+            if(otherTile2.index < 5)
+            {
+                this.grassMap.putTileAt(otherTile2.index + 1, otherTile2.x, otherTile2.y);
+                //this.grassMap.replaceByIndex(currentTile.index, currentTile.index + 1, currentTile.x, currentTile.y, 1, 1);
+            }
+        }
+        if(otherTile3 && this.tick % 5 == 0){ 
+            if(otherTile3.index < 5)
+            {
+                this.grassMap.putTileAt(otherTile3.index + 1, otherTile3.x, otherTile3.y);
+                //this.grassMap.replaceByIndex(currentTile.index, currentTile.index + 1, currentTile.x, currentTile.y, 1, 1);
+            }
+        }
+        if(otherTile4 && this.tick % 5 == 0){ 
+            if(otherTile4.index < 5)
+            {
+                this.grassMap.putTileAt(otherTile4.index + 1, otherTile4.x, otherTile4.y);
+                //this.grassMap.replaceByIndex(currentTile.index, currentTile.index + 1, currentTile.x, currentTile.y, 1, 1);
+            }
+        }
+        
+        //this.levelArray[currentTile.x][currentTile.y] += 1;
+        //this.grassMap.putTileAtWorldXY(0, currentTile.x, currentTile.y);
+        //this.grassLayer.removeTileAtWorldXY(currentTile.x, currentTile.y);
         this.player.update()
         this.oasis.update()
 

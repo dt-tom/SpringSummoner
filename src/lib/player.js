@@ -12,6 +12,8 @@ export class Player {
     constructor(scene) {
         this.scene = scene
         console.log('Player:', 'constructed')
+        this.firstUpdate = true
+        
     }
 
     // Preload is called before scene load, with a copy of the scene
@@ -125,8 +127,8 @@ export class Player {
     collide(_enemy) {
         this.health -= 1;
         if(this.health <= 0) {
-            this.gameObject.anims.play('deathAnimation')
-            this.gameObject.body.enable = false;
+            // this.gameObject.destroy();
+            console.log('Player:', "we're dead")
         }
     }
 
