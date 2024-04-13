@@ -84,13 +84,14 @@ export class HealthbarV2 {
         height = 15,
         borderRadius = 1,  // black outline thickness
         colorFunc = function(currentValue, maxValue) {
-            bg = 0xffffff
-            fg = ((currentValue / maxValue) < 30) ? 0xff0000 : 0x00ff00;
+            const bg = 0xffffff
+            const fg = ((currentValue / maxValue) < 0.3) ? 0xff0000 : 0x00ff00;
             return { bg: bg, fg: fg }
         },
         offsets ={ x: 0, y: 0, },
     }) {
         this.gfx = new Phaser.GameObjects.Graphics(scene);
+        scene.add.existing(this.gfx);
         this.value = startingValue;
         this.maxValue = maxValue;
         this.width = width;
@@ -102,38 +103,39 @@ export class HealthbarV2 {
 
     // Call this when health changes or the entity moves
     redraw({ x, y, value }) {
-        this.gfx.clear();
         const { fg, bg } = this.colorFunc(value, this.maxValue);
         const black = 0x000000;
 
         const centerX = x + this.offsets.x
         const centerY = y + this.offsets.y
+        const halfWidth = this.width / 2
+        const halfHeight = this.height / 2
 
-        this.bar.clear();
+        this.gfx.clear();
 
         //  Outline
-        this.bar.fillStyle(black);
-        this.bar.fillRect(
-            centerX - width - this.borderRadius,
-            centerY - height - this.borderRadius,
-            this.width + this.borderRadius,
-            this.height + this.borderRadius,
+        this.gfx.fillStyle(black);
+        this.gfx.fillRect(
+            centerX - halfWidth - this.borderRadius,
+            centerY - halfHeight - this.borderRadius,
+            this.width + (2 * this.borderRadius),
+            this.height + (2 * this.borderRadius),
         );
 
         // Background
-        this.bar.fillStyle(bg);
-        this.bar.fillRect(
-            centerX - width,
-            centerY - height,
+        this.gfx.fillStyle(bg);
+        this.gfx.fillRect(
+            centerX - halfWidth,
+            centerY - halfHeight,
             this.width,
             this.height,
         );
 
         //  Health
-        this.bar.fillStyle(fg);
-        this.bar.fillRect(
-            centerX - width,
-            centerY - height,
+        this.gfx.fillStyle(fg);
+        this.gfx.fillRect(
+            centerX - halfWidth,
+            centerY - halfHeight,
             this.width * (value / this.maxValue),
             this.height,
         );

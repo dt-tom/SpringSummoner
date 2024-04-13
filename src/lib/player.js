@@ -1,4 +1,4 @@
-import { HealthBar } from '../lib/healthbar.js'
+import { HealthBar, HealthbarV2 } from '../lib/healthbar.js'
 import { playerSpawn, playerSpeed } from '../constants.js'
 
 /**
@@ -12,13 +12,11 @@ export class Player {
     constructor(scene) {
         this.scene = scene
         console.log('Player:', 'constructed')
-        this.firstUpdate = true
     }
 
     // Preload is called before scene load, with a copy of the scene
     preload() {
         this.scene.load.image('me', 'assets/main-character-inuse.png');
-        this.health = 100;
         console.log('Player:', 'preloaded')
     }
 
@@ -28,7 +26,23 @@ export class Player {
         this.gameObject = this.scene.physics.add.image(playerSpawn.x, playerSpawn.y, 'me');
         this.gameObject.setCollideWorldBounds(true);
 
-        this.hp = new HealthBar(this.scene, this.health, playerSpawn.x - 300, playerSpawn.y - 300);
+        this.health = 100;
+        this.healthbar = new HealthbarV2({
+            scene: this.scene,
+            height: 12,
+            startingValue: 100,
+            maxValue: 100,
+            offsets: { x: 0, y: -35 },
+        })
+        this.mana = 200;
+        this.manabar = new HealthbarV2({
+            scene: this.scene,
+            height: 6,
+            startingValue: 200,
+            maxValue: 500,
+            colorFunc: () => ({ fg: 0x0000ff, bg: 0xffffff }),
+            offsets: { x: 0, y: -28 },
+        })
 
         let { wasd, arrowkeys } = createCursors(this.scene)
         this.wasd = wasd
@@ -40,17 +54,14 @@ export class Player {
 
     // Update is called once per tick
     update() {
-        if (this.firstUpdate) {
-            console.log("Player:", "first update", this.gameObject)
-            this.firstUpdate = false
-        }
         // Since we have multiple inputs doing the same thing, setup (set
         // velocity to 0 must be done first)
         this.gameObject.setVelocity(0);
         this.updateMovement(this.wasd)
         this.updateMovement(this.arrowkeys)
 
-        this.hp.reposition(this.gameObject.x - 25, this.gameObject.y - 30);
+        this.healthbar.redraw({ x: this.gameObject.x, y: this.gameObject.y, value: this.health })
+        this.manabar.redraw({ x: this.gameObject.x, y: this.gameObject.y, value: this.mana })
     }
     /**
      * @param cursors is an object with up down left and right as properties where the
@@ -77,7 +88,6 @@ export class Player {
     // Called by scene when player collides with an enemy
     collide(_enemy) {
         this.health -= 1;
-        this.hp.decrease(1);
         if(this.health <= 0) {
             this.gameObject.destroy();
             console.log('Player:', "we're dead")
