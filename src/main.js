@@ -9,6 +9,7 @@ class Example extends Phaser.Scene
     {
         this.load.image('bg', 'assets/sky.png');
         this.load.image('block', 'assets/star.png');
+        this.load.image('ally', 'assets/bomb.png');
     }
 
     create ()
@@ -30,6 +31,14 @@ class Example extends Phaser.Scene
         this.player.setCollideWorldBounds(true);
 
         this.cameras.main.startFollow(this.player, true, 0.05, 0.05);
+
+        this.allies = this.physics.add.group();
+
+        this.input.on('pointerdown', e => {
+            console.log(e.downX, e.downY);
+
+            this.allies.create(e.downX, e.downY, 'ally')
+        })
     }
 
     update ()
@@ -52,6 +61,10 @@ class Example extends Phaser.Scene
         else if (this.cursors.down.isDown)
         {
             this.player.setVelocityY(500);
+        }
+
+        for (let entity of this.allies.getChildren()) {
+            this.physics.moveToObject(entity, this.player, 150);
         }
     }
 }
