@@ -18,7 +18,7 @@ Tiles are 32x32 px. Normal text is N pt. Large text is M pt.
 
 __Colors__
 
-We're on that sandy pallette. Actual colors TODO.
+We're on that sandy palette. Actual colors TODO.
 
 __Typefaces__
 
