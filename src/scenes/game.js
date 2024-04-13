@@ -211,8 +211,8 @@ export class GameScene extends Phaser.Scene {
         {
             let direction = Math.random < 0.5 ? 1 : -1;
             this.createEnemy(
-                this.player.x + (constants.canvasWidth * direction) + Math.random() * 400, 
-                this.player.y + (constants.canvasHeight * direction) + Math.random() * 400);
+                this.player.gameObject.x + (constants.canvasWidth * direction) + Math.random() * 400, 
+                this.player.gameObject.y + (constants.canvasHeight * direction) + Math.random() * 400);
             allowSpawnEnemy = false;
         }
         this.player.update()
