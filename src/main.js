@@ -23,6 +23,7 @@ class Example extends Phaser.Scene
         const NUMBER_OF_ENEMIES = 10;
         //  Set the camera and physics bounds to be the size of 4x4 bg images
         this.cameras.main.setBounds(0, 0, 1920 * 2, 1080 * 2);
+        this.cameras.main.setZoom(2);  // 2x our assets visually
         this.physics.world.setBounds(0, 0, 1920 * 2, 1080 * 2);
 
         //  Background/desert tiles
