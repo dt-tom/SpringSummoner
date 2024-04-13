@@ -17,13 +17,16 @@ export class Player {
     // Preload is called before scene load, with a copy of the scene
     preload() {
         this.scene.load.image('me', 'assets/main-character-inuse.png');
+        this.scene.load.spritesheet('death', 'assets/main-character-death-animation-inuse.png', {
+            frameWidth: 32, frameHeight: 32,
+        })
         console.log('Player:', 'preloaded')
     }
 
     // Create is called when the scene becomes active, once, after assets are
     // preloaded. It's expected that this scene will have aleady called preload
     create() {
-        this.gameObject = this.scene.physics.add.image(playerSpawn.x, playerSpawn.y, 'me');
+        this.gameObject = this.scene.physics.add.sprite(playerSpawn.x, playerSpawn.y, 'me');
         this.gameObject.setCollideWorldBounds(true);
 
         this.health = 100;
@@ -47,6 +50,12 @@ export class Player {
         let { wasd, arrowkeys } = createCursors(this.scene)
         this.wasd = wasd
         this.arrowkeys = arrowkeys
+
+        this.gameObject.anims.create({
+            key: 'deathAnimation',
+            frames: this.gameObject.anims.generateFrameNumbers('death', { start: 0, end: 26}),
+            frameRate: 12,
+        });
 
         console.log('Player:', 'created', this.gameObject)
         return this
@@ -89,8 +98,8 @@ export class Player {
     collide(_enemy) {
         this.health -= 1;
         if(this.health <= 0) {
-            this.gameObject.destroy();
-            console.log('Player:', "we're dead")
+            this.gameObject.anims.play('deathAnimation')
+            this.gameObject.body.enable = false;
         }
     }
 
