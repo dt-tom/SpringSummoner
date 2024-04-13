@@ -78,7 +78,7 @@ class Example extends Phaser.Scene
     {
         this.load.image('me', 'assets/druid_base.png');
         this.load.image('ally', 'assets/bush-v1.png');
-        this.load.image('attackingAlly', 'assets/bomb.png');
+        this.load.spritesheet('attackingAlly', 'assets/scorpion-thing-v1.png', { frameWidth: 32, frameHeight: 32});
         this.load.spritesheet('enemy', 'assets/bug-move.png', { frameWidth: 32, frameHeight: 32});
         this.load.image('ground', 'assets/desert-block.png')
     }
@@ -119,14 +119,13 @@ class Example extends Phaser.Scene
 
         this.input.on('pointerdown', e => {
             if(e.rightButtonDown()) {
-                this.attackingAllies.create(e.worldX, e.worldY, 'attackingAlly')
+                this.attackingAllies.create(e.worldX, e.worldY, 'attackingAlly');
+                this.attackingAllies.playAnimation('scorpion-move');
             } else {
-                this.allies.create(e.worldX, e.worldY, 'ally')
+                this.allies.create(e.worldX, e.worldY, 'ally');
             }
             
         });
-
-        //console.log(this.health);
 
         // make enemies
         this.enemies = this.physics.add.group();
@@ -173,8 +172,18 @@ class Example extends Phaser.Scene
             frames: this.anims.generateFrameNumbers('enemy', { start: 0, end: 4}),
             frameRate: 20,
             repeat: -1,
-        })
+        });
+
+        // ally animations
+        this.anims.create({
+            key: 'scorpion-move',
+            frames: this.anims.generateFrameNumbers('attackingAlly', { start: 0, end: 5}),
+            frameRate: 20,
+            repeat: -1,
+        });
+
         this.enemies.playAnimation('bug-move');
+       
     }
 
     /**
