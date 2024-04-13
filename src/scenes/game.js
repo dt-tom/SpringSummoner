@@ -17,6 +17,7 @@ export class GameScene extends Phaser.Scene {
     preload () {
         this.load.image('ally', 'assets/bush-v1.png');
         this.load.image('attackingAlly', 'assets/bomb.png');
+        this.load.image('bush', 'assets/bush-v1.png');
         this.load.spritesheet('enemy', 'assets/bug-move.png', {
             frameWidth: 32, frameHeight: 32
         });
