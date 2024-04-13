@@ -1,5 +1,71 @@
 import * as constants from './constants.js';
 
+class HealthBar {
+
+    constructor (scene, startingHealth, x, y)
+    {
+        this.bar = new Phaser.GameObjects.Graphics(scene);
+
+        this.x = x;
+        this.y = y;
+        this.value = startingHealth;
+        this.p = 38 / 100;
+
+        this.draw();
+
+        scene.add.existing(this.bar);
+    }
+
+    decrease (amount)
+    {
+        this.value -= amount;
+
+        if (this.value < 0)
+        {
+            this.value = 0;
+        }
+
+        this.draw();
+
+        return (this.value === 0);
+    }
+
+    draw ()
+    {
+        this.bar.clear();
+
+        //  BG
+        this.bar.fillStyle(0x000000);
+        this.bar.fillRect(this.x, this.y, 42, 10);
+
+        //  Health
+
+        this.bar.fillStyle(0xffffff);
+        this.bar.fillRect(this.x + 2, this.y + 2, 38, 6);
+
+        if (this.value < 30)
+        {
+            this.bar.fillStyle(0xff0000);
+        }
+        else
+        {
+            this.bar.fillStyle(0x00ff00);
+        }
+
+        var d = Math.floor(this.p * this.value);
+
+        this.bar.fillRect(this.x + 2, this.y + 2, d, 6);
+    }
+
+    reposition(x, y)
+    {
+        this.x = x;
+        this.y = y;
+        this.draw();
+    }
+
+}
+
 class Example extends Phaser.Scene
 {
     constructor ()
@@ -16,9 +82,6 @@ class Example extends Phaser.Scene
         this.load.spritesheet('enemy', 'assets/bug-move.png', { frameWidth: 32, frameHeight: 32});
         this.load.image('ground', 'assets/desert-block.png')
     }
-
-    
-  
 
     create ()
     {
@@ -39,6 +102,8 @@ class Example extends Phaser.Scene
         this.player = this.physics.add.image(400, 300, 'me');
 
         let playerRef = this.player;
+
+        this.hp = new HealthBar(this, this.health, this.player.x - 300, this.player.y - 300);
 
         this.player.setCollideWorldBounds(true);
 
@@ -76,9 +141,17 @@ class Example extends Phaser.Scene
 
 
         // add colliders
-        this.physics.add.collider(this.player, this.enemies);
         this.physics.add.collider(this.enemies, this.enemies);  
         this.physics.add.collider(this.attackingAllies, this.enemies); 
+
+        this.physics.add.collider(this.player, this.enemies, (player, enemy) => {
+            this.health -= 1;
+            this.hp.decrease(1);
+            if(this.health <= 0)
+            {
+                this.player.destroy();
+            }
+        }, null, this);
 
         // spawn new enemy near the player every ENEMY_SPAWN_TIMER milliseconds
         // make sure they always spawn off screen
@@ -153,12 +226,12 @@ class Example extends Phaser.Scene
     
 
         for(const enemy of this.enemies.getChildren()) {
-            this.enemyDealDamage({
-                pX: this.player.x,
-                pY: this.player.y,
-                eX: enemy.x,
-                eY: enemy.y
-            })
+            // this.enemyDealDamage({
+            //     pX: this.player.x,
+            //     pY: this.player.y,
+            //     eX: enemy.x,
+            //     eY: enemy.y
+            // })
 
             const vector = new Phaser.Math.Vector2(
                 this.player.x - enemy.x,
@@ -180,14 +253,17 @@ class Example extends Phaser.Scene
         this.updatePlayerState();
     }
 
-    enemyDealDamage(positions, baseDamage = 1) {
-        let dX = Math.sqrt((positions.pX - positions.eX) ** 2 + (positions.pY - positions.eY) ** 2);
-        console.log(this.health, dX);
-        if (dX < 50) this.health -= baseDamage;
-    }
+    // enemyDealDamage(positions, baseDamage = 1) {
+    //     let dX = Math.sqrt((positions.pX - positions.eX) ** 2 + (positions.pY - positions.eY) ** 2);
+    //     console.log(this.health, dX);
+    //     if (dX < 50){
+    //         this.health -= baseDamage;
+    //         this.hp.decrease(baseDamage);
+    //     } 
+    // }
 
     updatePlayerState() {
-        if (this.health <= 0) this.player.destroy();
+        this.hp.reposition(this.player.x - 25, this.player.y - 30);
     }
 
     /**
