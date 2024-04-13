@@ -1,3 +1,5 @@
+import { mapWidth, mapHeight } from './constants.js';
+
 class Example extends Phaser.Scene
 {
     constructor ()
@@ -7,10 +9,10 @@ class Example extends Phaser.Scene
 
     preload ()
     {
-        this.load.image('bg', 'assets/sky.png');
         this.load.image('block', 'assets/star.png');
         this.load.image('ally', 'assets/bomb.png');
         this.load.image('enemy', 'assets/bomb.png');
+        this.load.image('ground', 'assets/desert-block.png')
     }
 
   
@@ -23,8 +25,8 @@ class Example extends Phaser.Scene
         this.cameras.main.setBounds(0, 0, 1920 * 2, 1080 * 2);
         this.physics.world.setBounds(0, 0, 1920 * 2, 1080 * 2);
 
-        //  Mash 4 images together to create our background
-        this.add.image(0, 0, 'bg').setOrigin(0);
+        //  Background/desert tiles
+        this.add.tileSprite(0, 0, mapWidth, mapHeight, 'ground').setOrigin(0, 0);
 
         this.cursors = this.input.keyboard.createCursorKeys();
 
