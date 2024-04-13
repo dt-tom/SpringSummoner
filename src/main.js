@@ -5,12 +5,13 @@ class Example extends Phaser.Scene
     constructor ()
     {
         super();
+        this.health = 100;
     }
 
     preload ()
     {
         this.load.image('me', 'assets/druid_base.png');
-        this.load.image('ally', 'assets/bomb.png');
+        this.load.image('ally', 'assets/bush-v1.png');
         this.load.spritesheet('enemy', 'assets/bug-move.png', { frameWidth: 32, frameHeight: 32});
         this.load.image('ground', 'assets/desert-block.png')
     }
@@ -55,6 +56,8 @@ class Example extends Phaser.Scene
             }
             
         });
+
+        console.log(this.health);
 
         // make enemies
         this.enemies = this.physics.add.group();
@@ -118,7 +121,15 @@ class Example extends Phaser.Scene
             }
         }
     
+
         for(const enemy of this.enemies.getChildren()) {
+            this.enemyDealDamage({
+                pX: this.player.x,
+                pY: this.player.y,
+                eX: enemy.x,
+                eY: enemy.y
+            })
+
             const vector = new Phaser.Math.Vector2(
                 this.player.x - enemy.x,
                 this.player.y - enemy.y
@@ -135,6 +146,18 @@ class Example extends Phaser.Scene
             }
             this.physics.moveTo(enemy, this.player.x + Math.random() * 100, this.player.y + Math.random() * 100, moveSpeed)
         }
+
+        this.updatePlayerState();
+    }
+
+    enemyDealDamage(positions, baseDamage = 1) {
+        let dX = Math.sqrt((positions.pX - positions.eX) ** 2 + (positions.pY - positions.eY) ** 2);
+        console.log(this.health, dX);
+        if (dX < 50) this.health -= baseDamage;
+    }
+
+    updatePlayerState() {
+        if (this.health <= 0) this.player.destroy();
     }
 
     /**
