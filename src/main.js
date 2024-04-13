@@ -37,6 +37,7 @@ class Example extends Phaser.Scene
 
         this.cameras.main.startFollow(this.player, true, 0.05, 0.05);
 
+        // allies
         this.allies = this.physics.add.group();
 
         this.input.on('pointerdown', e => {
@@ -86,10 +87,6 @@ class Example extends Phaser.Scene
         {
             this.player.setVelocityY(500);
         }
-
-        for (let entity of this.allies.getChildren()) {
-            this.physics.moveToObject(entity, this.player, 150);
-        }
     
         for(const member of this.enemies.getChildren())
         {
@@ -100,6 +97,13 @@ class Example extends Phaser.Scene
             vector.normalizeRightHand();
             member.rotation = vector.angle();
             this.physics.moveTo(member, this.player.x + Math.random() * 100, this.player.y + Math.random() * 100, 150)
+        }
+
+        for(const ally of this.allies.getChildren())
+        {
+            // find nearest enemy and move towards her
+            closest_enemy = this.enemies.getClosestTo(ally)
+            this.physics.moveTo(ally, closest_enemy, 150)
         }
 
 
