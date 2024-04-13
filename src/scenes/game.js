@@ -85,6 +85,12 @@ export class GameScene extends Phaser.Scene {
         });
         this.load.image('sand', 'assets/desert-block.png')
         this.load.image('oasis', 'assets/oasis-inuse.png')
+        this.load.spritesheet('dirtParticle', 'assets/dirt-particle.png', {
+            frameWidth: 6, frameHeight: 6,
+        });
+        this.load.spritesheet('bugSpawn', 'assets/bug-spawn.png', {
+            frameWidth: 32, frameHeight: 32,
+        });
     }
 
     create () {
@@ -138,12 +144,30 @@ export class GameScene extends Phaser.Scene {
         }
 
         this.anims.create({
-            key: 'bug-move',
-            frames: this.anims.generateFrameNumbers('enemy', { start: 0, end: 4}),
+            key: 'bugMoveAnimation',
+            frames: this.anims.generateFrameNumbers('enemy', { start: 0, end: 3}),
             frameRate: 20,
             repeat: -1,
         })
-        this.enemies.playAnimation('bug-move');
+        this.anims.create({
+            key: 'bugSpawnAnimation',
+            frames: this.anims.generateFrameNumbers('bugSpawn', { start: 0, end: 8}),
+            frameRate: 10,
+            repeat: -1,
+        })
+        this.anims.create({
+            key: 'dirtTumble',
+            frames: this.anims.generateFrameNumbers('dirtParticle', { start: 0, end: 7}),
+            frameRate: 10,
+            repeat: -1,
+        })
+    
+        // make enemies
+        this.enemies = this.physics.add.group({
+            createCallback: (enemy) => {
+                enemy.isSpawned = false;
+            }
+        });
 
         // ally animations
         this.anims.create({
@@ -153,7 +177,25 @@ export class GameScene extends Phaser.Scene {
             repeat: -1,
         });
 
-        this.physics.add.collider(this.enemies, this.enemies);  
+        for(let i = 0; i < NUMBER_OF_ENEMIES; i++) {
+            const spawnX = Math.random() * 400;
+            const spawnY = Math.random() * 400;
+            const enemy = this.enemies.create(spawnX, spawnY, 'bugSpawn');
+            this.add.particles(spawnX, spawnY, 'dirtParticle', {
+                speed: { min: 1, max: 20 },
+                maxParticles: 20,
+                anim: 'dirtTumble',
+                duration: 3000,
+                emitZone: { source: new Phaser.Geom.Circle(0, 0, 30) }  // Emit particles within a 4 pixel radius
+            });
+            this.time.delayedCall(1000, (e) => { 
+                e.isSpawned = true;
+                this.enemies.playAnimation('bugMoveAnimation');
+             }, [enemy], this);
+        }
+        this.enemies.playAnimation('bugSpawnAnimation');
+
+        this.physics.add.collider(this.enemies, this.enemies); 
         this.physics.add.collider(this.attackingAllies, this.enemies); 
         this.physics.add.collider(this.player, this.enemies, (player, enemy) => {
             this.health -= 1;
@@ -193,7 +235,7 @@ export class GameScene extends Phaser.Scene {
         return min_item;
     }
 
-    /**
+    /**f.log
      * @return an object containing two cursor objects, arrowkeys and wasd which
      * each have up down left and right key inputs.
      */
@@ -253,7 +295,9 @@ export class GameScene extends Phaser.Scene {
                     moveSpeed = constants.bugMovespeed * constants.bushSlow;
                 }
             }
-            this.physics.moveTo(enemy, this.player.x + Math.random() * 100, this.player.y + Math.random() * 100, moveSpeed)
+            if (enemy.isSpawned) {
+                this.physics.moveTo(enemy, this.player.x + Math.random() * 100, this.player.y + Math.random() * 100, moveSpeed)
+            }
         }
 
         this.updatePlayerState();
