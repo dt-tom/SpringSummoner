@@ -142,7 +142,7 @@ export class GameScene extends Phaser.Scene {
         });
 
         // Attacking allies engage with enemies
-        this.attackingAllies = this.physics.add.group();
+        // this.attackingAllies = this.physics.add.group();
 
         // make enemies
         this.enemies = this.physics.add.group();
