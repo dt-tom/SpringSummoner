@@ -25,8 +25,6 @@ export class Bush {
                 ally.isSpawned = false;
             },
         });
-
-        this.scene.physics.add.collider(this.bushes, this.scene.enemies);
     }
 
     update() {
