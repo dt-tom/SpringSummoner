@@ -29,6 +29,10 @@ export class Player {
         this.scene.load.spritesheet('walkBack', 'assets/main_character_walking_back_v1.png', {
             frameWidth: 32, frameHeight: 32,
         })
+        this.scene.load.spritesheet('oasisHeal', 'assets/oasis-heal-particle-v2.png', {
+            frameWidth: 8, frameHeight: 8,
+        })
+        this.scene.load.audio('leavesSound', 'assets/sounds/bush-sound.mp3');
         console.log('Player:', 'preloaded')
     }
 
@@ -74,6 +78,14 @@ export class Player {
             key: 'walkBackAnimation',
             frames: this.gameObject.anims.generateFrameNumbers('walkBack', { start: 0, end: 3}),
             frameRate: 8,
+        });
+
+        // this one goes in scene since it's a particle
+        this.scene.anims.create({
+            key: 'oasisHealAnimation',
+            frames: this.gameObject.anims.generateFrameNumbers('oasisHeal', { start: 0, end: 1}),
+            frameRate: 10,
+            repeat: -1,
         });
 
         // Mouseclicks for summoning
@@ -169,6 +181,21 @@ export class Player {
 
     isDead () {
         return this.health <= 0 || !this.gameObject.body.enable;
+    }
+
+    spawnOasisParticles () {
+        console.log("here");
+        this.scene.add.particles(this.gameObject.x + Math.random() * 10, this.gameObject.y + Math.random() * 10, 'oasisHeal', {
+            speed: { min: 1, max: 2 },
+            maxParticles: 2,
+            anim: 'oasisHealAnimation',
+            duration: 100,
+            accelerationY: Math.random() * -900,
+            accelerationX: Math.random() * -50,
+            speed: Math.random() * 100,
+            lifespan: 200,
+            //emitZone: { source: new Phaser.Geom.Rectangle(0, 0, 30, 30) }  // Emit particles within a 4 pixel radius
+        });
     }
 };
 

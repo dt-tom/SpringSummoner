@@ -34,5 +34,6 @@ export class Oasis {
 
     overlapPlayer() {
         this.scene.player.mana += 0.5
+        this.scene.player.spawnOasisParticles();
     }
 }
