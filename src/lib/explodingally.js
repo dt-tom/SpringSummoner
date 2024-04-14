@@ -4,6 +4,7 @@ export class ExplodingAlly {
         this.scene = scene;
     }
     preload(){
+        this.scene.load.audio('explosion', 'assets/sounds/explosion.mp3');
         this.scene.load.spritesheet('gemWalking', 'assets/gem_bearer_walk.png', {
             frameWidth: 32, frameHeight: 32,
         });
@@ -22,6 +23,9 @@ export class ExplodingAlly {
             }
         });
 
+        this.explodingSound = this.scene.sound.add('explosion');
+        this.explodingSound.setVolume(0.5);
+
         this.scene.anims.create({
             key: 'gemWalkAnimation',
             frames: this.scene.anims.generateFrameNumbers('gemWalking', { start: 0, end: 1}),
@@ -31,14 +35,14 @@ export class ExplodingAlly {
         this.scene.anims.create({
             key: 'gemSpawnAnimation',
             frames: this.scene.anims.generateFrameNumbers('gemSpawn', { start: 0, end: 4}),
-            frameRate: 10,
-            repeat: -1,
+            frameRate: 15,
+            repeat: 0,
         });
         this.scene.anims.create({
             key: 'gemExplodeAnimation',
             frames: this.scene.anims.generateFrameNumbers('gemExplode', { start: 0, end: 6}),
             frameRate: 20,
-            repeat: -1,
+            repeat: 0,
         });
 
         this.scene.physics.add.collider(this.explodingAllies, this.explodingAllies);
@@ -67,20 +71,29 @@ export class ExplodingAlly {
             duration: 3000,
             emitZone: { source: new Phaser.Geom.Circle(0, 0, 30) }  // Emit particles within a 4 pixel radius
         });
-        this.scene.time.delayedCall(550, (e) => { 
-            e.isSpawned = true;
-            this.explodingAllies.playAnimation('gemWalkAnimation');
-            }, [ally], this);
+        ally.on('animationcomplete', () => {
+            ally.play('gemWalkAnimation');
+        });
+       
     }
 
-    explode(ally)
+    explode(ally, enemy)
     {
         console.log(ally);
-        ally.exploding = true;
-        ally.play('gemExplodeAnimation');
-        this.scene.time.delayedCall(300, (e) => { 
+        if(!ally.exploding)
+        {
+            ally.exploding = true;
+            ally.play('gemExplodeAnimation');
+            this.explodingSound.play();
+            
+        }
+        ally.on('animationcomplete', () => {
             ally.destroy();
-        }, [ally], this);
+            this.scene.bugs.damageBug(enemy, 100);
+        });
+        this.scene.time.delayedCall(800, (e) => { 
+            ally.destroy();
+        });
     }
 
     end() {
