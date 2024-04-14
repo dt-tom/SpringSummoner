@@ -50,7 +50,6 @@ export class Player {
         let currentScale = this.gameObject.scaleX;
         this.gameObject.setScale(currentScale * 1.25);
         this.gameObject.setCollideWorldBounds(true);
-
         this.health = 100;
         this.healthbar = new HealthbarV2({
             scene: this.scene,
@@ -59,12 +58,13 @@ export class Player {
             maxValue: 100,
             offsets: { x: 0, y: -35 },
         })
-        this.mana = 200;
+        this.MAX_MANA = 100;
+        this.mana = this.MAX_MANA;
         this.manabar = new HealthbarV2({
             scene: this.scene,
             height: 6,
-            startingValue: 200,
-            maxValue: 500,
+            startingValue: this.MAX_MANA,
+            maxValue: this.MAX_MANA,
             colorFunc: () => ({ fg: 0x0000ff, bg: 0xffffff }),
             offsets: { x: 0, y: -28 },
         })
@@ -109,6 +109,10 @@ export class Player {
         this.scene.input.on('pointerdown', this.clickDownHandler.bind(this))  // maybe this has a context param??
         this.scene.input.on('pointerup', this.clickUpHandler.bind(this))
         setInterval(this.trackMousePositionAndSpawnParticles.bind(this), MOUSE_SAMPLE_RATE);
+    }
+
+    addMana(amount) {
+        this.mana = Math.min(this.mana + amount, this.MAX_MANA)
     }
 
     hasMana(amount) {

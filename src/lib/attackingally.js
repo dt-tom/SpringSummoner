@@ -16,7 +16,7 @@ export class AttackingAlly {
         });
     }
     create() {
-        this.manaCost = 50;
+        this.manaCost = 25;
         this.gruntMaxLifetimeMillis = 12_000
         this.slashSound = this.scene.sound.add('slash');
         this.slashSound.setVolume(0.05);

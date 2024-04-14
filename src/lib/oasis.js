@@ -48,12 +48,10 @@ export class Oasis {
     }
 
     overlapPlayer() {
-        this.scene.player.mana += 0.5
+        this.scene.player.addMana(1);
         this.scene.player.spawnOasisParticles();
-        
-        this.auraSound.setVolume(0.25);
-        if(!this.auraSound.isPlaying)
-        {
+        this.auraSound.setVolume(0.1);
+        if(!this.auraSound.isPlaying) {
             this.auraSound.play();
         }
     }

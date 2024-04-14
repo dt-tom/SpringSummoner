@@ -14,9 +14,9 @@ export class Bush {
     }
 
     create (){
-        this.manaCost = 20;
+        this.manaCost = 5;
         this.bushMaxLifetimeMillis = 10_000;
-        this.bushSpeedReduction = 50;
+        this.bushSpeedReduction = 20;
         this.bushSlowDurationMillis = 200;
         this.scene.anims.create({
             key: 'bushSpawnAnimation',
