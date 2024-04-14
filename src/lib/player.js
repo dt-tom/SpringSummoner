@@ -184,7 +184,6 @@ export class Player {
     }
 
     spawnOasisParticles () {
-        console.log("here");
         this.scene.add.particles(this.gameObject.x + Math.random() * 10, this.gameObject.y + Math.random() * 10, 'oasisHeal', {
             speed: { min: 1, max: 2 },
             maxParticles: 2,
