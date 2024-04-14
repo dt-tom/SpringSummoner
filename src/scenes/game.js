@@ -22,6 +22,8 @@ export class GameScene extends Phaser.Scene {
 
         this.tick = 0;
         this.active = true;
+
+        this.score = 0;
     }
 
     preload () {
@@ -38,6 +40,35 @@ export class GameScene extends Phaser.Scene {
         this.bushes.preload();
         this.attackingAllies.preload();
         this.explodingAllies.preload();
+
+        // var progressBar = this.add.graphics();
+        // var progressBox = this.add.graphics();
+        // progressBox.fillStyle(0x222222, 1);
+        // progressBox.fillRect(0, 0, 1000, 1000);
+        // progressBox.setDepth(100);
+        // progressBar.setDepth(100);
+
+        // this.load.on('progress', function (value) {
+        //     console.log(value);
+        //     progressBar.clear();
+        //     progressBar.fillStyle(0xffffff, 1);
+        //     progressBar.fillRect(0, 0, 300 * value, 30);
+        // });
+                    
+        // // this.load.on('fileprogress', function (file) {
+        // //     console.log(file.src);
+        // // });
+        // this.load.on('complete', function () {
+        //     console.log("LOAD COMPLETE");
+        //     // progressBox.destroy();
+        //     // progressBar.destroy();
+        // });
+
+        this.time.delayedCall(1000, () => {
+            console.log("second after load");
+        })
+
+
     }
 
     createDrop(posX, posY) {
@@ -99,6 +130,17 @@ export class GameScene extends Phaser.Scene {
         for (let callable of this.postCreateHooks) {
             callable()
         }
+
+        this.scoreText = this.add.text(400, 400, 'Score: ' + this.score.toString(), {
+            fontSize: '32px', fill: '#000'
+        }).setOrigin(0.5);
+
+       
+    // t.cameraOffset.setTo(200, 500);
+
+        // // Adjust its position using cameraOffset
+        // this.scoreText.cameraOffset.x = 100; // Set your desired x-coordinate
+        // this.scoreText.cameraOffset.y = 50;  // Set your desired y-coordinate
     }
 
     getAllObjectsWithinRange(object, group, minimumDistance) {
@@ -173,9 +215,22 @@ export class GameScene extends Phaser.Scene {
        oasis.setOrigin(0.5, 0.5);  // use the center of the sprite as the reference point for positioning
     }
 
+<<<<<<< HEAD
     updateTiles(x, y)
     {
         let currentTile = this.grassMap.getTileAtWorldXY(x, y);
+=======
+    replaceTileIndex(tile){
+        this.grassMap.replaceByIndex(tile.index, tile.index + 1, tile.x, tile.y, 1, 1);
+        this.score += tile.index + 1;
+        this.scoreText.setText('Score: ' + this.score.toString());
+        
+    }
+
+    updateTiles()
+    {      
+        let currentTile = this.grassMap.getTileAtWorldXY(this.player.gameObject.x, this.player.gameObject.y);
+>>>>>>> b25ba08 (score)
 
         if(currentTile && this.tick % constants.GRASS_GROW_SPEED == 0)
         {
@@ -183,9 +238,10 @@ export class GameScene extends Phaser.Scene {
                 .getTilesWithin(currentTile.x-1, currentTile.y-1, 3, 3) // find all tiles around the player
                 .filter(t => t.index < 5) // filter out grass then increment tile stage
                 .map(tile => (tile != currentTile) ? 
-                (Math.random() > 0.2) ? this.grassMap.replaceByIndex(tile.index, tile.index + 1, tile.x, tile.y, 1, 1) : null
-                : this.grassMap.replaceByIndex(tile.index, tile.index + 1, tile.x, tile.y, 1, 1));
+                (Math.random() > 0.2) ? this.replaceTileIndex(tile) : null
+                : this.replaceTileIndex(tile));
         }
+
     }
 
     update () {
