@@ -155,7 +155,6 @@ export class BugGroup {
             bug.destroy();
         }
         bug.setTint(0xff0000); // Tint the sprite red
-        this.scene.bugs.slowBug(bug, "gruntAttack", 75, 200);
         setTimeout(() => {
             bug.clearTint(); // Clear the tint after a delay
         }, 200);

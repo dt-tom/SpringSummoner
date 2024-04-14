@@ -14,9 +14,9 @@ export class Bush {
     }
 
     create (){
-        this.manaCost = 5;
-        this.bushTickDamage = 2;
-        this.bushMaxLifetimeMillis = 10_000;
+        this.manaCost = 10;
+        this.bushTickDamage = 0.5;
+        this.bushMaxLifetimeMillis = 15_000;
         this.bushSpeedReduction = 40;
         this.bushSlowDurationMillis = 2000;
         this.scene.anims.create({
@@ -41,7 +41,6 @@ export class Bush {
             );
             vector.normalizeRightHand();
             bug.rotation = vector.angle();
-            // var moveSpeed = constants.bugMovespeed;
             for (let bush of this.bushes.getChildren()) {
                 if (!bush.isSpawned) {
                     continue;
@@ -51,13 +50,8 @@ export class Bush {
                 if (Phaser.Geom.Intersects.RectangleToRectangle(bushBounds, bugBounds)) {
                     this.scene.bugs.slowBug(bug, "bushSlow", this.bushSpeedReduction, this.bushSlowDurationMillis);
                     this.scene.bugs.damageBug(bug, this.bushTickDamage);
-                    // moveSpeed = constants.bugMovespeed * constants.bushSlow;
                 }
             }
-
-            // if (enemy.isSpawned) {
-            //     this.scene.physics.moveTo(enemy, this.scene.player.gameObject.x + Math.random() * 100, this.scene.player.gameObject.y + Math.random() * 100, moveSpeed)
-            // }
         }
     }
 
@@ -74,7 +68,6 @@ export class Bush {
         bushSound.play('bushMarker');
         bushSound.setVolume(0.05);
 
-        // after 8 seconds trees disappear
         this.scene.time.delayedCall(this.bushMaxLifetimeMillis, (ally) => { 
             ally.on('animationcomplete', () => { 
                 this.bushes.remove(ally);
