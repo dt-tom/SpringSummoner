@@ -8,13 +8,15 @@ export class Bush {
     preload() {
         this.scene.load.image('bush', 'assets/bush-v1.png');
         this.scene.load.audio('leavesSound', 'assets/sounds/bush-sound.mp3');
-        this.scene.load.audio('bugSquishSound', 'assets/sounds/bug-squish.wav');
         this.scene.load.spritesheet('bushSpawn', 'assets/bush-spawn.png', {
             frameWidth: 64, frameHeight: 64,
         });
     }
 
     create (){
+        this.bushMaxLifetimeMillis = 8000;
+        this.bushSpeedReduction = 50;
+        this.bushSlowDurationMillis = 200;
         this.scene.anims.create({
             key: 'bushSpawnAnimation',
             frames: this.scene.anims.generateFrameNumbers('bushSpawn', { start: 0, end: 10}),
@@ -29,28 +31,30 @@ export class Bush {
     }
 
     update() {
-        // slow enemies
-        for(const enemy of this.scene.bugs.group.getChildren()) {
+        // slow bugs
+        for(const bug of this.scene.bugs.group.getChildren()) {
             const vector = new Phaser.Math.Vector2(
-                this.scene.player.gameObject.x - enemy.x,
-                this.scene.player.gameObject.y - enemy.y
+                this.scene.player.gameObject.x - bug.x,
+                this.scene.player.gameObject.y - bug.y
             );
             vector.normalizeRightHand();
-            enemy.rotation = vector.angle();
-            var moveSpeed = constants.bugMovespeed;
-            for (let ally of this.bushes.getChildren()) {
-                if (!ally.isSpawned) {
+            bug.rotation = vector.angle();
+            // var moveSpeed = constants.bugMovespeed;
+            for (let bush of this.bushes.getChildren()) {
+                if (!bush.isSpawned) {
                     continue;
                 }
-                const allyBounds = ally.getBounds();
-                const enemyBounds = enemy.getBounds();
-                if (Phaser.Geom.Intersects.RectangleToRectangle(allyBounds, enemyBounds)) {
-                    moveSpeed = constants.bugMovespeed * constants.bushSlow;
+                const bushBounds = bush.getBounds();
+                const bugBounds = bug.getBounds();
+                if (Phaser.Geom.Intersects.RectangleToRectangle(bushBounds, bugBounds)) {
+                    this.scene.bugs.slowBug(bug, "bushSlow", this.bushSpeedReduction, this.bushSlowDurationMillis);
+                    // moveSpeed = constants.bugMovespeed * constants.bushSlow;
                 }
             }
-            if (enemy.isSpawned) {
-                this.scene.physics.moveTo(enemy, this.scene.player.gameObject.x + Math.random() * 100, this.scene.player.gameObject.y + Math.random() * 100, moveSpeed)
-            }
+
+            // if (enemy.isSpawned) {
+            //     this.scene.physics.moveTo(enemy, this.scene.player.gameObject.x + Math.random() * 100, this.scene.player.gameObject.y + Math.random() * 100, moveSpeed)
+            // }
         }
     }
 
@@ -63,10 +67,9 @@ export class Bush {
         bushSound.addMarker({name: 'bushMarker', start: 3, duration: 1});
         bushSound.play('bushMarker');
         bushSound.setVolume(0.05);
-        let bugSquishSound = this.scene.sound.add('bugSquishSound');
 
         // after 8 seconds trees disappear
-        this.scene.time.delayedCall(8000, (ally) => { 
+        this.scene.time.delayedCall(this.bushMaxLifetimeMillis, (ally) => { 
             ally.on('animationcomplete', () => { 
                 this.bushes.remove(ally);
                 ally.setVisible(false);
@@ -88,7 +91,6 @@ export class Bush {
                 const allyBounds = ally.getBounds();
                 const enemyBounds = enemy.getBounds();
                 if (Phaser.Geom.Intersects.RectangleToRectangle(allyBounds, enemyBounds)) {
-                    bugSquishSound.play();
                     this.scene.bugs.group.remove(enemy);
                     enemy.setVisible(false);
                     enemy.body.enable = false;

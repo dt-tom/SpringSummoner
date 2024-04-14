@@ -5,7 +5,6 @@ import {
     ENEMY_SPAWN_TIMER,
     ENEMY_START_HEALTH,
     bugMovespeed,
-    bushSlow,
 } from "../constants.js";
 
 /**
@@ -19,6 +18,7 @@ export class BugGroup {
 
     // Preload is called before scene load, with a copy of the scene
     preload() {
+        this.scene.load.audio('bugSquishSound', 'assets/sounds/bug-squish.wav');
         this.scene.load.spritesheet('enemy', 'assets/bug-move.png', {
             frameWidth: 32, frameHeight: 32
         });
@@ -75,6 +75,7 @@ export class BugGroup {
     // Create is called when the scene becomes active, once, after assets are
     // preloaded. It's expected that this scene will have aleady called preload
     create() {
+        this.bugSquishSound = this.scene.sound.add('bugSquishSound');
         this.scene.anims.create({
             key: 'bugMoveAnimation',
             frames: this.scene.anims.generateFrameNumbers('enemy', { start: 0, end: 3}),
@@ -100,6 +101,8 @@ export class BugGroup {
                 enemy.health = ENEMY_START_HEALTH;
                 enemy.isSpawned = false;
                 enemy.setCollideWorldBounds(true);
+                enemy.speed = bugMovespeed;
+                enemy.effects = new Phaser.Structs.Set();
             }
         });
 
@@ -142,6 +145,23 @@ export class BugGroup {
         this.group.children.iterate(this.moveBug.bind(this))
     }
 
+    damageBug(bug, damage) {
+        if (!bug.hasSpawned) {
+            return;
+        }
+        bug.health = bug.health - damage;
+        if (bug.health <= 0) {
+            this.bugSquishSound.play();
+            this.group.remove(bug);
+            bug.destroy();
+        }
+        bug.setTint(0xff0000); // Tint the sprite red
+        this.scene.bugs.slowBug(bug, "gruntAttack", 75, 200);
+        setTimeout(() => {
+            bug.clearTint(); // Clear the tint after a delay
+        }, 200);
+    }
+
     moveBug(bug) {
         if (!bug.hasSpawned) {
             return;
@@ -151,7 +171,19 @@ export class BugGroup {
         const vector = new Phaser.Math.Vector2(x - bug.x, y - bug.y);
         bug.rotation = vector.clone().normalizeRightHand().angle();
         vector.normalize()
-        vector.scale(bugMovespeed)
+        vector.scale(bug.speed)
         bug.setVelocity(vector.x, vector.y)
+    }
+
+    slowBug(bug, reason, speedReduction, durationMillis) {
+        if (bug.effects.contains(reason)) {
+            return;
+        }
+        bug.effects.set(reason);
+        bug.speed = bug.speed - speedReduction;
+        setTimeout(() => {
+            bug.speed = bug.speed + speedReduction;
+            bug.effects.delete(reason);
+        }, durationMillis);
     }
 };

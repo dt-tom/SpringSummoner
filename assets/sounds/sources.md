@@ -9,3 +9,6 @@ https://freesound.org/people/gallifreyanbuccaneer/sounds/426560/
 
 # Bug Squish
 https://freesound.org/people/OtisJames/sounds/233343/
+
+# Slash
+https://freesound.org/people/qubodup/sounds/442903/

@@ -71,11 +71,11 @@ export class GameScene extends Phaser.Scene {
             this.player.pickUp(drop)
         }, null, this);
         this.physics.add.collider(this.attackingAllies.attackingAllies, this.bugs.group, (ally, enemy) => {
-            enemy.health -= 10;
-            if(enemy.health <= 0)
-            {
-                enemy.destroy();
-            }
+            // enemy.health -= 10;
+            // if(enemy.health <= 0)
+            // {
+            //     enemy.destroy();
+            // }
         });
 
         this.anims.create({
