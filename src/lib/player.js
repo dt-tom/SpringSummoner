@@ -48,6 +48,7 @@ export class Player {
     // preloaded. It's expected that this scene will have aleady called preload
     create() {
         this.effects = new Phaser.Structs.Set();
+        this.particles = [];
         this.gameObject = this.scene.physics.add.sprite(playerSpawn.x, playerSpawn.y, 'walkBack');
         let currentScale = this.gameObject.scaleX;
         this.gameObject.setScale(currentScale * 1.25);
@@ -128,12 +129,14 @@ export class Player {
             if (this.hasMana(gruntManaCost)) {
                 this.mana = this.mana - gruntManaCost;
                 this.scene.attackingAllies.createAttackingAlly(upEvent.worldX, upEvent.worldY);
+                return true;
             }
         } else if (this.upSwipe()) {
             let bushManaCost = this.scene.bushes.getManaCost();
             if (this.hasMana(bushManaCost)) {
                 this.mana = this.mana - bushManaCost;
                 this.scene.bushes.addBush(upEvent.worldX, upEvent.worldY);
+                return true;
             }
         }
         else if (this.downSwipe()) {
@@ -141,8 +144,10 @@ export class Player {
             if (this.hasMana(explosionManaCost)) {
                 this.mana = this.mana - explosionManaCost;
                 this.scene.explodingAllies.createExplodingAlly(upEvent.worldX, upEvent.worldY);
+                return true;
             }
         }
+        return false;
     }
 
     upSwipe()
@@ -218,7 +223,7 @@ export class Player {
             //let mPos = new Vector2(this.scene.input.mousePointer.x, this.scene.input.mousePointer.y);
             let wPos = this.scene.cameras.main.getWorldPoint(this.scene.input.mousePointer.x, this.scene.input.mousePointer.y);
         
-            this.scene.add.particles(wPos.x, wPos.y, 'mouseParticle', {
+            let p = this.scene.add.particles(wPos.x, wPos.y, 'mouseParticle', {
                 speed: { min: 1, max: 20 },
                 maxParticles: 10,
                 anim: 'mouseParticleAnimation',
@@ -229,6 +234,7 @@ export class Player {
                 // lifespan: 200,
                 emitZone: { source: new Phaser.Geom.Circle(0, 0, 10) }  // Emit particles within a 4 pixel radius
             });
+            this.particles.push(p)
         }
     }
 
@@ -285,7 +291,16 @@ export class Player {
         if (this.isDead()) {
             return
         }
-        this.detectGesture();
+        let result = this.detectGesture();
+        // Iterate over the array
+        for (let i = 0; i < this.particles.length; i++) {
+            if (result) {
+                this.particles[i].setParticleTint(0x00ff00);
+            } else {
+                this.particles[i].setParticleTint(0xff0000);
+            }
+        }
+        this.particles = [];
     }
 
     // Update is called once per tick
