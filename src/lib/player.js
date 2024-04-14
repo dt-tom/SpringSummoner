@@ -29,7 +29,7 @@ export class Player {
         this.scene.load.spritesheet('walkBack', 'assets/main_character_walking_back_v1.png', {
             frameWidth: 32, frameHeight: 32,
         })
-        this.scene.load.spritesheet('oasisHeal', 'assets/oasis-heal-particle-v2.png', {
+        this.scene.load.spritesheet('oasisHeal', 'assets/oasis-heal-particle-v3.png', {
             frameWidth: 8, frameHeight: 8,
         })
         this.scene.load.audio('leavesSound', 'assets/sounds/bush-sound.mp3');
