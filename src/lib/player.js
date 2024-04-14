@@ -121,7 +121,7 @@ export class Player {
 
     detectGesture(){
         // horizontal right swipe
-        if(this.upRightSwipe()){
+        if(this.rightSwipe() || this.leftSwipe()){
             let gruntManaCost = this.scene.attackingAllies.getManaCost();
             if (this.hasMana(gruntManaCost)) {
                 this.mana = this.mana - gruntManaCost;
