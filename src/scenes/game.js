@@ -30,9 +30,6 @@ export class GameScene extends Phaser.Scene {
         this.load.image('tiles', 'assets/grass-block.png');
         this.load.image('grassTiles', 'assets/grass-block-sheet-v2.png');
         this.load.image('desertTile', 'assets/desert-block.png');
-
-        this.createWorld();
-
         this.player.preload();
         this.oasis.preload();
         this.bugs.preload();
@@ -49,47 +46,12 @@ export class GameScene extends Phaser.Scene {
         // Useful for adding collision handlers when everything is ready to go
         // (make sure to bind them if they're instance methods)
         this.postCreateHooks = []
+        this.createWorld();
 
-        // Level creation stuff
-        this.levelArray = [];
-        // construct level array
-        for(let i = 0; i < constants.mapHeight; i++) {
-            let thisRow = [];
-            for(let j = 0; j < constants.mapWidth; j++) {
-                thisRow.push([0]);
-            }
-            this.levelArray.push(thisRow);
-        }
-        var levelArray2 = [];
-        // construct level array
-        for(let i = 0; i < constants.mapHeight; i++) {
-            let thisRow = [];
-            for(let j = 0; j < constants.mapWidth; j++) {
-                thisRow.push([0]);
-            }
-            levelArray2.push(thisRow);
-        }
-    
-        // When loading from an array, make sure to specify the tileWidth and tileHeight
-        this.grassMap = this.make.tilemap({ data: this.levelArray, tileWidth: 32, tileHeight: 32 });
-        var tiles = this.grassMap.addTilesetImage("grassTiles");
-        //const grassTiles = map.addTilesetImage("grassTile");
-        this.grassLayer = this.grassMap.createLayer(0, tiles, 0, 0);
-        this.grassLayer.setDepth(-1);
-      
-        var desertMap = this.make.tilemap({ data: levelArray2, tileWidth: 32, tileHeight: 32 });
-        var desertTiles = desertMap.addTilesetImage("desertTile");
-        //const grassTiles = map.addTilesetImage("grassTile");
-        var desertLayer = desertMap.createLayer(0, desertTiles, 0, 0);
-        desertLayer.setDepth(-2);
-         
         //  Set the camera and physics bounds to be the size of 4x4 bg images
         this.cameras.main.setBounds(0, 0, 1920 * 2, 1080 * 2);
         this.cameras.main.setZoom(2);  // 2x our assets visually
         this.physics.world.setBounds(0, 0, 1920 * 2, 1080 * 2);
-
-        //  Background/desert tiles
-        this.add.tileSprite(0, 0, constants.mapWidth, constants.mapHeight, 'sand').setOrigin(0, 0);
 
         this.oasis.create();
         this.player.create();
@@ -160,7 +122,7 @@ export class GameScene extends Phaser.Scene {
           let thisRow = [];
           for(let j = 0; j < constants.mapWidth; j++)
           {
-              thisRow.push([0]);
+              thisRow.push(0);
           }
           this.levelArray.push(thisRow);
         }
@@ -172,24 +134,21 @@ export class GameScene extends Phaser.Scene {
           let thisRow = [];
           for(let j = 0; j < constants.mapWidth; j++)
           {
-              thisRow.push([0]);
+              thisRow.push(0);
           }
           levelArray2.push(thisRow);
         }
-      
+
         // When loading from an array, make sure to specify the tileWidth and tileHeight
         this.grassMap = this.make.tilemap({ data: this.levelArray, tileWidth: 32, tileHeight: 32 });
         var tiles = this.grassMap.addTilesetImage("grassTiles");
-        //const grassTiles = map.addTilesetImage("grassTile");
         this.grassLayer = this.grassMap.createLayer(0, tiles, 0, 0);
         this.grassLayer.setDepth(-1);
-        
+
         var desertMap = this.make.tilemap({ data: levelArray2, tileWidth: 32, tileHeight: 32 });
         var desertTiles = desertMap.addTilesetImage("desertTile");
-        //const grassTiles = map.addTilesetImage("grassTile");
         var desertLayer = desertMap.createLayer(0, desertTiles, 0, 0);
         desertLayer.setDepth(-2);
-
 
         // Oasis
        let oasis = this.add.sprite(400, 300, 'oasis');
