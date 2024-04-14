@@ -200,10 +200,6 @@ export class GameScene extends Phaser.Scene {
         var desertTiles = desertMap.addTilesetImage("desertTile");
         var desertLayer = desertMap.createLayer(0, desertTiles, 0, 0);
         desertLayer.setDepth(-2);
-
-        // Oasis
-       let oasis = this.add.sprite(400, 300, 'oasis');
-       oasis.setOrigin(0.5, 0.5);  // use the center of the sprite as the reference point for positioning
     }
 
     replaceTileIndex(tile){

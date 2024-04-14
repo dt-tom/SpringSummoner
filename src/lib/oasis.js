@@ -8,16 +8,17 @@ export class Oasis {
     }
 
     preload() {
-        this.scene.load.image('oasis', 'assets/oasis-inuse.png')
+        this.scene.load.image('oasis', 'assets/oasis.png')
         this.scene.load.audio('oasisAura', 'assets/sounds/oasisAura3.mp3');
     }
 
     create() {
         // Oasis
         this.gameObject = this.scene.physics.add.image(400, 300, 'oasis');
-        
-        this.gameObject.setOrigin(0.5, 0.5);  // use the center of the sprite as the reference point for positioning
 
+        this.gameObject.setOrigin(0.5, 0.5);  // use the center of the sprite as the reference point for positioning
+        this.gameObject.setScale(2);
+        
         this.scene.postCreateHooks.push(this.addPlayerOverlapHandler.bind(this));
 
         this.auraSound = this.scene.sound.add('oasisAura');
