@@ -74,18 +74,9 @@ export class GameScene extends Phaser.Scene {
         this.physics.add.collider(this.player.gameObject, this.drops, (_player, drop) => {
             this.player.pickUp(drop)
         }, null, this);
-<<<<<<< HEAD
         this.physics.add.collider(this.attackingAllies.attackingAllies, this.bugs.group);
-=======
-        this.physics.add.collider(this.attackingAllies.attackingAllies, this.bugs.group, (ally, enemy) => {
-        });
->>>>>>> 6f6156c (animations working)
         this.physics.add.collider(this.explodingAllies.explodingAllies, this.bugs.group, (ally, enemy) => {
             this.explodingAllies.explode(ally, enemy);
-            // this.time.delayedCall(450, (e) => { 
-            //     this.getAllObjectsWithinRange(ally, this.bugs.group, 2000);
-            // });
-            
         });
 
         this.anims.create({

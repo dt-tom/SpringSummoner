@@ -123,11 +123,18 @@ export class Player {
                 this.mana = this.mana - gruntManaCost;
                 this.scene.attackingAllies.createAttackingAlly(upEvent.worldX, upEvent.worldY);
             }
-        } else if (this.downSwipe()) {
+        } else if (this.upSwipe()) {
             let bushManaCost = this.scene.bushes.getManaCost();
             if (this.hasMana(bushManaCost)) {
                 this.mana = this.mana - bushManaCost;
                 this.scene.bushes.addBush(upEvent.worldX, upEvent.worldY);
+            }
+        }
+        else if (this.downSwipe()) {
+            let explosionManaCost = this.scene.explodingAllies.getManaCost();
+            if (this.hasMana(explosionManaCost)) {
+                this.mana = this.mana - explosionManaCost;
+                this.scene.explodingAllies.createExplodingAlly(upEvent.worldX, upEvent.worldY);
             }
         }
     }
