@@ -198,7 +198,7 @@ export class GameScene extends Phaser.Scene {
             constants.canvasWidth * Math.random() * 32,
             constants.canvasHeight * Math.random() * 32);
 
-        // this.updateTiles(this.player.gameObject.x, this.player.gameObject.y);
+        this.updateTiles(this.player.gameObject.x, this.player.gameObject.y);
 
         this.player.update();
         this.oasis.update();
