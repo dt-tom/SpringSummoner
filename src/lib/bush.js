@@ -15,9 +15,10 @@ export class Bush {
 
     create (){
         this.manaCost = 5;
+        this.bushTickDamage = 2;
         this.bushMaxLifetimeMillis = 10_000;
-        this.bushSpeedReduction = 20;
-        this.bushSlowDurationMillis = 200;
+        this.bushSpeedReduction = 40;
+        this.bushSlowDurationMillis = 2000;
         this.scene.anims.create({
             key: 'bushSpawnAnimation',
             frames: this.scene.anims.generateFrameNumbers('bushSpawn', { start: 0, end: 10}),
@@ -49,6 +50,7 @@ export class Bush {
                 const bugBounds = bug.getBounds();
                 if (Phaser.Geom.Intersects.RectangleToRectangle(bushBounds, bugBounds)) {
                     this.scene.bugs.slowBug(bug, "bushSlow", this.bushSpeedReduction, this.bushSlowDurationMillis);
+                    this.scene.bugs.damageBug(bug, this.bushTickDamage);
                     // moveSpeed = constants.bugMovespeed * constants.bushSlow;
                 }
             }
