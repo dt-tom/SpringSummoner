@@ -87,6 +87,8 @@ export class AttackingAlly {
     {
         let grunt = this.attackingAllies.create(posX, posY, 'gruntWalking');
         grunt.play('gruntSpawnAnimation');
+        let currentScale = grunt.scaleX; // Get the current scale
+        grunt.setScale(currentScale * 1.25);
         this.scene.add.particles(posX, posY, 'dirtParticle', {
             speed: { min: 1, max: 20 },
             maxParticles: 20,

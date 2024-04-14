@@ -60,7 +60,6 @@ export class Bush {
 
     addBush(posX, posY) {
         let ally = this.bushes.create(posX, posY, 'bush');
-
         // sounds
         let bushSound = this.scene.sound.add('leavesSound');
         // Add a marker that starts at 12 second into the sound and lasts for 1 seconds
@@ -87,14 +86,11 @@ export class Bush {
                 return;
             }
             // bad code xd xd 
-            for (let enemy of this.scene.bugs.group.getChildren()) {
-                const allyBounds = ally.getBounds();
-                const enemyBounds = enemy.getBounds();
-                if (Phaser.Geom.Intersects.RectangleToRectangle(allyBounds, enemyBounds)) {
-                    this.scene.bugs.group.remove(enemy);
-                    enemy.setVisible(false);
-                    enemy.body.enable = false;
-                    enemy.destroy();
+            for (let bug of this.scene.bugs.group.getChildren()) {
+                const bushBounds = ally.getBounds();
+                const bugBounds = bug.getBounds();
+                if (Phaser.Geom.Intersects.RectangleToRectangle(bushBounds, bugBounds)) {
+                    this.scene.bugs.damageBug(bug, 1000);
                 }
             }
             ally.isSpawned = true;

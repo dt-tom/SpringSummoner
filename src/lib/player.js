@@ -49,6 +49,8 @@ export class Player {
     // preloaded. It's expected that this scene will have aleady called preload
     create() {
         this.gameObject = this.scene.physics.add.sprite(playerSpawn.x, playerSpawn.y, 'walkBack');
+        let currentScale = this.gameObject.scaleX;
+        this.gameObject.setScale(currentScale * 1.25);
         this.gameObject.setCollideWorldBounds(true);
 
         this.health = 100;
@@ -106,8 +108,8 @@ export class Player {
 
         // Mouseclicks for summoning
         this.scene.input.mouse.disableContextMenu();
-        this.scene.input.on('pointerdown', this.clickHandler.bind(this))  // maybe this has a context param??
-        this.scene.input.on('pointerup', this.clickHandler2.bind(this))
+        this.scene.input.on('pointerdown', this.clickDownHandler.bind(this))  // maybe this has a context param??
+        this.scene.input.on('pointerup', this.clickUpHandler.bind(this))
         setInterval(this.trackMousePositionAndSpawnParticles.bind(this), MOUSE_SAMPLE_RATE);
         console.log('Player:', 'created')
     }
@@ -214,13 +216,14 @@ export class Player {
 
    
 
-    clickHandler(e) {
+    clickDownHandler(e) {
         mouseCurrentlyDown = true;
         console.log(e.downX);
         downEvent = e;
         if (this.isDead()) {
             return
         }
+
         if (this.mana >= 50) {
           if (!summonForFree)  {
             this.mana -= 50; // TODO: configurable summon costs
@@ -236,7 +239,7 @@ export class Player {
         // }
     }
 
-    clickHandler2(e) {
+    clickUpHandler(e) {
         mousePositions = [];
         mouseCurrentlyDown = false;
         console.log(e.upX);

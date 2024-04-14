@@ -58,6 +58,8 @@ export class BugGroup {
     spawnBugAt({x, y}) {
         // spawn animation
         let bug = this.group.create(x, y, 'bugSpawn')
+        let currentScale = bug.scaleX; // Get the current scale
+        bug.setScale(currentScale * 0.7); // Increase the scale by 50;
         this.scene.add.particles(x, y, 'dirtParticle', {
             speed: { min: 1, max: 20 },
             maxParticles: 20,
