@@ -45,9 +45,6 @@ export class AttackingAlly {
     {
         let ally = this.attackingAllies.create(posX, posY, 'attackingAlly');
         ally.play('gruntSpawnAnimation');
-        ally.on('animationcomplete', () => { 
-            console.log("here3");
-        });
         this.scene.add.particles(posX, posY, 'dirtParticle', {
             speed: { min: 1, max: 20 },
             maxParticles: 20,
@@ -56,7 +53,6 @@ export class AttackingAlly {
             emitZone: { source: new Phaser.Geom.Circle(0, 0, 30) }  // Emit particles within a 4 pixel radius
         });
         this.scene.time.delayedCall(550, (e) => { 
-            console.log("lol");
             e.isSpawned = true;
             this.attackingAllies.playAnimation('gruntIdleAnimation');
             }, [ally], this);
