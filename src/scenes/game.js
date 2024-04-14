@@ -1,12 +1,9 @@
 import * as constants from '../constants.js'
 import { Player } from '../lib/player.js'
 import { Oasis } from '../lib/oasis.js'
-import { HealthBar } from '../lib/healthbar.js'
 import { AttackingAlly } from '../lib/attackingally.js';
 import { Bush } from '../lib/bush.js';
-
-let allowSpawnEnemy = false;
-
+import { BugGroup } from '../lib/bug.js'
 
 /**
  * GameScene is the main scene of Spring Summoner; it's where the actual game
@@ -19,6 +16,8 @@ export class GameScene extends Phaser.Scene {
         this.oasis = new Oasis(this)
         this.attackingAllies = new AttackingAlly(this);
         this.bushes = new Bush(this);
+        this.bugs = new BugGroup(this)
+
         this.tick = 0;
         this.active = true;
     }
@@ -27,40 +26,16 @@ export class GameScene extends Phaser.Scene {
         this.load.scenePlugin('AnimatedTiles', 'https://raw.githubusercontent.com/nkholski/phaser-animated-tiles/master/dist/AnimatedTiles.js', 'animatedTiles', 'animatedTiles'); 
         this.load.image('me', 'assets/main-character-inuse.png')
         this.load.image('drop', 'assets/star.png');
-        this.load.spritesheet('enemy', 'assets/bug-move.png', {
-            frameWidth: 32, frameHeight: 32
-        });
         this.load.image('sand', 'assets/desert-block.png');
-        this.load.image('oasis', 'assets/oasis-inuse.png');
         this.load.image('tiles', 'assets/grass-block.png');
         this.load.image('grassTiles', 'assets/grass-block-sheet-v2.png');
         this.load.image('desertTile', 'assets/desert-block.png');
-        this.load.spritesheet('dirtParticle', 'assets/dirt-particle.png', {
-            frameWidth: 6, frameHeight: 6,
-        });
-        this.load.spritesheet('bugSpawn', 'assets/bug-spawn.png', {
-            frameWidth: 32, frameHeight: 32,
-        });
+
+        this.createWorld();
+
         this.player.preload();
         this.oasis.preload();
-        this.attackingAllies.preload();
-        this.bushes.preload();
-    }
-
-    createEnemy(posX, posY)
-    {
-        const enemy = this.enemies.create(posX, posY, 'bugSpawn');
-        this.add.particles(posX, posY, 'dirtParticle', {
-            speed: { min: 1, max: 20 },
-            maxParticles: 20,
-            anim: 'dirtTumble',
-            duration: 3000,
-            emitZone: { source: new Phaser.Geom.Circle(0, 0, 30) }  // Emit particles within a 4 pixel radius
-        });
-        this.time.delayedCall(1000, (e) => { 
-            e.isSpawned = true;
-            this.enemies.playAnimation('bugMoveAnimation');
-            }, [enemy], this);
+        this.bugs.preload()
     }
 
     createDrop(posX, posY) {
@@ -68,48 +43,44 @@ export class GameScene extends Phaser.Scene {
     }
 
     create () {
-        this.createWorld();
         // Will call each of these after everything is initialized
         // Useful for adding collision handlers when everything is ready to go
         // (make sure to bind them if they're instance methods)
         this.postCreateHooks = []
-          this.levelArray = [];
-          // construct level array
-          for(let i = 0; i < constants.mapHeight; i++)
-          {
+
+        // Level creation stuff
+        this.levelArray = [];
+        // construct level array
+        for(let i = 0; i < constants.mapHeight; i++) {
             let thisRow = [];
-            for(let j = 0; j < constants.mapWidth; j++)
-            {
+            for(let j = 0; j < constants.mapWidth; j++) {
                 thisRow.push([0]);
             }
             this.levelArray.push(thisRow);
-          }
-
-          var levelArray2 = [];
-          // construct level array
-          for(let i = 0; i < constants.mapHeight; i++)
-          {
+        }
+        var levelArray2 = [];
+        // construct level array
+        for(let i = 0; i < constants.mapHeight; i++) {
             let thisRow = [];
-            for(let j = 0; j < constants.mapWidth; j++)
-            {
+            for(let j = 0; j < constants.mapWidth; j++) {
                 thisRow.push([0]);
             }
             levelArray2.push(thisRow);
-          }
-        
-          // When loading from an array, make sure to specify the tileWidth and tileHeight
-          this.grassMap = this.make.tilemap({ data: this.levelArray, tileWidth: 32, tileHeight: 32 });
-          var tiles = this.grassMap.addTilesetImage("grassTiles");
-          this.grassLayer = this.grassMap.createLayer(0, tiles, 0, 0);
-          this.grassLayer.setDepth(-1);
-
-          var desertMap = this.make.tilemap({ data: levelArray2, tileWidth: 32, tileHeight: 32 });
-          var desertTiles = desertMap.addTilesetImage("desertTile");
-          var desertLayer = desertMap.createLayer(0, desertTiles, 0, 0);
-          desertLayer.setDepth(-2);
+        }
+    
+        // When loading from an array, make sure to specify the tileWidth and tileHeight
+        this.grassMap = this.make.tilemap({ data: this.levelArray, tileWidth: 32, tileHeight: 32 });
+        var tiles = this.grassMap.addTilesetImage("grassTiles");
+        //const grassTiles = map.addTilesetImage("grassTile");
+        this.grassLayer = this.grassMap.createLayer(0, tiles, 0, 0);
+        this.grassLayer.setDepth(-1);
+      
+        var desertMap = this.make.tilemap({ data: levelArray2, tileWidth: 32, tileHeight: 32 });
+        var desertTiles = desertMap.addTilesetImage("desertTile");
+        //const grassTiles = map.addTilesetImage("grassTile");
+        var desertLayer = desertMap.createLayer(0, desertTiles, 0, 0);
+        desertLayer.setDepth(-2);
          
-        // consts
-        const NUMBER_OF_ENEMIES = 10;
         //  Set the camera and physics bounds to be the size of 4x4 bg images
         this.cameras.main.setBounds(0, 0, 1920 * 2, 1080 * 2);
         this.cameras.main.setZoom(2);  // 2x our assets visually
@@ -122,6 +93,7 @@ export class GameScene extends Phaser.Scene {
         this.player.create();
         this.attackingAllies.create();
         this.bushes.create();
+        this.bugs.create();
 
         this.cameras.main.startFollow(this.player.gameObject, true, 0.1, 0.1);  // Should this be in player.js?
 
@@ -131,71 +103,24 @@ export class GameScene extends Phaser.Scene {
             },
         });
 
-        // make enemies
-        this.enemies = this.physics.add.group();
-
-        this.anims.create({
-            key: 'bugMoveAnimation',
-            frames: this.anims.generateFrameNumbers('enemy', { start: 0, end: 3}),
-            frameRate: 20,
-            repeat: -1,
-        });
-        this.anims.create({
-            key: 'bugSpawnAnimation',
-            frames: this.anims.generateFrameNumbers('bugSpawn', { start: 0, end: 8}),
-            frameRate: 10,
-            repeat: -1,
-        });
-        this.anims.create({
-            key: 'dirtTumble',
-            frames: this.anims.generateFrameNumbers('dirtParticle', { start: 0, end: 7}),
-            frameRate: 10,
-            repeat: -1,
-        });
-
-        // this.anims.create({
-        //     key: 'scorpion-move',
-        //     frames: this.anims.generateFrameNumbers('attackingAlly', { start: 0, end: 5}),
-        //     frameRate: 20,
-        //     repeat: -1,
-        // });
-        
-    
-        // make enemies
-        this.enemies = this.physics.add.group({
-            createCallback: (enemy) => {
-                enemy.isSpawned = false;
-            }
-        });
-
-        for(let i = 0; i < constants.NUMBER_OF_ENEMIES; i++) {
-            const spawnX = Math.random() * 400;
-            const spawnY = Math.random() * 400;
-            this.createEnemy(spawnX, spawnY);
-        }
-        this.enemies.playAnimation('bugSpawnAnimation');
-
         this.physics.add.collider(this.player.gameObject, this.drops, (_player, drop) => {
             this.player.pickUp(drop)
         }, null, this);
-        this.physics.add.collider(this.enemies, this.enemies); 
-        this.physics.add.collider(this.attackingAllies.attackingAllies, this.enemies);
-        //this.physics.add.collider(this.attackingAllies, this.enemies); 
-        this.physics.add.collider(this.player.gameObject, this.enemies, (_player, enemy) => {
-            this.player.collide(enemy)
-        }, null, this);
+        this.physics.add.collider(this.attackingAllies.attackingAllies, this.bugs.group);
 
-        // spawn new enemy near the player every ENEMY_SPAWN_TIMER milliseconds
-        // make sure they always spawn off screen
-        const playerObjRef = this.player.gameObject
-        function spawnEnemy()
-        {
-            allowSpawnEnemy = true;
-        }
-        setInterval(
-            spawnEnemy,
-            constants.ENEMY_SPAWN_TIMER
-        );
+        this.anims.create({
+            key: 'bushSpawnAnimation',
+            frames: this.anims.generateFrameNumbers('bushSpawn', { start: 0, end: 10}),
+            frameRate: 15,
+        });
+        this.anims.create({
+            key: 'scorpion-move',
+            frames: this.anims.generateFrameNumbers('attackingAlly', { start: 0, end: 4}),
+            frameRate: 20,
+            repeat: -1,
+        });
+
+        this.physics.add.collider(this.attackingAllies, this.bugs.group); 
 
         if (constants.devMode) {
             this.physics.world.createDebugGraphic()
@@ -288,14 +213,6 @@ export class GameScene extends Phaser.Scene {
             return;
         }
 
-        if(allowSpawnEnemy == true)
-        {
-            let direction = Math.random < 0.5 ? 1 : -1;
-            this.createEnemy(
-                this.player.gameObject.x + (constants.canvasWidth * direction) + Math.random() * 400, 
-                this.player.gameObject.y + (constants.canvasHeight * direction) + Math.random() * 400);
-            allowSpawnEnemy = false;
-        }
         this.createDrop(
             constants.canvasWidth * Math.random() * 32,
             constants.canvasHeight * Math.random() * 32);
@@ -306,13 +223,12 @@ export class GameScene extends Phaser.Scene {
         this.oasis.update();
         this.attackingAllies.update();
         this.bushes.update();
-
     }
 
     // called when player health is zero
     end () {
         this.active = false;
-        for (let enemy of this.enemies.getChildren()) {
+        for (let enemy of this.bugs.group.getChildren()) {
             enemy.body.setVelocity(0, 0);
         }
         // wait one second so death animation can finish
@@ -320,13 +236,13 @@ export class GameScene extends Phaser.Scene {
             for (let enemy of enemies.getChildren()) {
                 enemy.playReverse('bugSpawnAnimation');
             }
-        }, [this.enemies], this);
+        }, [this.bugs.group], this);
         // wait 1.8 seconds before removing enemies (not 2s to avoid overlapping frames)
         this.time.delayedCall(1800, (enemies) => { 
             for (let enemy of enemies.getChildren()) {
                 enemy.setVisible(false);
                 enemy.body.enable = false;
             }
-        }, [this.enemies], this);
+        }, [this.bugs.group], this);
     }
 }

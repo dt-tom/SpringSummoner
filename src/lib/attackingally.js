@@ -34,7 +34,7 @@ export class AttackingAlly {
     {
         //console.log(this.attackingAllies);
         for (let ally of this.attackingAllies.getChildren()) {
-            let closestEnemy = this.scene.getClosestObject(ally, this.scene.enemies);
+            let closestEnemy = this.scene.getClosestObject(ally, this.scene.bugs.group);
             if (closestEnemy){
                 this.scene.physics.moveToObject(ally, closestEnemy, 60);
             }

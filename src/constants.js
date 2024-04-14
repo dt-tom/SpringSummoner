@@ -22,4 +22,7 @@ export const playerSpawn = { x: 400, y: 300 }
 export const summonForFree = false;
 export const devMode = true;
 
-export const NUMBER_OF_ENEMIES = 10;
+// Bug Enemies
+export const bugSpawnInnerRadius = 250;
+export const bugSpawnOuterRadius = 800;
+export const bugNumInitialSpawns = 10;

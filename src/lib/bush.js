@@ -30,7 +30,7 @@ export class Bush {
 
     update() {
         // slow enemies
-        for(const enemy of this.scene.enemies.getChildren()) {
+        for(const enemy of this.scene.bugs.group.getChildren()) {
             const vector = new Phaser.Math.Vector2(
                 this.scene.player.gameObject.x - enemy.x,
                 this.scene.player.gameObject.y - enemy.y
@@ -84,12 +84,12 @@ export class Bush {
                 return;
             }
             // bad code xd xd 
-            for (let enemy of this.scene.enemies.getChildren()) {
+            for (let enemy of this.scene.bugs.group.getChildren()) {
                 const allyBounds = ally.getBounds();
                 const enemyBounds = enemy.getBounds();
                 if (Phaser.Geom.Intersects.RectangleToRectangle(allyBounds, enemyBounds)) {
                     bugSquishSound.play();
-                    this.scene.enemies.remove(enemy);
+                    this.scene.bugs.group.remove(enemy);
                     enemy.setVisible(false);
                     enemy.body.enable = false;
                     enemy.destroy();
