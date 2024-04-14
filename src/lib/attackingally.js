@@ -4,7 +4,7 @@ export class AttackingAlly {
         this.scene = scene;
     }
     preload(){
-        this.scene.load.spritesheet('attackingAlly', 'assets/stick_grunt_idle_v1.png', {
+        this.scene.load.spritesheet('gruntWalking', 'assets/stick_grunt_walking_front.png', {
             frameWidth: 32, frameHeight: 32,
         });
         this.scene.load.spritesheet('gruntSpawn', 'assets/stick_grunt_summoning_v1.png', {
@@ -16,8 +16,8 @@ export class AttackingAlly {
         this.attackingAllies = this.scene.physics.add.group();
 
         this.scene.anims.create({
-            key: 'gruntIdleAnimation',
-            frames: this.scene.anims.generateFrameNumbers('attackingAlly', { start: 0, end: 2}),
+            key: 'gruntWalkAnimation',
+            frames: this.scene.anims.generateFrameNumbers('gruntWalking', { start: 0, end: 3}),
             frameRate: 20,
             repeat: -1,
         });
@@ -43,7 +43,7 @@ export class AttackingAlly {
     }
     createAttackingAlly(posX, posY)
     {
-        let ally = this.attackingAllies.create(posX, posY, 'attackingAlly');
+        let ally = this.attackingAllies.create(posX, posY, 'gruntWalking');
         ally.play('gruntSpawnAnimation');
         this.scene.add.particles(posX, posY, 'dirtParticle', {
             speed: { min: 1, max: 20 },
@@ -54,7 +54,7 @@ export class AttackingAlly {
         });
         this.scene.time.delayedCall(550, (e) => { 
             e.isSpawned = true;
-            this.attackingAllies.playAnimation('gruntIdleAnimation');
+            this.attackingAllies.playAnimation('gruntWalkAnimation');
             }, [ally], this);
     }
 

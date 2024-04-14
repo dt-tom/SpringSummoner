@@ -15,8 +15,6 @@ export class Oasis {
     create() {
         // Oasis
         this.gameObject = this.scene.physics.add.image(400, 300, 'oasis');
-
-        console.log(this.gameObject.getBounds());
         
         this.gameObject.setOrigin(0.5, 0.5);  // use the center of the sprite as the reference point for positioning
 
@@ -48,7 +46,6 @@ export class Oasis {
         {
             if(!this.checkOverlap(this.scene.player.gameObject, this.gameObject))
             {
-                console.log("stopping");
                 this.auraSound.stop();
             };
         }
@@ -58,7 +55,7 @@ export class Oasis {
         this.scene.player.mana += 0.5
         this.scene.player.spawnOasisParticles();
         
-        this.auraSound.setVolume(0.5);
+        this.auraSound.setVolume(0.25);
         if(!this.auraSound.isPlaying)
         {
             this.auraSound.play();
