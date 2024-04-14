@@ -14,7 +14,7 @@ export class Player {
         this.scene = scene
         console.log('Player:', 'constructed')
         this.firstUpdate = true
-        
+        this.playerSpeed = playerSpeed;
     }
 
     // Preload is called before scene load, with a copy of the scene
@@ -147,23 +147,23 @@ export class Player {
 
         if (cursor.left.isDown) {
             this.gameObject.setFlipX(true);
-            this.gameObject.setVelocityX(-playerSpeed);
+            this.gameObject.setVelocityX(-this.playerSpeed);
             this.gameObject.anims.play('walkFrontAnimation', true)
         }
 
         if (cursor.right.isDown) {
             this.gameObject.setFlipX(false);
-            this.gameObject.setVelocityX(playerSpeed);
+            this.gameObject.setVelocityX(this.playerSpeed);
             this.gameObject.anims.play('walkFrontAnimation', true)
         }
 
         if (cursor.up.isDown) {
             this.gameObject.anims.play('walkBackAnimation', true)
-            this.gameObject.setVelocityY(-playerSpeed);
+            this.gameObject.setVelocityY(-this.playerSpeed);
         }
 
         if (cursor.down.isDown) {
-            this.gameObject.setVelocityY(playerSpeed);
+            this.gameObject.setVelocityY(this.playerSpeed);
             this.gameObject.anims.play('walkFrontAnimation', true)
         }
 
@@ -183,6 +183,11 @@ export class Player {
             this.gameObject.anims.play('deathAnimation', true);
             this.scene.end();
         }
+    }
+
+    pickUp(drop) {
+        this.playerSpeed *= 1.1;
+        drop.destroy();
     }
 
     isDead () {

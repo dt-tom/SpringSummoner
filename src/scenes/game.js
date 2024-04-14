@@ -24,6 +24,7 @@ export class GameScene extends Phaser.Scene {
     preload () {
         this.load.scenePlugin('AnimatedTiles', 'https://raw.githubusercontent.com/nkholski/phaser-animated-tiles/master/dist/AnimatedTiles.js', 'animatedTiles', 'animatedTiles'); 
         this.load.image('me', 'assets/main-character-inuse.png');
+        this.load.image('drop', 'assets/star.png');
         this.load.image('bush', 'assets/bush-v1.png');
         
         this.load.image('bush', 'assets/bush-v1.png');
@@ -65,7 +66,9 @@ export class GameScene extends Phaser.Scene {
             }, [enemy], this);
     }
 
-   
+    createDrop(posX, posY) {
+        const drop = this.drops.create(posX, posY, 'drop');
+    }
 
     create () {
         this.createWorld();
@@ -73,6 +76,43 @@ export class GameScene extends Phaser.Scene {
         // Useful for adding collision handlers when everything is ready to go
         // (make sure to bind them if they're instance methods)
         this.postCreateHooks = []
+          this.levelArray = [];
+          // construct level array
+          for(let i = 0; i < constants.mapHeight; i++)
+          {
+            let thisRow = [];
+            for(let j = 0; j < constants.mapWidth; j++)
+            {
+                thisRow.push([0]);
+            }
+            this.levelArray.push(thisRow);
+          }
+
+          var levelArray2 = [];
+          // construct level array
+          for(let i = 0; i < constants.mapHeight; i++)
+          {
+            let thisRow = [];
+            for(let j = 0; j < constants.mapWidth; j++)
+            {
+                thisRow.push([0]);
+            }
+            levelArray2.push(thisRow);
+          }
+        
+          // When loading from an array, make sure to specify the tileWidth and tileHeight
+          this.grassMap = this.make.tilemap({ data: this.levelArray, tileWidth: 32, tileHeight: 32 });
+          var tiles = this.grassMap.addTilesetImage("grassTiles");
+          this.grassLayer = this.grassMap.createLayer(0, tiles, 0, 0);
+          this.grassLayer.setDepth(-1);
+
+          var desertMap = this.make.tilemap({ data: levelArray2, tileWidth: 32, tileHeight: 32 });
+          var desertTiles = desertMap.addTilesetImage("desertTile");
+          var desertLayer = desertMap.createLayer(0, desertTiles, 0, 0);
+          desertLayer.setDepth(-2);
+         
+        // consts
+        const NUMBER_OF_ENEMIES = 10;
         //  Set the camera and physics bounds to be the size of 4x4 bg images
         this.cameras.main.setBounds(0, 0, 1920 * 2, 1080 * 2);
         this.cameras.main.setZoom(2);  // 2x our assets visually
@@ -94,6 +134,15 @@ export class GameScene extends Phaser.Scene {
                 ally.isSpawned = false;
             },
         });
+
+        this.drops = this.physics.add.group({
+            createCallback: (drop) => {
+                drop.isSpawned = false;
+            },
+        });
+
+        // Attacking allies engage with enemies
+        this.attackingAllies = this.physics.add.group();
 
         // make enemies
         this.enemies = this.physics.add.group();
@@ -147,6 +196,9 @@ export class GameScene extends Phaser.Scene {
         }
         this.enemies.playAnimation('bugSpawnAnimation');
 
+        this.physics.add.collider(this.player.gameObject, this.drops, (_player, drop) => {
+            this.player.pickUp(drop)
+        }, null, this);
         this.physics.add.collider(this.enemies, this.enemies); 
         this.physics.add.collider(this.attackingAllies.attackingAllies, this.enemies);
         //this.physics.add.collider(this.attackingAllies, this.enemies); 
@@ -265,6 +317,10 @@ export class GameScene extends Phaser.Scene {
                 this.player.gameObject.y + (constants.canvasHeight * direction) + Math.random() * 400);
             allowSpawnEnemy = false;
         }
+        this.createDrop(
+            constants.canvasWidth * Math.random() * 32,
+            constants.canvasHeight * Math.random() * 32);
+
         this.updateTiles();
 
         this.player.update();
