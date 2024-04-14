@@ -91,8 +91,6 @@ export class GameScene extends Phaser.Scene {
             repeat: -1,
         });
 
-        //this.physics.add.collider(this.attackingAllies, this.bugs.group); 
-
         if (constants.devMode) {
             this.physics.world.createDebugGraphic()
             this.physics.world.drawDebug = true

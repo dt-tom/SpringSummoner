@@ -307,9 +307,12 @@ export class Player {
         }
     }
 
-    // Called by scene when player collides with an enemy
-    collide(_enemy) {
-        this.health -= 1;
+    damage(damage) {
+        this.health -= damage;
+        this.gameObject.setTint(0xFF474c); // Tint the sprite red
+        setTimeout(() => {
+            this.gameObject.clearTint(); // Clear the tint after a delay
+        }, 100);
         if(this.health <= 0) {
             this.healthbar.gfx.destroy();
             this.manabar.gfx.destroy();
