@@ -8,6 +8,7 @@ export class Bush {
     preload() {
         this.scene.load.image('bush', 'assets/bush-v1.png');
         this.scene.load.audio('leavesSound', 'assets/sounds/bush-sound.mp3');
+        this.scene.load.audio('bugSquishSound', 'assets/sounds/bug-squish.wav');
         this.scene.load.spritesheet('bushSpawn', 'assets/bush-spawn.png', {
             frameWidth: 64, frameHeight: 64,
         });
@@ -62,6 +63,7 @@ export class Bush {
         bushSound.addMarker({name: 'bushMarker', start: 3, duration: 1});
         bushSound.play('bushMarker');
         bushSound.setVolume(0.05);
+        let bugSquishSound = this.scene.sound.add('bugSquishSound');
 
         // after 8 seconds trees disappear
         this.scene.time.delayedCall(8_000, (ally) => { 
@@ -86,6 +88,7 @@ export class Bush {
                 const allyBounds = ally.getBounds();
                 const enemyBounds = enemy.getBounds();
                 if (Phaser.Geom.Intersects.RectangleToRectangle(allyBounds, enemyBounds)) {
+                    bugSquishSound.play();
                     this.scene.enemies.remove(enemy);
                     enemy.setVisible(false);
                     enemy.body.enable = false;
