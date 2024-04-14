@@ -175,9 +175,9 @@ export class GameScene extends Phaser.Scene {
        oasis.setOrigin(0.5, 0.5);  // use the center of the sprite as the reference point for positioning
     }
 
-    updateTiles()
+    updateTiles(x, y)
     {
-        let currentTile = this.grassMap.getTileAtWorldXY(this.player.gameObject.x, this.player.gameObject.y);
+        let currentTile = this.grassMap.getTileAtWorldXY(x, y);
 
         if(currentTile && this.tick % constants.GRASS_GROW_SPEED == 0)
         {
@@ -200,7 +200,7 @@ export class GameScene extends Phaser.Scene {
             constants.canvasWidth * Math.random() * 32,
             constants.canvasHeight * Math.random() * 32);
 
-        this.updateTiles();
+        // this.updateTiles(this.player.gameObject.x, this.player.gameObject.y);
 
         this.player.update();
         this.oasis.update();

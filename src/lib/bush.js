@@ -14,7 +14,7 @@ export class Bush {
     }
 
     create (){
-        this.manaCost = 10;
+        this.manaCost = 15;
         this.bushTickDamage = 0.5;
         this.bushMaxLifetimeMillis = 15_000;
         this.bushSpeedReduction = 40;
@@ -60,6 +60,21 @@ export class Bush {
         return this.manaCost;
     }
 
+    spiralGreen (posX, posY) {
+        let radius = 1; // Initial radius
+        let angle = 0; // Initial angle
+        let intervalId = setInterval(() => {
+            let x = posX + radius * Math.cos(angle);
+            let y = posY + radius * Math.sin(angle);
+            this.scene.updateTiles(x, y);
+            angle += 1;
+            radius += 1;
+        }, 50);
+        setTimeout(() => {
+            clearInterval(intervalId);
+        }, this.bushMaxLifetimeMillis / 4);
+    }
+
     addBush(posX, posY) {
         let ally = this.bushes.create(posX, posY, 'bush');
         ally.setScale(ally.scaleX * this.bushScale);
@@ -70,6 +85,8 @@ export class Bush {
         bushSound.play('bushMarker');
         bushSound.setVolume(0.05);
 
+        // spiral green the terrain
+        this.spiralGreen(posX, posY);
         this.scene.time.delayedCall(this.bushMaxLifetimeMillis, (ally) => { 
             ally.on('animationcomplete', () => { 
                 this.bushes.remove(ally);
