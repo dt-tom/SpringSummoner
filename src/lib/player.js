@@ -9,6 +9,9 @@ import { AttackingAlly } from '../lib/attackingally.js'
  * X and Y are stored on the gameObject. HP should be stored on the healthbar
  * but is currently duplicated.
  */
+
+let downPos = 0;
+let upPos = 0;
 export class Player {
     constructor(scene) {
         this.scene = scene
@@ -91,11 +94,44 @@ export class Player {
         // Mouseclicks for summoning
         this.scene.input.mouse.disableContextMenu();
         this.scene.input.on('pointerdown', this.clickHandler.bind(this))  // maybe this has a context param??
-
+        this.scene.input.on('pointerup', this.clickHandler2.bind(this))
         console.log('Player:', 'created')
     }
 
+    
+
     clickHandler(e) {
+        console.log(e.downX);
+        downPos = e.downX;
+        if (this.isDead()) {
+            return
+        }
+        if (this.mana >= 50) {
+          if (!summonForFree)  {
+            this.mana -= 50; // TODO: configurable summon costs
+          }
+        } else {
+          return;  // TODO: signal this to the player
+        }
+        // if(e.rightButtonDown()) {
+        //     //AttackingAlly.createAttackingAlly();
+        //     this.scene.attackingAllies.createAttackingAlly(e.worldX, e.worldY);
+        // } else {
+        //     this.scene.bushes.addBush(e.worldX, e.worldY);
+        // }
+    }
+
+    clickHandler2(e) {
+        console.log(e.upX);
+        upPos = e.upX;
+
+        if(downPos < upPos)
+        {
+            console.log("SWIPE");
+            this.scene.attackingAllies.createAttackingAlly(e.worldX, e.worldY);
+        } else {
+            this.scene.bushes.addBush(e.worldX, e.worldY);
+        }
         if (this.isDead()) {
             return
         }
@@ -108,9 +144,9 @@ export class Player {
         }
         if(e.rightButtonDown()) {
             //AttackingAlly.createAttackingAlly();
-            this.scene.attackingAllies.createAttackingAlly(e.worldX, e.worldY);
+            //this.scene.attackingAllies.createAttackingAlly(e.worldX, e.worldY);
         } else {
-            this.scene.bushes.addBush(e.worldX, e.worldY);
+            //his.scene.bushes.addBush(e.worldX, e.worldY);
         }
     }
 

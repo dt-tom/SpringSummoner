@@ -44,7 +44,7 @@ export class BugGroup {
         const xOut = x + (distance * Math.cos(direction))
         const yOut = y + (distance * Math.sin(direction))
 
-        console.log('spawnBugNear', `(${x}, ${y})`, '->', `(${xOut}, ${yOut})`)
+        //console.log('spawnBugNear', `(${x}, ${y})`, '->', `(${xOut}, ${yOut})`)
 
         this.spawnBugAt({
             x: xOut,
