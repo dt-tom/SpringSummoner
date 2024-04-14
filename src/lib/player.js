@@ -1,6 +1,7 @@
 import { HealthbarV2 } from '../lib/healthbar.js'
 import { playerSpawn, playerSpeed, summonForFree, MIN_SWIPE_DISTANCE, MOUSE_SAMPLE_RATE } from '../constants.js'
 import { AttackingAlly } from '../lib/attackingally.js'
+import { guess } from '../main.js';
 
 /**
  *
@@ -231,7 +232,41 @@ export class Player {
         }
     }
 
-   
+    classifySummmon(size=28) {
+        function drawLine(ctx, x1, y1, x2, y2, stroke = 'black', width = 3) {
+            ctx.beginPath();
+            ctx.moveTo(x1, y1);
+            ctx.lineTo(x2, y2);
+            ctx.strokeStyle = stroke;
+            ctx.lineWidth = width;
+            ctx.stroke();
+        }
+        const canvas = document.createElement("canvas");
+        canvas.style.display = "none";
+        document.body.appendChild(canvas);
+        const ctx = canvas.getContext("2d");
+        ctx.canvas.width  = size;
+        ctx.canvas.height = size;
+        ctx.lineCap = 'round';
+        ctx.lineJoin = 'round';
+        ctx.fillStyle= "white";
+        ctx.fillRect(0, 0, size, size);
+
+        for (let i = 0; i < mousePositions.length - 1; i++) {
+            const tx = size/1024;
+            const ty = size/768;
+            const [x1, y1, x2, y2] = [mousePositions[i][0] * tx, mousePositions[i][1] * ty,mousePositions[i+1][0] * tx,mousePositions[i + 1][1] * ty];
+            drawLine(ctx, x1, y1, x2, y2);
+        }
+        let bright  = []
+        for (let x = 0; x < size; x++) {
+            for (let y = 0; y < size; y++) {
+                bright.push(ctx.getImageData(x,y,1,1).data[0]/255)
+            }
+        }
+        console.log(`Result: ${bright.filter(d=>d<1).length > 50 ? guess(bright): 'Not enough input'}`)
+        document.body.removeChild(canvas);
+    }
 
     clickDownHandler(e) {
         mouseCurrentlyDown = true;
@@ -242,6 +277,7 @@ export class Player {
     }
 
     clickUpHandler(e) {
+        this.classifySummmon();
         mousePositions = [];
         mouseCurrentlyDown = false;
         upEvent = e;
