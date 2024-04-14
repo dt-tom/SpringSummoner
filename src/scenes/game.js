@@ -70,7 +70,13 @@ export class GameScene extends Phaser.Scene {
         this.physics.add.collider(this.player.gameObject, this.drops, (_player, drop) => {
             this.player.pickUp(drop)
         }, null, this);
-        this.physics.add.collider(this.attackingAllies.attackingAllies, this.bugs.group);
+        this.physics.add.collider(this.attackingAllies.attackingAllies, this.bugs.group, (ally, enemy) => {
+            enemy.health -= 10;
+            if(enemy.health <= 0)
+            {
+                enemy.destroy();
+            }
+        });
 
         this.anims.create({
             key: 'bushSpawnAnimation',

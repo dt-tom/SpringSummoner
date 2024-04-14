@@ -3,6 +3,7 @@ import {
     bugSpawnOuterRadius,
     bugNumInitialSpawns,
     ENEMY_SPAWN_TIMER,
+    ENEMY_START_HEALTH,
     bugMovespeed,
     bushSlow,
 } from "../constants.js";
@@ -96,6 +97,7 @@ export class BugGroup {
         // make enemies
         this.group = this.scene.physics.add.group({
             createCallback: (enemy) => {
+                enemy.health = ENEMY_START_HEALTH;
                 enemy.isSpawned = false;
                 enemy.setCollideWorldBounds(true);
             }

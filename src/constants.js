@@ -26,3 +26,5 @@ export const devMode = true;
 export const bugSpawnInnerRadius = 250;
 export const bugSpawnOuterRadius = 800;
 export const bugNumInitialSpawns = 10;
+
+export const ENEMY_START_HEALTH = 100;
