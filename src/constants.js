@@ -31,3 +31,4 @@ export const ENEMY_START_HEALTH = 100;
 
 // gestures
 export const MIN_SWIPE_DISTANCE = 200;
+export const MOUSE_SAMPLE_RATE = 10;

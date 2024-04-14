@@ -1,5 +1,5 @@
 import { HealthbarV2 } from '../lib/healthbar.js'
-import { playerSpawn, playerSpeed, summonForFree, MIN_SWIPE_DISTANCE } from '../constants.js'
+import { playerSpawn, playerSpeed, summonForFree, MIN_SWIPE_DISTANCE, MOUSE_SAMPLE_RATE } from '../constants.js'
 import { AttackingAlly } from '../lib/attackingally.js'
 
 /**
@@ -12,6 +12,9 @@ import { AttackingAlly } from '../lib/attackingally.js'
 
 let downEvent = 0;
 let upEvent = 0;
+let mouseCurrentlyDown = false;
+
+let mousePositions = [];
 export class Player {
     constructor(scene) {
         this.scene = scene
@@ -33,6 +36,9 @@ export class Player {
             frameWidth: 32, frameHeight: 32,
         })
         this.scene.load.spritesheet('oasisHeal', 'assets/oasis-heal-particle-v3.png', {
+            frameWidth: 8, frameHeight: 8,
+        })
+        this.scene.load.spritesheet('mouseParticle', 'assets/mouse-particle-v1.png', {
             frameWidth: 8, frameHeight: 8,
         })
         this.scene.load.audio('leavesSound', 'assets/sounds/bush-sound.mp3');
@@ -91,10 +97,18 @@ export class Player {
             repeat: -1,
         });
 
+        this.scene.anims.create({
+            key: 'mouseParticleAnimation',
+            frames: this.gameObject.anims.generateFrameNumbers('mouseParticle', { start: 0, end: 1}),
+            frameRate: 10,
+            repeat: -1,
+        });
+
         // Mouseclicks for summoning
         this.scene.input.mouse.disableContextMenu();
         this.scene.input.on('pointerdown', this.clickHandler.bind(this))  // maybe this has a context param??
         this.scene.input.on('pointerup', this.clickHandler2.bind(this))
+        setInterval(this.trackMousePositionAndSpawnParticles.bind(this), MOUSE_SAMPLE_RATE);
         console.log('Player:', 'created')
     }
 
@@ -172,9 +186,36 @@ export class Player {
         && Math.abs(downEvent.downY - upEvent.upY) > MIN_SWIPE_DISTANCE
     }
 
+    trackMousePositionAndSpawnParticles()
+    {
+        if(mouseCurrentlyDown)
+        {
+            console.log(mousePositions);
+            mousePositions.push([this.scene.input.mousePointer.x, this.scene.input.mousePointer.y])
+
+            //let mPos = new Vector2(this.scene.input.mousePointer.x, this.scene.input.mousePointer.y);
+            let wPos = this.scene.cameras.main.getWorldPoint(this.scene.input.mousePointer.x, this.scene.input.mousePointer.y);
+
+            console.log(wPos);
+        
+            this.scene.add.particles(wPos.x, wPos.y, 'mouseParticle', {
+                speed: { min: 1, max: 20 },
+                maxParticles: 10,
+                anim: 'mouseParticleAnimation',
+                duration: 1000,
+                // accelerationY: Math.random() * -900,
+                // accelerationX: Math.random() * -50,
+                // speed: Math.random() * 100,
+                // lifespan: 200,
+                emitZone: { source: new Phaser.Geom.Circle(0, 0, 10) }  // Emit particles within a 4 pixel radius
+            });
+        }
+    }
+
    
 
     clickHandler(e) {
+        mouseCurrentlyDown = true;
         console.log(e.downX);
         downEvent = e;
         if (this.isDead()) {
@@ -196,6 +237,8 @@ export class Player {
     }
 
     clickHandler2(e) {
+        mousePositions = [];
+        mouseCurrentlyDown = false;
         console.log(e.upX);
         upEvent = e;
 
