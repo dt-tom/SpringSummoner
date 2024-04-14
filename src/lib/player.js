@@ -84,6 +84,9 @@ export class Player {
     }
 
     clickHandler(e) {
+        if (this.isDead()) {
+            return
+        }
         if (this.mana >= 50) {
           if (!summonForFree)  {
             this.mana -= 50; // TODO: configurable summon costs
@@ -166,10 +169,13 @@ export class Player {
             this.gameObject.body.enable = false;
             this.gameObject.setTexture('death');
             this.gameObject.anims.play('deathAnimation', true);
-
+            this.scene.end();
         }
     }
 
+    isDead () {
+        return this.health <= 0 || !this.gameObject.body.enable;
+    }
 };
 
 /**
@@ -187,8 +193,3 @@ function createCursors(scene) {
         arrowkeys: scene.input.keyboard.createCursorKeys(),
     }
 }
-
-function isDead () {
-    return this.gameObject.body.enable;
-}
-

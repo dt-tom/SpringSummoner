@@ -16,6 +16,7 @@ export class GameScene extends Phaser.Scene {
         this.player = new Player(this)
         this.oasis = new Oasis(this)
         this.tick = 0;
+        this.active = true;
     }
 
     preload () {
@@ -281,6 +282,10 @@ export class GameScene extends Phaser.Scene {
 
     update () {
         this.tick += 1;
+        if (!this.active) {
+            return;
+        }
+
         if(allowSpawnEnemy == true)
         {
             let direction = Math.random < 0.5 ? 1 : -1;
@@ -302,7 +307,6 @@ export class GameScene extends Phaser.Scene {
             
         }
     
-
         for(const enemy of this.enemies.getChildren()) {
             const vector = new Phaser.Math.Vector2(
                 this.player.gameObject.x - enemy.x,
@@ -325,5 +329,26 @@ export class GameScene extends Phaser.Scene {
                 this.physics.moveTo(enemy, this.player.gameObject.x + Math.random() * 100, this.player.gameObject.y + Math.random() * 100, moveSpeed)
             }
         }
+    }
+
+    // called when player health is zero
+    end () {
+        this.active = false;
+        for (let enemy of this.enemies.getChildren()) {
+            enemy.body.setVelocity(0, 0);
+        }
+        // wait one second so death animation can finish
+        this.time.delayedCall(1000, (enemies) => { 
+            for (let enemy of enemies.getChildren()) {
+                enemy.playReverse('bugSpawnAnimation');
+            }
+        }, [this.enemies], this);
+        // wait 1.8 seconds before removing enemies (not 2s to avoid overlapping frames)
+        this.time.delayedCall(1800, (enemies) => { 
+            for (let enemy of enemies.getChildren()) {
+                enemy.setVisible(false);
+                enemy.body.enable = false;
+            }
+        }, [this.enemies], this);
     }
 }
