@@ -222,9 +222,9 @@ export class GameScene extends Phaser.Scene {
         
     }
 
-    updateTiles()
+    updateTiles(posX, posY)
     {      
-        let currentTile = this.grassMap.getTileAtWorldXY(this.player.gameObject.x, this.player.gameObject.y);
+        let currentTile = this.grassMap.getTileAtWorldXY(posX, posY);
 
         if(currentTile && this.tick % constants.GRASS_GROW_SPEED == 0)
         {

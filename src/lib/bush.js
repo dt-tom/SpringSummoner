@@ -6,7 +6,7 @@ export class Bush {
         this.scene = scene;
     }
     preload() {
-        this.scene.load.image('bush', 'assets/bush-v1.png');
+        this.scene.load.image('bush', 'assets/bush-v2.png');
         this.scene.load.audio('leavesSound', 'assets/sounds/bush-sound.mp3');
         this.scene.load.spritesheet('bushSpawn', 'assets/bush-spawn.png', {
             frameWidth: 64, frameHeight: 64,
@@ -101,6 +101,8 @@ export class Bush {
         ally.play('bushSpawnAnimation');
         ally.on('animationcomplete', () => { 
             ally.setTexture('bush');
+            ally.x = ally.x - 2;
+            ally.y = ally.y + 8;
             if (ally.isSpawned) {
                 return;
             }
