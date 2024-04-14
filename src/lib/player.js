@@ -1,5 +1,5 @@
 import { HealthbarV2 } from '../lib/healthbar.js'
-import { playerSpawn, playerSpeed, summonForFree } from '../constants.js'
+import { playerSpawn, playerSpeed, summonForFree, MIN_SWIPE_DISTANCE } from '../constants.js'
 import { AttackingAlly } from '../lib/attackingally.js'
 
 /**
@@ -10,8 +10,8 @@ import { AttackingAlly } from '../lib/attackingally.js'
  * but is currently duplicated.
  */
 
-let downPos = 0;
-let upPos = 0;
+let downEvent = 0;
+let upEvent = 0;
 export class Player {
     constructor(scene) {
         this.scene = scene
@@ -98,11 +98,85 @@ export class Player {
         console.log('Player:', 'created')
     }
 
-    
+    detectGesture(){
+        // horizontal right swipe
+        console.log(this.upSwipe() + " " + this.downSwipe() + " " + this.leftSwipe() + " " + this.rightSwipe() + " " + this.upLeftSwipe() + " " + this.upRightSwipe() + " " + this.downLeftSwipe() + " " + this.downRightSwipe());
+        if(this.upRightSwipe()){
+            this.scene.attackingAllies.createAttackingAlly(upEvent.worldX, upEvent.worldY);
+        } else if (this.downSwipe()) {
+            this.scene.bushes.addBush(upEvent.worldX, upEvent.worldY);
+        }
+    }
+
+    upSwipe()
+    {
+        return downEvent.downY > upEvent.upY 
+        && Math.abs(downEvent.downY - upEvent.upY) > MIN_SWIPE_DISTANCE
+        && Math.abs(downEvent.downX - upEvent.upX) < MIN_SWIPE_DISTANCE
+        && Math.abs(downEvent.downY - upEvent.upY) > Math.abs(downEvent.downX - upEvent.upX);
+    }
+
+    downSwipe()
+    {
+        return downEvent.downY < upEvent.upY 
+        && Math.abs(downEvent.downY - upEvent.upY) > MIN_SWIPE_DISTANCE
+        && Math.abs(downEvent.downX - upEvent.upX) < MIN_SWIPE_DISTANCE
+        && Math.abs(downEvent.downY - upEvent.upY) > Math.abs(downEvent.downX - upEvent.upX);
+    }
+
+    rightSwipe()
+    {
+        return downEvent.downX < upEvent.upX 
+        && Math.abs(downEvent.downX - upEvent.upX) > MIN_SWIPE_DISTANCE
+        && Math.abs(downEvent.downY - upEvent.upY) < MIN_SWIPE_DISTANCE
+        && Math.abs(downEvent.downX - upEvent.upX) > Math.abs(downEvent.downY - upEvent.upY)
+    }
+
+    leftSwipe()
+    {
+        return downEvent.downX > upEvent.upX 
+        && Math.abs(downEvent.downX - upEvent.upX) > MIN_SWIPE_DISTANCE
+        && Math.abs(downEvent.downY - upEvent.upY) < MIN_SWIPE_DISTANCE
+        && Math.abs(downEvent.downX - upEvent.upX) > Math.abs(downEvent.downY - upEvent.upY)
+    }
+
+    downLeftSwipe()
+    {
+        return downEvent.downX > upEvent.upX 
+        && downEvent.downY < upEvent.upY 
+        && Math.abs(downEvent.downX - upEvent.upX) > MIN_SWIPE_DISTANCE
+        && Math.abs(downEvent.downY - upEvent.upY) > MIN_SWIPE_DISTANCE
+    }
+
+    downRightSwipe()
+    {
+        return downEvent.downX < upEvent.upX 
+        && downEvent.downY < upEvent.upY 
+        && Math.abs(downEvent.downX - upEvent.upX) > MIN_SWIPE_DISTANCE
+        && Math.abs(downEvent.downY - upEvent.upY) > MIN_SWIPE_DISTANCE
+    }
+
+    upLeftSwipe()
+    {
+        return downEvent.downX > upEvent.upX 
+        && downEvent.downY > upEvent.upY 
+        && Math.abs(downEvent.downX - upEvent.upX) > MIN_SWIPE_DISTANCE
+        && Math.abs(downEvent.downY - upEvent.upY) > MIN_SWIPE_DISTANCE
+    }
+
+    upRightSwipe()
+    {
+        return downEvent.downX < upEvent.upX 
+        && downEvent.downY > upEvent.upY 
+        && Math.abs(downEvent.downX - upEvent.upX) > MIN_SWIPE_DISTANCE
+        && Math.abs(downEvent.downY - upEvent.upY) > MIN_SWIPE_DISTANCE
+    }
+
+   
 
     clickHandler(e) {
         console.log(e.downX);
-        downPos = e.downX;
+        downEvent = e;
         if (this.isDead()) {
             return
         }
@@ -123,15 +197,9 @@ export class Player {
 
     clickHandler2(e) {
         console.log(e.upX);
-        upPos = e.upX;
+        upEvent = e;
 
-        if(downPos < upPos)
-        {
-            console.log("SWIPE");
-            this.scene.attackingAllies.createAttackingAlly(e.worldX, e.worldY);
-        } else {
-            this.scene.bushes.addBush(e.worldX, e.worldY);
-        }
+        this.detectGesture();
         if (this.isDead()) {
             return
         }

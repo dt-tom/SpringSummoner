@@ -28,3 +28,6 @@ export const bugSpawnOuterRadius = 800;
 export const bugNumInitialSpawns = 10;
 
 export const ENEMY_START_HEALTH = 100;
+
+// gestures
+export const MIN_SWIPE_DISTANCE = 200;
