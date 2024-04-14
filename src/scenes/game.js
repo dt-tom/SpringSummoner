@@ -29,7 +29,9 @@ export class GameScene extends Phaser.Scene {
     preload () {
         this.load.scenePlugin('AnimatedTiles', 'https://raw.githubusercontent.com/nkholski/phaser-animated-tiles/master/dist/AnimatedTiles.js', 'animatedTiles', 'animatedTiles'); 
         this.load.image('me', 'assets/main-character-inuse.png')
-        this.load.image('drop', 'assets/star.png');
+        this.load.image('speedDrop', 'assets/white_fruit.png');
+        this.load.image('healthDrop', 'assets/pink_fruit.png');
+        this.load.image('manaDrop', 'assets/blue_fruit.png');
         this.load.image('sand', 'assets/desert-block.png');
         this.load.image('tiles', 'assets/grass-block.png');
         this.load.image('grassTiles', 'assets/grass-block-sheet-v2.png');
@@ -72,7 +74,18 @@ export class GameScene extends Phaser.Scene {
     }
 
     createDrop(posX, posY) {
-        const drop = this.drops.create(posX, posY, 'drop');
+        
+        let random = Math.random();
+        if(random < 0.33) {
+            const drop = this.drops.create(posX, posY, 'speedDrop');
+            drop.type = "speed";
+        } else if (random < 0.66) {
+            const drop = this.drops.create(posX, posY, 'manaDrop');
+            drop.type = "mana";
+        } else {
+            const drop = this.drops.create(posX, posY, 'healthDrop');
+            drop.type = "health";
+        }
     }
 
     create () {
@@ -101,6 +114,7 @@ export class GameScene extends Phaser.Scene {
         this.drops = this.physics.add.group({
             createCallback: (drop) => {
                 drop.isSpawned = false;
+                drop.type = '';
             },
         });
 

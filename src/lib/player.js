@@ -53,7 +53,8 @@ export class Player {
         let currentScale = this.gameObject.scaleX;
         this.gameObject.setScale(currentScale * 1.25);
         this.gameObject.setCollideWorldBounds(true);
-        this.health = 100;
+        this.MAX_HEALTH = 100;
+        this.health = this.MAX_HEALTH;
         this.healthbar = new HealthbarV2({
             scene: this.scene,
             height: 12,
@@ -398,7 +399,18 @@ export class Player {
     }
 
     pickUp(drop) {
-        this.playerSpeed = this.playerSpeed + 20;
+        if(drop.type == "speed")
+        {
+            this.playerSpeed = this.playerSpeed + 20;
+        }
+        if(drop.type == "mana")
+        {
+            this.mana = Math.min(this.mana + 100, this.MAX_MANA);
+        }
+        if(drop.type == "health")
+        {
+            this.health = Math.min(this.health + 20, this.MAX_HEALTH);
+        }
         drop.destroy();
     }
 
