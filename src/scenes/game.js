@@ -3,6 +3,7 @@ import { Player } from '../lib/player.js'
 import { Oasis } from '../lib/oasis.js'
 import { HealthBar } from '../lib/healthbar.js'
 import { AttackingAlly } from '../lib/attackingally.js';
+import { Bush } from '../lib/bush.js';
 
 let allowSpawnEnemy = false;
 
@@ -17,17 +18,15 @@ export class GameScene extends Phaser.Scene {
         this.player = new Player(this)
         this.oasis = new Oasis(this)
         this.attackingAllies = new AttackingAlly(this);
+        this.bushes = new Bush(this);
         this.tick = 0;
         this.active = true;
     }
 
     preload () {
         this.load.scenePlugin('AnimatedTiles', 'https://raw.githubusercontent.com/nkholski/phaser-animated-tiles/master/dist/AnimatedTiles.js', 'animatedTiles', 'animatedTiles'); 
-        this.load.image('me', 'assets/main-character-inuse.png');
+        this.load.image('me', 'assets/main-character-inuse.png')
         this.load.image('drop', 'assets/star.png');
-        this.load.image('bush', 'assets/bush-v1.png');
-        
-        this.load.image('bush', 'assets/bush-v1.png');
         this.load.spritesheet('enemy', 'assets/bug-move.png', {
             frameWidth: 32, frameHeight: 32
         });
@@ -42,12 +41,10 @@ export class GameScene extends Phaser.Scene {
         this.load.spritesheet('bugSpawn', 'assets/bug-spawn.png', {
             frameWidth: 32, frameHeight: 32,
         });
-        this.load.spritesheet('bushSpawn', 'assets/bush-spawn.png', {
-            frameWidth: 64, frameHeight: 64,
-        });
         this.player.preload();
         this.oasis.preload();
         this.attackingAllies.preload();
+        this.bushes.preload();
     }
 
     createEnemy(posX, posY)
@@ -124,16 +121,9 @@ export class GameScene extends Phaser.Scene {
         this.oasis.create();
         this.player.create();
         this.attackingAllies.create();
-        
+        this.bushes.create();
 
         this.cameras.main.startFollow(this.player.gameObject, true, 0.1, 0.1);  // Should this be in player.js?
-
-        // Allies are stationary helpers
-        this.allies = this.physics.add.group({
-            createCallback: (ally) => {
-                ally.isSpawned = false;
-            },
-        });
 
         this.drops = this.physics.add.group({
             createCallback: (drop) => {
@@ -141,13 +131,8 @@ export class GameScene extends Phaser.Scene {
             },
         });
 
-        // Attacking allies engage with enemies
-        // this.attackingAllies = this.physics.add.group();
-
         // make enemies
         this.enemies = this.physics.add.group();
-
-        
 
         this.anims.create({
             key: 'bugMoveAnimation',
@@ -167,11 +152,7 @@ export class GameScene extends Phaser.Scene {
             frameRate: 10,
             repeat: -1,
         });
-        this.anims.create({
-            key: 'bushSpawnAnimation',
-            frames: this.anims.generateFrameNumbers('bushSpawn', { start: 0, end: 10}),
-            frameRate: 15,
-        });
+
         // this.anims.create({
         //     key: 'scorpion-move',
         //     frames: this.anims.generateFrameNumbers('attackingAlly', { start: 0, end: 5}),
@@ -186,8 +167,6 @@ export class GameScene extends Phaser.Scene {
                 enemy.isSpawned = false;
             }
         });
-
-        
 
         for(let i = 0; i < constants.NUMBER_OF_ENEMIES; i++) {
             const spawnX = Math.random() * 400;
@@ -326,29 +305,8 @@ export class GameScene extends Phaser.Scene {
         this.player.update();
         this.oasis.update();
         this.attackingAllies.update();
-    
-        for(const enemy of this.enemies.getChildren()) {
-            const vector = new Phaser.Math.Vector2(
-                this.player.gameObject.x - enemy.x,
-                this.player.gameObject.y - enemy.y
-            );
-            vector.normalizeRightHand();
-            enemy.rotation = vector.angle();
-            var moveSpeed = constants.bugMovespeed;
-            for (let ally of this.allies.getChildren()) {
-                if (!ally.isSpawned) {
-                    continue;
-                }
-                const allyBounds = ally.getBounds();
-                const enemyBounds = enemy.getBounds();
-                if (Phaser.Geom.Intersects.RectangleToRectangle(allyBounds, enemyBounds)) {
-                    moveSpeed = constants.bugMovespeed * constants.bushSlow;
-                }
-            }
-            if (enemy.isSpawned) {
-                this.physics.moveTo(enemy, this.player.gameObject.x + Math.random() * 100, this.player.gameObject.y + Math.random() * 100, moveSpeed)
-            }
-        }
+        this.bushes.update();
+
     }
 
     // called when player health is zero

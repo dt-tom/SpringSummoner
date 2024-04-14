@@ -14,7 +14,7 @@ export class AttackingAlly {
     create(){
         // Attacking allies engage with enemies
         this.attackingAllies = this.scene.physics.add.group();
-        
+
         this.scene.anims.create({
             key: 'gruntIdleAnimation',
             frames: this.scene.anims.generateFrameNumbers('attackingAlly', { start: 0, end: 2}),

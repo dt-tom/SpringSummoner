@@ -29,7 +29,6 @@ export class Player {
         this.scene.load.spritesheet('walkBack', 'assets/main_character_walking_back_v1.png', {
             frameWidth: 32, frameHeight: 32,
         })
-        this.scene.load.audio('leavesSound', 'assets/sounds/bush-sound.mp3');
         console.log('Player:', 'preloaded')
     }
 
@@ -99,29 +98,7 @@ export class Player {
             //AttackingAlly.createAttackingAlly();
             this.scene.attackingAllies.createAttackingAlly(e.worldX, e.worldY);
         } else {
-            let ally = this.scene.allies.create(e.worldX, e.worldY, 'bush');
-            // after 8 seconds trees disappear
-            this.scene.time.delayedCall(8_000, (ally) => { 
-                ally.on('animationcomplete', () => { 
-                    this.scene.allies.remove(ally);
-                    ally.setVisible(false);
-                    ally.body.enable = false;
-                    ally.destroy();
-                }, this.scene);
-                ally.playReverse('bushSpawnAnimation');
-            }, [ally], this);
-            // spawn animation
-            ally.play('bushSpawnAnimation');
-            ally.on('animationcomplete', () => { 
-                ally.isSpawned = true;
-                ally.setTexture('bush');
-            }, this.scene);
-            ally.setDepth(0);
-            let bushSound = this.scene.sound.add('leavesSound');
-            // Add a marker that starts at 12 second into the sound and lasts for 1 seconds
-            bushSound.addMarker({name: 'bushMarker', start: 3, duration: 1});
-            bushSound.play('bushMarker');
-            bushSound.setVolume(0.05);
+            this.scene.bushes.addBush(e.worldX, e.worldY);
         }
     }
 
