@@ -57,4 +57,8 @@ export class AttackingAlly {
             this.attackingAllies.playAnimation('gruntIdleAnimation');
             }, [ally], this);
     }
+
+    end() {
+      this.attackingAllies.clear(true, true)
+    }
 }
