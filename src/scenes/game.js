@@ -184,7 +184,9 @@ export class GameScene extends Phaser.Scene {
             this.grassMap
                 .getTilesWithin(currentTile.x-1, currentTile.y-1, 3, 3) // find all tiles around the player
                 .filter(t => t.index < 5) // filter out grass then increment tile stage
-                .map(tile => this.grassMap.replaceByIndex(tile.index, tile.index + 1, tile.x, tile.y, 1, 1));
+                .map(tile => (tile != currentTile) ? 
+                (Math.random() > 0.2) ? this.grassMap.replaceByIndex(tile.index, tile.index + 1, tile.x, tile.y, 1, 1) : null
+                : this.grassMap.replaceByIndex(tile.index, tile.index + 1, tile.x, tile.y, 1, 1));
         }
     }
 

@@ -13,7 +13,7 @@ export const bushSlow = 0.25;
 
 // Timings
 export const ENEMY_SPAWN_TIMER = 1000;
-export const GRASS_GROW_SPEED = 5;
+export const GRASS_GROW_SPEED = 3;
 
 // Startup values
 export const playerSpawn = { x: 400, y: 300 }
