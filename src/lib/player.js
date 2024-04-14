@@ -99,6 +99,17 @@ export class Player {
             this.scene.attackingAllies.playAnimation('scorpion-move');
         } else {
             let ally = this.scene.allies.create(e.worldX, e.worldY, 'bush');
+            // after 8 seconds trees disappear
+            this.scene.time.delayedCall(8_000, (ally) => { 
+                ally.on('animationcomplete', () => { 
+                    this.scene.allies.remove(ally);
+                    ally.setVisible(false);
+                    ally.body.enable = false;
+                    ally.destroy();
+                }, this.scene);
+                ally.playReverse('bushSpawnAnimation');
+            }, [ally], this);
+            // spawn animation
             ally.play('bushSpawnAnimation');
             ally.on('animationcomplete', () => { 
                 ally.isSpawned = true;
