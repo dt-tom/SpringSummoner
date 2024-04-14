@@ -124,30 +124,37 @@ export class Player {
 
     detectGesture(){
         // horizontal right swipe
+        let hasMana = true;
         if(this.rightSwipe() || this.leftSwipe()){
             let gruntManaCost = this.scene.attackingAllies.getManaCost();
             if (this.hasMana(gruntManaCost)) {
                 this.mana = this.mana - gruntManaCost;
                 this.scene.attackingAllies.createAttackingAlly(upEvent.worldX, upEvent.worldY);
-                return true;
+                return [true, 0x00ff00];
             }
+            hasMana = false;
         } else if (this.upSwipe()) {
             let bushManaCost = this.scene.bushes.getManaCost();
             if (this.hasMana(bushManaCost)) {
                 this.mana = this.mana - bushManaCost;
                 this.scene.bushes.addBush(upEvent.worldX, upEvent.worldY);
-                return true;
+                return [true, 0x00ff00];;
             }
+            hasMana = false;
         }
         else if (this.downSwipe()) {
             let explosionManaCost = this.scene.explodingAllies.getManaCost();
             if (this.hasMana(explosionManaCost)) {
                 this.mana = this.mana - explosionManaCost;
                 this.scene.explodingAllies.createExplodingAlly(upEvent.worldX, upEvent.worldY);
-                return true;
+                return [true, 0x00ff00];;
             }
+            hasMana = false;
         }
-        return false;
+        if (!hasMana) {
+            return [false, 0x0000ff]
+        }
+        return [false, 0xff0000];
     }
 
     upSwipe()
@@ -294,11 +301,7 @@ export class Player {
         let result = this.detectGesture();
         // Iterate over the array
         for (let i = 0; i < this.particles.length; i++) {
-            if (result) {
-                this.particles[i].setParticleTint(0x00ff00);
-            } else {
-                this.particles[i].setParticleTint(0xff0000);
-            }
+            this.particles[i].setParticleTint(result[1]);
         }
         this.particles = [];
     }
