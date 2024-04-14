@@ -25,13 +25,9 @@ export class Oasis {
 
     addPlayerOverlapHandler() {
         if (this.scene.player !== undefined && this.scene.player.gameObject !== undefined) {
-            console.log('Oasis:', 'adding player overlap handler')
-            
             this.scene.physics.add.overlap(
                 this.scene.player.gameObject, this.gameObject, this.overlapPlayer, null, this
             )
-        } else {
-            console.log('Oasis:', "couldn't find a player to heal")
         }
     }
 
@@ -60,6 +56,5 @@ export class Oasis {
         {
             this.auraSound.play();
         }
-
     }
 }

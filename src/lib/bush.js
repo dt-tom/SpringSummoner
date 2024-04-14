@@ -14,7 +14,8 @@ export class Bush {
     }
 
     create (){
-        this.bushMaxLifetimeMillis = 8000;
+        this.manaCost = 20;
+        this.bushMaxLifetimeMillis = 10_000;
         this.bushSpeedReduction = 50;
         this.bushSlowDurationMillis = 200;
         this.scene.anims.create({
@@ -56,6 +57,10 @@ export class Bush {
             //     this.scene.physics.moveTo(enemy, this.scene.player.gameObject.x + Math.random() * 100, this.scene.player.gameObject.y + Math.random() * 100, moveSpeed)
             // }
         }
+    }
+
+    getManaCost() {
+        return this.manaCost;
     }
 
     addBush(posX, posY) {

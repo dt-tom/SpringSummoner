@@ -18,7 +18,6 @@ let mousePositions = [];
 export class Player {
     constructor(scene) {
         this.scene = scene
-        console.log('Player:', 'constructed')
         this.firstUpdate = true
         this.playerSpeed = playerSpeed;
     }
@@ -42,7 +41,6 @@ export class Player {
             frameWidth: 8, frameHeight: 8,
         })
         this.scene.load.audio('leavesSound', 'assets/sounds/bush-sound.mp3');
-        console.log('Player:', 'preloaded')
     }
 
     // Create is called when the scene becomes active, once, after assets are
@@ -111,16 +109,26 @@ export class Player {
         this.scene.input.on('pointerdown', this.clickDownHandler.bind(this))  // maybe this has a context param??
         this.scene.input.on('pointerup', this.clickUpHandler.bind(this))
         setInterval(this.trackMousePositionAndSpawnParticles.bind(this), MOUSE_SAMPLE_RATE);
-        console.log('Player:', 'created')
+    }
+
+    hasMana(amount) {
+        return this.mana >= amount;
     }
 
     detectGesture(){
         // horizontal right swipe
-        console.log(this.upSwipe() + " " + this.downSwipe() + " " + this.leftSwipe() + " " + this.rightSwipe() + " " + this.upLeftSwipe() + " " + this.upRightSwipe() + " " + this.downLeftSwipe() + " " + this.downRightSwipe());
         if(this.upRightSwipe()){
-            this.scene.attackingAllies.createAttackingAlly(upEvent.worldX, upEvent.worldY);
+            let gruntManaCost = this.scene.attackingAllies.getManaCost();
+            if (this.hasMana(gruntManaCost)) {
+                this.mana = this.mana - gruntManaCost;
+                this.scene.attackingAllies.createAttackingAlly(upEvent.worldX, upEvent.worldY);
+            }
         } else if (this.downSwipe()) {
-            this.scene.bushes.addBush(upEvent.worldX, upEvent.worldY);
+            let bushManaCost = this.scene.bushes.getManaCost();
+            if (this.hasMana(bushManaCost)) {
+                this.mana = this.mana - bushManaCost;
+                this.scene.bushes.addBush(upEvent.worldX, upEvent.worldY);
+            }
         }
     }
 
@@ -192,13 +200,10 @@ export class Player {
     {
         if(mouseCurrentlyDown)
         {
-            console.log(mousePositions);
             mousePositions.push([this.scene.input.mousePointer.x, this.scene.input.mousePointer.y])
 
             //let mPos = new Vector2(this.scene.input.mousePointer.x, this.scene.input.mousePointer.y);
             let wPos = this.scene.cameras.main.getWorldPoint(this.scene.input.mousePointer.x, this.scene.input.mousePointer.y);
-
-            console.log(wPos);
         
             this.scene.add.particles(wPos.x, wPos.y, 'mouseParticle', {
                 speed: { min: 1, max: 20 },
@@ -218,50 +223,21 @@ export class Player {
 
     clickDownHandler(e) {
         mouseCurrentlyDown = true;
-        console.log(e.downX);
         downEvent = e;
         if (this.isDead()) {
             return
         }
-
-        if (this.mana >= 50) {
-          if (!summonForFree)  {
-            this.mana -= 50; // TODO: configurable summon costs
-          }
-        } else {
-          return;  // TODO: signal this to the player
-        }
-        // if(e.rightButtonDown()) {
-        //     //AttackingAlly.createAttackingAlly();
-        //     this.scene.attackingAllies.createAttackingAlly(e.worldX, e.worldY);
-        // } else {
-        //     this.scene.bushes.addBush(e.worldX, e.worldY);
-        // }
     }
 
     clickUpHandler(e) {
         mousePositions = [];
         mouseCurrentlyDown = false;
-        console.log(e.upX);
         upEvent = e;
 
-        this.detectGesture();
         if (this.isDead()) {
             return
         }
-        if (this.mana >= 50) {
-          if (!summonForFree)  {
-            this.mana -= 50; // TODO: configurable summon costs
-          }
-        } else {
-          return;  // TODO: signal this to the player
-        }
-        if(e.rightButtonDown()) {
-            //AttackingAlly.createAttackingAlly();
-            //this.scene.attackingAllies.createAttackingAlly(e.worldX, e.worldY);
-        } else {
-            //his.scene.bushes.addBush(e.worldX, e.worldY);
-        }
+        this.detectGesture();
     }
 
     // Update is called once per tick

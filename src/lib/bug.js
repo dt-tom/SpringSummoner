@@ -13,7 +13,6 @@ import {
 export class BugGroup {
     constructor(scene) {
         this.scene = scene
-        console.log('BugGroup:', 'constructed')
     }
 
     // Preload is called before scene load, with a copy of the scene
@@ -44,7 +43,6 @@ export class BugGroup {
         const xOut = x + (distance * Math.cos(direction))
         const yOut = y + (distance * Math.sin(direction))
 
-        //console.log('spawnBugNear', `(${x}, ${y})`, '->', `(${xOut}, ${yOut})`)
 
         this.spawnBugAt({
             x: xOut,
@@ -118,7 +116,6 @@ export class BugGroup {
         }).bind(this), ENEMY_SPAWN_TIMER);
 
         this.scene.postCreateHooks.push(this.postCreate.bind(this))
-        console.log('BugGroup:', 'created')
     }
 
     postCreate() {

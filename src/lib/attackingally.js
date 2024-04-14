@@ -15,8 +15,9 @@ export class AttackingAlly {
             frameWidth: 32, frameHeight: 32,
         });
     }
-    create(){
-        this.gruntMaxLifetimeMillis = 5_000
+    create() {
+        this.manaCost = 50;
+        this.gruntMaxLifetimeMillis = 12_000
         this.slashSound = this.scene.sound.add('slash');
         this.slashSound.setVolume(0.05);
         this.attackDamage = 40;
@@ -87,8 +88,6 @@ export class AttackingAlly {
     {
         let grunt = this.attackingAllies.create(posX, posY, 'gruntWalking');
         grunt.play('gruntSpawnAnimation');
-        let currentScale = grunt.scaleX; // Get the current scale
-        grunt.setScale(currentScale * 1.25);
         this.scene.add.particles(posX, posY, 'dirtParticle', {
             speed: { min: 1, max: 20 },
             maxParticles: 20,
@@ -118,6 +117,10 @@ export class AttackingAlly {
                 g.destroy();
             }, 1000);
         }, [grunt], this);
+    }
+
+    getManaCost() {
+        return this.manaCost;
     }
 
     end() {
