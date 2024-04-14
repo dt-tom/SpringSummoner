@@ -16,7 +16,7 @@ export class ExplodingAlly {
         });
     }
     create(){
-        this.manaCost = 20;
+        this.manaCost = 10;
         // exploding allies engage with enemies
         this.explodingAllies = this.scene.physics.add.group({
             createCallback: (ally) => {

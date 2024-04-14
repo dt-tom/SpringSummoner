@@ -19,6 +19,7 @@ export class Bush {
         this.bushMaxLifetimeMillis = 15_000;
         this.bushSpeedReduction = 40;
         this.bushSlowDurationMillis = 2000;
+        this.bushScale = 1.2;
         this.scene.anims.create({
             key: 'bushSpawnAnimation',
             frames: this.scene.anims.generateFrameNumbers('bushSpawn', { start: 0, end: 10}),
@@ -61,6 +62,7 @@ export class Bush {
 
     addBush(posX, posY) {
         let ally = this.bushes.create(posX, posY, 'bush');
+        ally.setScale(ally.scaleX * this.bushScale);
         // sounds
         let bushSound = this.scene.sound.add('leavesSound');
         // Add a marker that starts at 12 second into the sound and lasts for 1 seconds
