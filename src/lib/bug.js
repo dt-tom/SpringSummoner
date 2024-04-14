@@ -147,7 +147,7 @@ export class BugGroup {
         bug.setVelocity(0, 0)
         const {x, y} = this.scene.player.gameObject;
         const vector = new Phaser.Math.Vector2(x - bug.x, y - bug.y);
-        bug.rotation = vector.angle();
+        bug.rotation = vector.clone().normalizeRightHand().angle();
         vector.normalize()
         vector.scale(bugMovespeed)
         bug.setVelocity(vector.x, vector.y)
