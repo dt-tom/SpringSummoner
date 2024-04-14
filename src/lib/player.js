@@ -1,5 +1,6 @@
 import { HealthbarV2 } from '../lib/healthbar.js'
 import { playerSpawn, playerSpeed, summonForFree } from '../constants.js'
+import { AttackingAlly } from '../lib/attackingally.js'
 
 /**
  *
@@ -95,8 +96,9 @@ export class Player {
           return;  // TODO: signal this to the player
         }
         if(e.rightButtonDown()) {
-            this.scene.attackingAllies.create(e.worldX, e.worldY, 'attackingAlly');
-            this.scene.attackingAllies.playAnimation('scorpion-move');
+            //AttackingAlly.createAttackingAlly();
+            let ally = new AttackingAlly;
+            ally.createAttackingAlly();
         } else {
             let ally = this.scene.allies.create(e.worldX, e.worldY, 'bush');
             // after 8 seconds trees disappear

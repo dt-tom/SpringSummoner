@@ -21,3 +21,5 @@ export const playerSpawn = { x: 400, y: 300 }
 // Killswitches (development tools)
 export const summonForFree = false;
 export const devMode = true;
+
+export const NUMBER_OF_ENEMIES = 10;
