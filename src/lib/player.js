@@ -293,6 +293,15 @@ export class Player {
             this.gameObject.anims.play('walkFrontAnimation', true)
         }
 
+        // normalize the speed
+        let velocity = new Phaser.Math.Vector2(this.gameObject.body.velocity.x, this.gameObject.body.velocity.y);
+        velocity.normalize();
+        // Scale the velocity vector to the desired speed
+        velocity.scale(this.playerSpeed);
+
+        // Apply the new velocity to the sprite
+        this.gameObject.setVelocity(velocity.x, velocity.y);
+
         if (!cursor.left.isDown && !cursor.right.isDown && !cursor.up.isDown && !cursor.down.isDown) {
             this.gameObject.setTexture('me')
         }
@@ -312,7 +321,7 @@ export class Player {
     }
 
     pickUp(drop) {
-        this.playerSpeed *= 1.1;
+        this.playerSpeed = this.playerSpeed + 20;
         drop.destroy();
     }
 
