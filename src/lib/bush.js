@@ -66,7 +66,7 @@ export class Bush {
         let bugSquishSound = this.scene.sound.add('bugSquishSound');
 
         // after 8 seconds trees disappear
-        this.scene.time.delayedCall(8_000, (ally) => { 
+        this.scene.time.delayedCall(8000, (ally) => { 
             ally.on('animationcomplete', () => { 
                 this.bushes.remove(ally);
                 ally.setVisible(false);

@@ -35,7 +35,9 @@ export class GameScene extends Phaser.Scene {
 
         this.player.preload();
         this.oasis.preload();
-        this.bugs.preload()
+        this.bugs.preload();
+        this.bushes.preload();
+        this.attackingAllies.preload();
     }
 
     createDrop(posX, posY) {

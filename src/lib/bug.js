@@ -145,7 +145,7 @@ export class BugGroup {
             vector.normalizeRightHand();
             enemy.rotation = vector.angle();
             var moveSpeed = bugMovespeed;
-            for (let ally of this.scene.allies.getChildren()) {
+            for (let ally of this.scene.bushes.bushes.getChildren()) {
                 if (!ally.isSpawned) {
                     continue;
                 }
