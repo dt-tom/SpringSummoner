@@ -46,6 +46,7 @@ export class Player {
     // Create is called when the scene becomes active, once, after assets are
     // preloaded. It's expected that this scene will have aleady called preload
     create() {
+        this.effects = new Phaser.Structs.Set();
         this.gameObject = this.scene.physics.add.sprite(playerSpawn.x, playerSpawn.y, 'walkBack');
         let currentScale = this.gameObject.scaleX;
         this.gameObject.setScale(currentScale * 1.25);
@@ -305,6 +306,25 @@ export class Player {
         if (!cursor.left.isDown && !cursor.right.isDown && !cursor.up.isDown && !cursor.down.isDown) {
             this.gameObject.setTexture('me')
         }
+    }
+
+    slow(reason, speedReduction, durationMillis) {
+        if (this.effects.contains(reason) && reason !== 'bugSlow') {
+            return;
+        }
+        let reduction = speedReduction;
+        if (this.playSpeed - speedReduction <= 0) {
+            reduction = this.playerSpeed
+        }
+        if (reduction == 0) {
+            return;
+        }
+        this.effects.set(reason);
+        this.playerSpeed -= reduction;
+        setTimeout(() => {
+            this.playerSpeed += reduction;
+            this.effects.delete(reason);
+        }, durationMillis);
     }
 
     damage(damage) {

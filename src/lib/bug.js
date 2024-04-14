@@ -75,6 +75,8 @@ export class BugGroup {
     // Create is called when the scene becomes active, once, after assets are
     // preloaded. It's expected that this scene will have aleady called preload
     create() {
+        this.bugSlowReduction = 20;
+        this.bugSlowDurationMillis = 500;
         this.attackDamage = 2;
         this.attackCooldownMillis = 250;
         this.bugSquishSound = this.scene.sound.add('bugSquishSound');
@@ -156,7 +158,8 @@ export class BugGroup {
         this.scene.time.delayedCall(this.attackCooldownMillis, (b) => { 
             b.attacking = false;
         }, [bug], this);
-        this.scene.player.damage(this.attackDamage)
+        this.scene.player.damage(this.attackDamage);
+        this.scene.player.slow("bugSlow", this.bugSlowReduction, this.bugSlowDurationMillis);
     }
 
     damageBug(bug, damage) {
