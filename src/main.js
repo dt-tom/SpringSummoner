@@ -1,6 +1,7 @@
 import * as constants from './constants.js';
 import { TitleScene } from './scenes/title.js'
 import { GameScene } from './scenes/game.js'
+import { Scoreboard } from './scenes/scoreboard.js'
 
 const config = {
     type: Phaser.AUTO,
@@ -10,7 +11,7 @@ const config = {
     physics: {
         default: 'arcade',
     },
-    scene: [TitleScene, GameScene],
+    scene: [TitleScene, GameScene, Scoreboard],
 };
 
 export const game = new Phaser.Game(config);

@@ -82,6 +82,8 @@ export class GameScene extends Phaser.Scene {
         this.postCreateHooks = []
         this.createWorld();
 
+        this.scene.launch('Scoreboard');
+
         //  Set the camera and physics bounds to be the size of 4x4 bg images
         this.cameras.main.setBounds(0, 0, 1920 * 2, 1080 * 2);
         this.cameras.main.setZoom(2);  // 2x our assets visually
@@ -130,17 +132,6 @@ export class GameScene extends Phaser.Scene {
         for (let callable of this.postCreateHooks) {
             callable()
         }
-
-        this.scoreText = this.add.text(400, 400, 'Score: ' + this.score.toString(), {
-            fontSize: '32px', fill: '#000'
-        }).setOrigin(0.5);
-
-       
-    // t.cameraOffset.setTo(200, 500);
-
-        // // Adjust its position using cameraOffset
-        // this.scoreText.cameraOffset.x = 100; // Set your desired x-coordinate
-        // this.scoreText.cameraOffset.y = 50;  // Set your desired y-coordinate
     }
 
     getAllObjectsWithinRange(object, group, minimumDistance) {
@@ -218,8 +209,7 @@ export class GameScene extends Phaser.Scene {
     replaceTileIndex(tile){
         this.grassMap.replaceByIndex(tile.index, tile.index + 1, tile.x, tile.y, 1, 1);
         this.score += tile.index + 1;
-        this.scoreText.setText('Score: ' + this.score.toString());
-        
+        this.scene.get('Scoreboard').updateScore(this.score);
     }
 
     updateTiles(posX, posY)
