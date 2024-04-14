@@ -46,6 +46,7 @@ export class Player {
     // Create is called when the scene becomes active, once, after assets are
     // preloaded. It's expected that this scene will have aleady called preload
     create() {
+        this.effects = new Phaser.Structs.Set();
         this.gameObject = this.scene.physics.add.sprite(playerSpawn.x, playerSpawn.y, 'walkBack');
         let currentScale = this.gameObject.scaleX;
         this.gameObject.setScale(currentScale * 1.25);
@@ -293,14 +294,45 @@ export class Player {
             this.gameObject.anims.play('walkFrontAnimation', true)
         }
 
+        // normalize the speed
+        let velocity = new Phaser.Math.Vector2(this.gameObject.body.velocity.x, this.gameObject.body.velocity.y);
+        velocity.normalize();
+        // Scale the velocity vector to the desired speed
+        velocity.scale(this.playerSpeed);
+
+        // Apply the new velocity to the sprite
+        this.gameObject.setVelocity(velocity.x, velocity.y);
+
         if (!cursor.left.isDown && !cursor.right.isDown && !cursor.up.isDown && !cursor.down.isDown) {
             this.gameObject.setTexture('me')
         }
     }
 
-    // Called by scene when player collides with an enemy
-    collide(_enemy) {
-        this.health -= 1;
+    slow(reason, speedReduction, durationMillis) {
+        if (this.effects.contains(reason) && reason !== 'bugSlow') {
+            return;
+        }
+        let reduction = speedReduction;
+        if (this.playSpeed - speedReduction <= 0) {
+            reduction = this.playerSpeed
+        }
+        if (reduction == 0) {
+            return;
+        }
+        this.effects.set(reason);
+        this.playerSpeed -= reduction;
+        setTimeout(() => {
+            this.playerSpeed += reduction;
+            this.effects.delete(reason);
+        }, durationMillis);
+    }
+
+    damage(damage) {
+        this.health -= damage;
+        this.gameObject.setTint(0xFF474c); // Tint the sprite red
+        setTimeout(() => {
+            this.gameObject.clearTint(); // Clear the tint after a delay
+        }, 100);
         if(this.health <= 0) {
             this.healthbar.gfx.destroy();
             this.manabar.gfx.destroy();
@@ -312,7 +344,7 @@ export class Player {
     }
 
     pickUp(drop) {
-        this.playerSpeed *= 1.1;
+        this.playerSpeed = this.playerSpeed + 20;
         drop.destroy();
     }
 

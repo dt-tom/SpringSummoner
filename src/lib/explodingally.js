@@ -16,8 +16,7 @@ export class ExplodingAlly {
         });
     }
     create(){
-
-        this.manaCost = 20;
+        this.manaCost = 10;
         // exploding allies engage with enemies
         this.explodingAllies = this.scene.physics.add.group({
             createCallback: (ally) => {
@@ -51,7 +50,6 @@ export class ExplodingAlly {
     }
     update()
     {
-        //console.log(this.explodingAllies);
         for (let ally of this.explodingAllies.getChildren()) {
             if(!ally.exploding){
                 let closestEnemy = this.scene.getClosestObject(ally, this.scene.bugs.group);
@@ -81,13 +79,11 @@ export class ExplodingAlly {
 
     explode(ally, enemy)
     {
-        console.log(ally);
         if(!ally.exploding)
         {
             ally.exploding = true;
             ally.play('gemExplodeAnimation');
             this.explodingSound.play();
-            
         }
         ally.on('animationcomplete', () => {
             ally.destroy();

@@ -7,7 +7,7 @@ export const canvasWidth = 1024;
 export const canvasHeight = 768;
 
 // Speeds
-export const playerSpeed = 250;
+export const playerSpeed = 200;
 export const bugMovespeed = 75;
 export const bushSlow = 0.25;
 
@@ -20,7 +20,7 @@ export const playerSpawn = { x: 400, y: 300 }
 
 // Killswitches (development tools)
 export const summonForFree = false;
-export const devMode = true;
+export const devMode = false;
 
 // Bug Enemies
 export const bugSpawnInnerRadius = 250;

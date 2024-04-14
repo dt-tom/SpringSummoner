@@ -14,11 +14,12 @@ export class Bush {
     }
 
     create (){
-        this.manaCost = 5;
-        this.bushTickDamage = 2;
-        this.bushMaxLifetimeMillis = 10_000;
+        this.manaCost = 15;
+        this.bushTickDamage = 0.5;
+        this.bushMaxLifetimeMillis = 15_000;
         this.bushSpeedReduction = 40;
         this.bushSlowDurationMillis = 2000;
+        this.bushScale = 1.2;
         this.scene.anims.create({
             key: 'bushSpawnAnimation',
             frames: this.scene.anims.generateFrameNumbers('bushSpawn', { start: 0, end: 10}),
@@ -41,7 +42,6 @@ export class Bush {
             );
             vector.normalizeRightHand();
             bug.rotation = vector.angle();
-            // var moveSpeed = constants.bugMovespeed;
             for (let bush of this.bushes.getChildren()) {
                 if (!bush.isSpawned) {
                     continue;
@@ -51,13 +51,8 @@ export class Bush {
                 if (Phaser.Geom.Intersects.RectangleToRectangle(bushBounds, bugBounds)) {
                     this.scene.bugs.slowBug(bug, "bushSlow", this.bushSpeedReduction, this.bushSlowDurationMillis);
                     this.scene.bugs.damageBug(bug, this.bushTickDamage);
-                    // moveSpeed = constants.bugMovespeed * constants.bushSlow;
                 }
             }
-
-            // if (enemy.isSpawned) {
-            //     this.scene.physics.moveTo(enemy, this.scene.player.gameObject.x + Math.random() * 100, this.scene.player.gameObject.y + Math.random() * 100, moveSpeed)
-            // }
         }
     }
 
@@ -65,8 +60,24 @@ export class Bush {
         return this.manaCost;
     }
 
+    spiralGreen (posX, posY) {
+        let radius = 1; // Initial radius
+        let angle = 0; // Initial angle
+        let intervalId = setInterval(() => {
+            let x = posX + radius * Math.cos(angle);
+            let y = posY + radius * Math.sin(angle);
+            this.scene.updateTiles(x, y);
+            angle += 1;
+            radius += 1;
+        }, 50);
+        setTimeout(() => {
+            clearInterval(intervalId);
+        }, this.bushMaxLifetimeMillis / 4);
+    }
+
     addBush(posX, posY) {
         let ally = this.bushes.create(posX, posY, 'bush');
+        ally.setScale(ally.scaleX * this.bushScale);
         // sounds
         let bushSound = this.scene.sound.add('leavesSound');
         // Add a marker that starts at 12 second into the sound and lasts for 1 seconds
@@ -74,7 +85,8 @@ export class Bush {
         bushSound.play('bushMarker');
         bushSound.setVolume(0.05);
 
-        // after 8 seconds trees disappear
+        // spiral green the terrain
+        this.spiralGreen(posX, posY);
         this.scene.time.delayedCall(this.bushMaxLifetimeMillis, (ally) => { 
             ally.on('animationcomplete', () => { 
                 this.bushes.remove(ally);

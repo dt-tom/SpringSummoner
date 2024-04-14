@@ -75,6 +75,10 @@ export class BugGroup {
     // Create is called when the scene becomes active, once, after assets are
     // preloaded. It's expected that this scene will have aleady called preload
     create() {
+        this.bugSlowReduction = 20;
+        this.bugSlowDurationMillis = 500;
+        this.attackDamage = 2;
+        this.attackCooldownMillis = 250;
         this.bugSquishSound = this.scene.sound.add('bugSquishSound');
         this.scene.anims.create({
             key: 'bugMoveAnimation',
@@ -100,6 +104,7 @@ export class BugGroup {
             createCallback: (enemy) => {
                 enemy.health = ENEMY_START_HEALTH;
                 enemy.isSpawned = false;
+                enemy.attacking = false;
                 enemy.setCollideWorldBounds(true);
                 enemy.speed = bugMovespeed;
                 enemy.effects = new Phaser.Structs.Set();
@@ -133,7 +138,7 @@ export class BugGroup {
         this.scene.physics.add.collider(
             this.scene.player.gameObject,
             this.group,
-            (_player, enemy) => {this.scene.player.collide(enemy)},
+            (_player, enemy) => {this.attack(enemy)},
             null,
             this,
         );
@@ -142,6 +147,19 @@ export class BugGroup {
     // Update is called once per tick
     update() {
         this.group.children.iterate(this.moveBug.bind(this))
+    }
+
+    attack(bug) {
+        if (bug.attacking) {
+            return;
+        }
+        bug.attacking = true;
+        bug.setVelocity(0);
+        this.scene.time.delayedCall(this.attackCooldownMillis, (b) => { 
+            b.attacking = false;
+        }, [bug], this);
+        this.scene.player.damage(this.attackDamage);
+        this.scene.player.slow("bugSlow", this.bugSlowReduction, this.bugSlowDurationMillis);
     }
 
     damageBug(bug, damage) {
@@ -155,14 +173,13 @@ export class BugGroup {
             bug.destroy();
         }
         bug.setTint(0xff0000); // Tint the sprite red
-        this.scene.bugs.slowBug(bug, "gruntAttack", 75, 200);
         setTimeout(() => {
             bug.clearTint(); // Clear the tint after a delay
         }, 200);
     }
 
     moveBug(bug) {
-        if (!bug.hasSpawned) {
+        if (!bug.hasSpawned || bug.attacking) {
             return;
         }
         bug.setVelocity(0, 0)
