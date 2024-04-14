@@ -34,6 +34,5 @@ export class Oasis {
 
     overlapPlayer() {
         this.scene.player.mana += 0.5
-        console.log('mana', this.scene.player.mana)
     }
 }

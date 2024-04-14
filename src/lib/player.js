@@ -60,10 +60,6 @@ export class Player {
         this.wasd = wasd
         this.arrowkeys = arrowkeys
 
-        let bushSound = this.scene.sound.add('leavesSound');
-        // Add a marker that starts at 12 second into the sound and lasts for 1 seconds
-        bushSound.addMarker({name: 'bushMarker', start: 3, duration: 1});
-
         this.gameObject.anims.create({
             key: 'deathAnimation',
             frames: this.gameObject.anims.generateFrameNumbers('death', { start: 0, end: 26}),
@@ -106,6 +102,9 @@ export class Player {
                 ally.setTexture('bush');
             }, this.scene);
             ally.setDepth(0);
+            let bushSound = this.scene.sound.add('leavesSound');
+            // Add a marker that starts at 12 second into the sound and lasts for 1 seconds
+            bushSound.addMarker({name: 'bushMarker', start: 3, duration: 1});
             bushSound.play('bushMarker');
             bushSound.setVolume(0.05);
         }
@@ -127,6 +126,10 @@ export class Player {
      * value of each is an input key
      */
     updateMovement(cursor) {
+        if (!this.gameObject.body.enable) {
+            return;
+        }
+
         if (cursor.left.isDown) {
             this.gameObject.setFlipX(true);
             this.gameObject.setVelocityX(-playerSpeed);
@@ -150,7 +153,7 @@ export class Player {
         }
 
         if (!cursor.left.isDown && !cursor.right.isDown && !cursor.up.isDown && !cursor.down.isDown) {
-            // this.gameObject.setTexture('me')
+            this.gameObject.setTexture('me')
         }
     }
 
@@ -158,8 +161,12 @@ export class Player {
     collide(_enemy) {
         this.health -= 1;
         if(this.health <= 0) {
-            // this.gameObject.destroy();
-            console.log('Player:', "we're dead")
+            this.healthbar.gfx.destroy();
+            this.manabar.gfx.destroy();
+            this.gameObject.body.enable = false;
+            this.gameObject.setTexture('death');
+            this.gameObject.anims.play('deathAnimation', true);
+
         }
     }
 
@@ -179,5 +186,9 @@ function createCursors(scene) {
         },
         arrowkeys: scene.input.keyboard.createCursorKeys(),
     }
+}
+
+function isDead () {
+    return this.gameObject.body.enable;
 }
 

@@ -157,7 +157,7 @@ export class GameScene extends Phaser.Scene {
         });
         this.anims.create({
             key: 'scorpion-move',
-            frames: this.anims.generateFrameNumbers('attackingAlly', { start: 0, end: 5}),
+            frames: this.anims.generateFrameNumbers('attackingAlly', { start: 0, end: 4}),
             frameRate: 20,
             repeat: -1,
         });
