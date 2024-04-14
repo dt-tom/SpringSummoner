@@ -137,27 +137,19 @@ export class BugGroup {
 
     // Update is called once per tick
     update() {
-        for(const enemy of this.group.getChildren()) {
-            const vector = new Phaser.Math.Vector2(
-                this.scene.player.gameObject.x - enemy.x,
-                this.scene.player.gameObject.y - enemy.y
-            );
-            vector.normalizeRightHand();
-            enemy.rotation = vector.angle();
-            var moveSpeed = bugMovespeed;
-            for (let ally of this.scene.bushes.bushes.getChildren()) {
-                if (!ally.isSpawned) {
-                    continue;
-                }
-                const allyBounds = ally.getBounds();
-                const enemyBounds = enemy.getBounds();
-                if (Phaser.Geom.Intersects.RectangleToRectangle(allyBounds, enemyBounds)) {
-                    moveSpeed = bugMovespeed * bushSlow;
-                }
-            }
-            if (enemy.hasSpawned) {
-                this.scene.physics.moveTo(enemy, this.scene.player.gameObject.x + Math.random() * 100, this.scene.player.gameObject.y + Math.random() * 100, moveSpeed)
-            }
+        this.group.children.iterate(this.moveBug.bind(this))
+    }
+
+    moveBug(bug) {
+        if (!bug.hasSpawned) {
+            return;
         }
+        bug.setVelocity(0, 0)
+        const {x, y} = this.scene.player.gameObject;
+        const vector = new Phaser.Math.Vector2(x - bug.x, y - bug.y);
+        bug.rotation = vector.angle();
+        vector.normalize()
+        vector.scale(bugMovespeed)
+        bug.setVelocity(vector.x, vector.y)
     }
 };

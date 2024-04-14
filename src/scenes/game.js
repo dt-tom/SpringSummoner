@@ -225,6 +225,7 @@ export class GameScene extends Phaser.Scene {
         this.oasis.update();
         this.attackingAllies.update();
         this.bushes.update();
+        this.bugs.update();
     }
 
     // called when player health is zero
