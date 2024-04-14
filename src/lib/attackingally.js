@@ -55,7 +55,7 @@ export class AttackingAlly {
             duration: 3000,
             emitZone: { source: new Phaser.Geom.Circle(0, 0, 30) }  // Emit particles within a 4 pixel radius
         });
-        this.scene.time.delayedCall(500, (e) => { 
+        this.scene.time.delayedCall(550, (e) => { 
             console.log("lol");
             e.isSpawned = true;
             this.attackingAllies.playAnimation('gruntIdleAnimation');
