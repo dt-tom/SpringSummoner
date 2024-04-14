@@ -14,7 +14,7 @@ const config = {
     scene: [TitleScene, GameScene, Scoreboard],
 };
 
-const CLASSES = ['Summon 1', 'Summon 2', 'Summon 3'];
+const CLASSES = ['Glyph: ¬', 'Glyph: -', 'Glyph: ƨ'];
 let model;
 
 // 100% safe code :)))))

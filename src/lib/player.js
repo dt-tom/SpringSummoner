@@ -278,7 +278,7 @@ export class Player {
                 bright.push(ctx.getImageData(x,y,1,1).data[0]/255)
             }
         }
-        console.log(`Result: ${bright.filter(d=>d<1).length > 50 ? guess(bright): 'Not enough input'}`)
+        console.log(`Result: ${bright.filter(d=>d<1).length > 10 ? guess(bright): 'Not enough input'}`)
         document.body.removeChild(canvas);
     }
 
