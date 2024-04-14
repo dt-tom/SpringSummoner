@@ -2,6 +2,7 @@ import * as constants from '../constants.js'
 import { Player } from '../lib/player.js'
 import { Oasis } from '../lib/oasis.js'
 import { AttackingAlly } from '../lib/attackingally.js';
+import { ExplodingAlly } from '../lib/explodingally.js';
 import { Bush } from '../lib/bush.js';
 import { BugGroup } from '../lib/bug.js'
 
@@ -15,6 +16,7 @@ export class GameScene extends Phaser.Scene {
         this.player = new Player(this)
         this.oasis = new Oasis(this)
         this.attackingAllies = new AttackingAlly(this);
+        this.explodingAllies = new ExplodingAlly(this);
         this.bushes = new Bush(this);
         this.bugs = new BugGroup(this)
 
@@ -35,6 +37,7 @@ export class GameScene extends Phaser.Scene {
         this.bugs.preload();
         this.bushes.preload();
         this.attackingAllies.preload();
+        this.explodingAllies.preload();
     }
 
     createDrop(posX, posY) {
@@ -56,6 +59,7 @@ export class GameScene extends Phaser.Scene {
         this.oasis.create();
         this.player.create();
         this.attackingAllies.create();
+        this.explodingAllies.create();
         this.bushes.create();
         this.bugs.create();
 
@@ -71,6 +75,14 @@ export class GameScene extends Phaser.Scene {
             this.player.pickUp(drop)
         }, null, this);
         this.physics.add.collider(this.attackingAllies.attackingAllies, this.bugs.group);
+        this.physics.add.collider(this.explodingAllies.explodingAllies, this.bugs.group, (ally, enemy) => {
+
+            this.explodingAllies.explode(ally);
+            this.time.delayedCall(300, (e) => { 
+                enemy.destroy();
+            }, [enemy], this);
+            
+        });
 
         this.anims.create({
             key: 'bushSpawnAnimation',
@@ -84,7 +96,7 @@ export class GameScene extends Phaser.Scene {
             repeat: -1,
         });
 
-        this.physics.add.collider(this.attackingAllies, this.bugs.group); 
+        //this.physics.add.collider(this.attackingAllies, this.bugs.group); 
 
         if (constants.devMode) {
             this.physics.world.createDebugGraphic()
@@ -183,6 +195,7 @@ export class GameScene extends Phaser.Scene {
         this.player.update();
         this.oasis.update();
         this.attackingAllies.update();
+        this.explodingAllies.update();
         this.bushes.update();
         this.bugs.update();
     }
