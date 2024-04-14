@@ -97,8 +97,7 @@ export class Player {
         }
         if(e.rightButtonDown()) {
             //AttackingAlly.createAttackingAlly();
-            let ally = new AttackingAlly;
-            ally.createAttackingAlly();
+            this.scene.attackingAllies.createAttackingAlly(e.worldX, e.worldY);
         } else {
             let ally = this.scene.allies.create(e.worldX, e.worldY, 'bush');
             // after 8 seconds trees disappear

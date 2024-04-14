@@ -2,6 +2,7 @@ import * as constants from '../constants.js'
 import { Player } from '../lib/player.js'
 import { Oasis } from '../lib/oasis.js'
 import { HealthBar } from '../lib/healthbar.js'
+import { AttackingAlly } from '../lib/attackingally.js';
 
 let allowSpawnEnemy = false;
 
@@ -15,6 +16,7 @@ export class GameScene extends Phaser.Scene {
         super('GameScene');
         this.player = new Player(this)
         this.oasis = new Oasis(this)
+        this.attackingAllies = new AttackingAlly(this);
         this.tick = 0;
         this.active = true;
     }
@@ -44,6 +46,7 @@ export class GameScene extends Phaser.Scene {
         });
         this.player.preload();
         this.oasis.preload();
+        this.attackingAllies.preload();
     }
 
     createEnemy(posX, posY)
@@ -78,8 +81,10 @@ export class GameScene extends Phaser.Scene {
         //  Background/desert tiles
         this.add.tileSprite(0, 0, constants.mapWidth, constants.mapHeight, 'sand').setOrigin(0, 0);
 
-        this.oasis.create()
-        this.player.create()
+        this.oasis.create();
+        this.player.create();
+        this.attackingAllies.create();
+        
 
         this.cameras.main.startFollow(this.player.gameObject, true, 0.1, 0.1);  // Should this be in player.js?
 
@@ -92,6 +97,8 @@ export class GameScene extends Phaser.Scene {
 
         // make enemies
         this.enemies = this.physics.add.group();
+
+        
 
         this.anims.create({
             key: 'bugMoveAnimation',
@@ -141,6 +148,7 @@ export class GameScene extends Phaser.Scene {
         this.enemies.playAnimation('bugSpawnAnimation');
 
         this.physics.add.collider(this.enemies, this.enemies); 
+        this.physics.add.collider(this.attackingAllies.attackingAllies, this.enemies);
         //this.physics.add.collider(this.attackingAllies, this.enemies); 
         this.physics.add.collider(this.player.gameObject, this.enemies, (_player, enemy) => {
             this.player.collide(enemy)
@@ -259,16 +267,9 @@ export class GameScene extends Phaser.Scene {
         }
         this.updateTiles();
 
-        this.player.update()
-        this.oasis.update()
-
-        // for (let ally of this.attackingAllies.getChildren()) {
-        //     let closestEnemy = this.getClosestObject(ally, this.enemies);
-        //     if (closestEnemy){
-        //         this.physics.moveToObject(ally, closestEnemy, 60);
-        //     }
-            
-        // }
+        this.player.update();
+        this.oasis.update();
+        this.attackingAllies.update();
     
         for(const enemy of this.enemies.getChildren()) {
             const vector = new Phaser.Math.Vector2(
