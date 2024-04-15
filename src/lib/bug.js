@@ -109,7 +109,7 @@ export class BugGroup {
         });
         this.scene.anims.create({
             key: 'bugSpawnAnimation',
-            frames: this.scene.anims.generateFrameNumbers('bugSpawn', { start: 0, end: 8}),
+            frames: this.scene.anims.generateFrameNumbers('bugSpawn', { start: 0, end: 5}),
             frameRate: 8,
         });
         this.scene.anims.create({

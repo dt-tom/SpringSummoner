@@ -186,17 +186,6 @@ export class GameScene extends Phaser.Scene {
             this.explodingAllies.explode(ally, enemy);
         });
 
-        this.anims.create({
-            key: 'bushSpawnAnimation',
-            frames: this.anims.generateFrameNumbers('bushSpawn', { start: 0, end: 10}),
-            frameRate: 15,
-        });
-        this.anims.create({
-            key: 'scorpion-move',
-            frames: this.anims.generateFrameNumbers('attackingAlly', { start: 0, end: 4}),
-            frameRate: 20,
-            repeat: -1,
-        });
 
         if (constants.devMode) {
             this.physics.world.createDebugGraphic()

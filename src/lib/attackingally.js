@@ -33,7 +33,7 @@ export class AttackingAlly {
 
         this.scene.anims.create({
             key: 'gruntWalkAnimation',
-            frames: this.scene.anims.generateFrameNumbers('gruntWalking', { start: 0, end: 3}),
+            frames: this.scene.anims.generateFrameNumbers('gruntWalking', { start: 0, end: 2}),
             frameRate: 20,
             repeat: -1,
         });
@@ -44,7 +44,7 @@ export class AttackingAlly {
         });
         this.scene.anims.create({
             key: 'gruntAttackAnimation',
-            frames: this.scene.anims.generateFrameNumbers('gruntAttack', { start: 0, end: 4}),
+            frames: this.scene.anims.generateFrameNumbers('gruntAttack', { start: 0, end: 3}),
             frameRate: 10,
             repeat: -1,
         });

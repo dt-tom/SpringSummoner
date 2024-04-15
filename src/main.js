@@ -28,7 +28,7 @@ async function loadMyModel() {
       }), new File([res2], "myDoodleNet.weights.bin", {
         type: "application/macbinary",
       })]));
-      model.summary();
+      // model.summary();
     }
 
 loadMyModel();

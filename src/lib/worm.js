@@ -131,12 +131,7 @@ export class Worm {
             frameRate: 9,
             repeat: 0,
         });
-        this.scene.anims.create({
-            key: 'dirtTumble',
-            frames: this.scene.anims.generateFrameNumbers('dirtParticle', { start: 0, end: 7}),
-            frameRate: 10,
-            repeat: -1,
-        });
+        // Don't recreate dirtTumble (it's in bug.js)
 
         // make enemies
         this.group = this.scene.physics.add.group({

@@ -123,16 +123,11 @@ export class ShooterGroup {
         });
         this.scene.anims.create({
             key: 'shooterAttackAnimation',
-            frames: this.scene.anims.generateFrameNumbers('shooterAttack', { start: 0, end: 5}),
+            frames: this.scene.anims.generateFrameNumbers('shooterAttack', { start: 0, end: 4}),
             frameRate: 10,
             repeat: -1,
         });
-        this.scene.anims.create({
-            key: 'dirtTumble',
-            frames: this.scene.anims.generateFrameNumbers('dirtParticle', { start: 0, end: 7}),
-            frameRate: 10,
-            repeat: -1,
-        });
+        // Don't recreate dirtTumble (it's in bug.js)
 
         // make enemies
         this.group = this.scene.physics.add.group({
