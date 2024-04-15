@@ -12,6 +12,7 @@ export class Worm {
     constructor(scene) {
         this.scene = scene
         this.tick = 0;
+        this.allowSpawn = false;
     }
 
     // Preload is called before scene load, with a copy of the scene
@@ -29,6 +30,10 @@ export class Worm {
             frameWidth: 64, frameHeight: 64,
         });
         
+    }
+
+    setAllowSpawn(){
+        this.allowSpawn = true;
     }
 
     /*
@@ -146,10 +151,13 @@ export class Worm {
         });
 
         setInterval((() => {
+            if(!this.allowSpawn)
+            {
+                return;
+            }
             if (!this.scene.active) {
                 return;
             }
-            console.log("num of worms: " + this.group.getLength());
             if (this.group.getLength() >= this.MAX_worm_COUNT) {
                 return;
             };
@@ -214,7 +222,6 @@ export class Worm {
             emitZone: { source: new Phaser.Geom.Circle(0, 0, 60) }  // Emit particles within a 4 pixel radius
         })
         this.scene.time.delayedCall(1000, (b) => { 
-            console.log("WORM ATTACK");
             // worm could be dead
             if(!worm)
             {
@@ -222,14 +229,11 @@ export class Worm {
             }
             
             let vVector = Math.sqrt(this.scene.player.gameObject.body.velocity.x ** 2, this.scene.player.gameObject.body.velocity.y ** 2);
-            console.log(vVector);
             if(vVector <= 100)
             {
-                console.log("attack still");
                 worm.x = this.scene.player.gameObject.x;
                 worm.y = this.scene.player.gameObject.y;
             } else {
-                console.log("attack ahead");
                 worm.x = this.scene.player.gameObject.x + this.scene.player.gameObject.body.velocity.x;
                 worm.y = this.scene.player.gameObject.y + this.scene.player.gameObject.body.velocity.y;
             }
@@ -238,7 +242,6 @@ export class Worm {
                 worm.play('wormAttackAnimation');
             }
             worm.on('animationcomplete', () => {
-                console.log("destroying worm");
                 worm.destroy();
             });
         }, [worm], this);

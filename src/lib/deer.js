@@ -5,10 +5,10 @@ export class DeerManager {
     }
     preload(){
         this.scene.load.spritesheet('deerSpawn', 'assets/deer-summoning.png', {
-            frameWidth: 32, frameHeight: 32,
+            frameWidth: 64, frameHeight: 64,
         });
         this.scene.load.spritesheet('deerAttack', 'assets/deer-charge.png', {
-            frameWidth: 32, frameHeight: 32,
+            frameWidth: 64, frameHeight: 64,
         });
     }
 
@@ -26,12 +26,12 @@ export class DeerManager {
 
         this.scene.anims.create({
             key: 'deerSpawnAnimation',
-            frames: this.scene.anims.generateFrameNumbers('deerSpawn', { start: 0, end: 2}),
+            frames: this.scene.anims.generateFrameNumbers('deerSpawn', { start: 0, end: 30}),
             frameRate: 3,
         });
         this.scene.anims.create({
             key: 'deerAttackAnimation',
-            frames: this.scene.anims.generateFrameNumbers('deerAttack', { start: 0, end: 4}),
+            frames: this.scene.anims.generateFrameNumbers('deerAttack', { start: 0, end: 19}),
             frameRate: 5,
             repeat: -1,
         });
@@ -65,6 +65,7 @@ export class DeerManager {
     }
 
     moveDeer(deer, positions, index, intervalMillis) {
+        console.log("in move deer");
         let posX = positions[index][0];
         let posY = positions[index][1];
         this.scene.physics.moveTo(deer, posX, posY, undefined, intervalMillis);
@@ -89,9 +90,11 @@ export class DeerManager {
     }
 
     createDeer(posX, posY, positions) {
+        console.log("creating deer");
         let deer = this.deers.create(posX, posY, 'deerSpawn');
         deer.play('deerSpawnAnimation');
         setTimeout(() => {
+            console.log("moving deer");
             let index = 0;
             let intervalMillis = this.attackDurationMillis / positions.length;
             deer.spawned = true;

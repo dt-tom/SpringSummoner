@@ -134,8 +134,9 @@ export class Player {
         }
         this.scene.scene.get('Scoreboard').updateGlyphSequence(this.glyphSequence);
 
-        if (this.glyphSequence.length == 3) {
-            result = this.summonElk();
+        if (this.upSwipe()) {
+            console.log("SUMMON ELK");
+            result = this.summonDeer();
             this.glyphSequence = [];
         } else if (this.leftSwipe()) {
             result = this.summonGrunt();
@@ -207,13 +208,13 @@ export class Player {
         return [false, 0x0000ff];
     }
 
-    // upSwipe()
-    // {
-    //     return downEvent.downY > upEvent.upY 
-    //     && Math.abs(downEvent.downY - upEvent.upY) > MIN_SWIPE_DISTANCE
-    //     && Math.abs(downEvent.downX - upEvent.upX) < MIN_SWIPE_DISTANCE
-    //     && Math.abs(downEvent.downY - upEvent.upY) > Math.abs(downEvent.downX - upEvent.upX);
-    // }
+    upSwipe()
+    {
+        return downEvent.downY > upEvent.upY 
+        && Math.abs(downEvent.downY - upEvent.upY) > MIN_SWIPE_DISTANCE
+        && Math.abs(downEvent.downX - upEvent.upX) < MIN_SWIPE_DISTANCE
+        && Math.abs(downEvent.downY - upEvent.upY) > Math.abs(downEvent.downX - upEvent.upX);
+    }
 
     // downSwipe()
     // {
