@@ -88,17 +88,6 @@ export class TutorialScene extends Phaser.Scene {
             fontSize: '16px', fill: '#000'
         }).setOrigin(0.5);
 
-        
-
-        let soundtrack = this.sound.add('soundtrack');
-        soundtrack.play();
-        soundtrack.setLoop(true);
-        soundtrack.setVolume(0.2);
-        let sandstorm = this.sound.add('sandstorm', { loop:true });
-        sandstorm.addMarker({name: 'sandstormWhoosh'});
-        sandstorm.play('sandstormWhoosh');
-        sandstorm.setVolume(0.03);
-
         this.swipeDirection = 0;
         this.interval = setInterval(() => {
             if(this.swipeDirection == -1){
@@ -163,11 +152,6 @@ export class TutorialScene extends Phaser.Scene {
                     break;
                 case 7:
                     clearInterval(this.interval);
-                    this.tweens.add({
-                        targets: sandstorm,
-                        volume: 0,
-                        duration: 1000,
-                    })
                     setTimeout(() => {this.scene.start('GameScene')}, 1000);  // Time is in milliseconds
             }
         }, this);

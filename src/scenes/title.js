@@ -34,19 +34,24 @@ export class TitleScene extends Phaser.Scene {
             fontSize: '16px', fill: '#000'
         }).setOrigin(0.5);
 
-        let soundtrack = this.sound.add('soundtrack');
-        soundtrack.play();
-        soundtrack.setLoop(true);
-        soundtrack.setVolume(0.2);
-        let sandstorm = this.sound.add('sandstorm', { loop:true });
-        sandstorm.addMarker({name: 'sandstormWhoosh'});
-        sandstorm.play('sandstormWhoosh');
-        sandstorm.setVolume(0.03);
+        this.soundtrack = this.sound.add('soundtrack');
+        this.soundtrack.play();
+        this.soundtrack.setLoop(true);
+        this.soundtrack.setVolume(0.2);
+        this.sandstorm = this.sound.add('sandstorm', { loop:true });
+        this.sandstorm.addMarker({name: 'sandstormWhoosh'});
+        this.sandstorm.play('sandstormWhoosh');
+        this.sandstorm.setVolume(0.04);
+        this.tweens.add({
+            targets: this.sandstorm,
+            volume: 0,
+            duration: 4500,
+        })
 
         // Click handler that starts the game
         this.input.on('pointerdown', () => {
             this.tweens.add({
-                targets: sandstorm,
+                targets: this.sandstorm,
                 volume: 0,
                 duration: 1000,
             })
