@@ -52,6 +52,7 @@ export class TitleScene extends Phaser.Scene {
                 duration: 1000,
             })
             setTimeout(() => {this.scene.start('GameScene')}, 1000);  // Time is in milliseconds
+            clearInterval(this.interval);
         }, this);
 
         this.interval = setInterval(() => {
@@ -62,6 +63,7 @@ export class TitleScene extends Phaser.Scene {
             if(this.tutorialTimer <= 0){
                 this.scene.stop();
                 this.scene.start('TutorialScene');
+                clearInterval(this.interval);
             }
         }, 1000)
     
