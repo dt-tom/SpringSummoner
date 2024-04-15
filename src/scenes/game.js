@@ -16,21 +16,6 @@ import { Worm } from '../lib/worm.js';
 export class GameScene extends Phaser.Scene {
     constructor () {
         super('GameScene');
-        this.player = new Player(this)
-        this.oasis = new Oasis(this)
-        this.attackingAllies = new AttackingAlly(this);
-        this.explodingAllies = new ExplodingAlly(this);
-        this.bushes = new Bush(this);
-        this.bugs = new BugGroup(this);
-        this.shooters = new ShooterGroup(this);
-        this.deers = new DeerManager(this);
-        this.worm = new Worm(this)
-        this.tick = 0;
-        this.active = true;
-        this.difficulty = 1;
-        this.previousDifficulty = 1;
-
-        this.score = 0;
     }
 
     scaleEnemies(difficulty) {
@@ -113,6 +98,25 @@ export class GameScene extends Phaser.Scene {
         //     // progressBox.destroy();
         //     // progressBar.destroy();
         // });
+    }
+
+    // Called before create, even on stop/restart
+    init() {
+        this.player = new Player(this)
+        this.oasis = new Oasis(this)
+        this.attackingAllies = new AttackingAlly(this);
+        this.explodingAllies = new ExplodingAlly(this);
+        this.bushes = new Bush(this);
+        this.bugs = new BugGroup(this);
+        this.shooters = new ShooterGroup(this);
+        this.deers = new DeerManager(this);
+        this.worm = new Worm(this)
+        this.tick = 0;
+        this.active = true;
+        this.difficulty = 1;
+        this.previousDifficulty = 1;
+
+        this.score = 0;
     }
 
     createDrop(posX, posY) {
