@@ -53,7 +53,7 @@ export function guess(x) {
 
     const sortProb = rawProbWIndex.sort((a, b) => b.probability - a.probability);
     const res = CLASSES[sortProb[0].index];
-    console.log(`${res}\n,${rawProbWIndex.map(x => `${CLASSES[x.index]} (${x.probability}) \n`)}`)
+    // console.log(`${res}\n,${rawProbWIndex.map(x => `${CLASSES[x.index]} (${x.probability}) \n`)}`)
     return { glyph: res, spellAccuracy: sortProb[0].probability }
 }
 

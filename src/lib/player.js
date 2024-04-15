@@ -140,8 +140,6 @@ export class Player {
 
         if (!glyph) return;
 
-        console.log(this.glyphSequence);
-
         if (spellAccuracy >= 0.9) {
             this.glyphSequence.push(glyph);
         } else {
@@ -151,6 +149,7 @@ export class Player {
         let hasMana = true;
         if (this.glyphSequence.length == 3) {
             hasMana = this.summonElk();
+            this.glyphSequence = [];
         } else if (glyph === 'Glyph: ƨ') {
             hasMana = this.summonGrunt();
         } else if (glyph === 'Glyph: -') {
