@@ -130,7 +130,11 @@ export class Player {
         if (spellAccuracy >= 0.9) {
             this.glyphSequence.push(glyph);
             this.glyphLevel += 1;
-            if (this.glyphLevel % 10 == 0) this.prevGlyphLevel = this.glyphLevel;
+            if (this.glyphLevel % 10 == 0) {
+                this.prevGlyphLevel = this.glyphLevel;
+                this.scalePlayer();
+                this.scaleSummons();
+            }
             this.scene.scene.get('Scoreboard').updateGlyphLevel(this.glyphLevel);
         } else if (spellAccuracy >= 0.5) {
             this.glyphSequence = [];
@@ -161,12 +165,15 @@ export class Player {
         return result;
     }
 
-    summonElk() {
+    scalePlayer() {
+        this.health += 200;
         this.mana += 50;
-        this.summonBush();
-        this.summonExploder();
-        this.summonGrunt();
-        return [true, 0x00ff00];
+        this.speed += 5;
+        this.scene.scene.get("Scoreboard").levelBreakpoint(this.health, this.mana)
+    }
+
+    scaleSummons() {
+
     }
 
     summonDeer() {

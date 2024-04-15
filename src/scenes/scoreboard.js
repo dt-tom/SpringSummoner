@@ -45,6 +45,26 @@ export class Scoreboard extends Phaser.Scene {
         })
     }
 
+    levelBreakpoint(health, mana) {
+        this.healthbar = new HealthbarV2({
+            scene: this.scene.scene,
+            height: 24,
+            width: 400,
+            startingValue: health,
+            maxValue: health,
+            offsets: { x: 0, y: 0 },
+        });
+        this.manabar = new HealthbarV2({
+            scene: this.scene.scene,
+            height: 16,
+            width: 400,
+            startingValue: mana,
+            maxValue: mana,
+            colorFunc: () => ({ fg: 0x0000ff, bg: 0xffffff }),
+            offsets: { x: 0, y: 0 },
+        });
+    }
+
     updateLastSpellAccuracy(newSpellAccuracy) {
         this.lastSpellAccuracy.setText(`Last Glyph Accuracy: ${Math.round(newSpellAccuracy * 100, 2)}%`);
     }
