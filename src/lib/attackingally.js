@@ -57,6 +57,12 @@ export class AttackingAlly {
             if (!grunt.spawned || grunt.attacking) {
                 continue;
             }
+            // flips grunt if their velocity would go to the right
+            if (grunt.body.velocity.x > 0) {
+                grunt.setFlipX(true);
+            } else {
+                grunt.setFlipX(false);
+            }
             const gruntBounds = grunt.getBounds();
             // Get closest enemy
 
