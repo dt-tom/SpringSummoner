@@ -2,8 +2,6 @@ import {
     shooterSpawnInnerRadius,
     shooterSpawnOuterRadius,
     shooterNumInitialSpawns,
-    ENEMY_SPAWN_TIMER,
-    ENEMY_START_HEALTH,
     shooterMovespeed,
 } from "../constants.js";
 
@@ -18,7 +16,6 @@ export class ShooterGroup {
 
     // Preload is called before scene load, with a copy of the scene
     preload() {
-       // this.scene.load.audio('bugSquishSound', 'assets/sounds/bug-squish.wav');
         this.scene.load.spritesheet('shooterMove', 'assets/viperess_move.png', {
             frameWidth: 32, frameHeight: 32
         });
@@ -32,6 +29,8 @@ export class ShooterGroup {
             frameWidth: 32, frameHeight: 32,
         });
         this.scene.load.image('shooterProjectile', 'assets/viperess_projectile.png');
+        this.scene.load.audio('shooterShootSound', 'assets/sounds/viper-spit.wav');
+        this.scene.load.audio('shooterDeathSound', 'assets/sounds/viper-death.wav');
     }
 
     /*
@@ -47,7 +46,6 @@ export class ShooterGroup {
 
         const xOut = x + (distance * Math.cos(direction))
         const yOut = y + (distance * Math.sin(direction))
-
 
         this.spawnShooterAt({
             x: xOut,
@@ -74,6 +72,24 @@ export class ShooterGroup {
             e.hasSpawned = true;
             this.group.playAnimation('shooterMoveAnimation');
         }, [shooter], this);
+
+        shooter.intervalId = setInterval(() => {
+            if (!shooter.hasSpawned || !this.group.contains(shooter)) {
+                return;
+            }
+            shooter.hasSpawned = false;
+            shooter?.playReverse('shooterSpawnAnimation');
+            shooter?.setVelocity(0);
+            this.scene.time.delayedCall(1000, (e) => { 
+                e.x = this.scene.player.gameObject.x + Math.random() * 400 - 200;
+                e.y = this.scene.player.gameObject.y + Math.random() * 400 - 200;
+                e.play('shooterSpawnAnimation');
+            }, [shooter], this);
+            this.scene.time.delayedCall(2000, (e) => { 
+                e.hasSpawned = true;
+                e.play('shooterMoveAnimation');
+            }, [shooter], this);
+        }, this.MAX_SHOOTER_LIFESPAN_MILLIS + Math.random() * 1000);
     }
 
 
@@ -82,10 +98,17 @@ export class ShooterGroup {
     create() {
         this.shooterSlowReduction = 20;
         this.shooterSlowDurationMillis = 500;
-        this.attackDamage = 2;
-        this.attackCooldownMillis = 10000;
+        this.attackDamage = 8;
+        this.attackCooldownMillis = 3000;
         this.projectileDamage = 1;
-        //this.shooterSquishSound = this.scene.sound.add('shooterSquishSound');
+        this.shooterDeathSound = this.scene.sound.add('shooterDeathSound');
+        this.shooterShootSound = this.scene.sound.add('shooterShootSound');
+        this.projectileSlow = 170;
+        this.projectileSlowDurationMillis = 350;
+        this.MAX_SHOOTER_COUNT = 10;
+        this.MAX_SHOOTER_LIFESPAN_MILLIS = 30_000;
+        this.SPAWN_INTERVAL = 10_000;
+        this.MAX_HEALTH = 50;
         this.scene.anims.create({
             key: 'shooterMoveAnimation',
             frames: this.scene.anims.generateFrameNumbers('shooterMove', { start: 0, end: 3}),
@@ -95,7 +118,7 @@ export class ShooterGroup {
         this.scene.anims.create({
             key: 'shooterSpawnAnimation',
             frames: this.scene.anims.generateFrameNumbers('shooterSpawn', { start: 0, end: 8}),
-            frameRate: 10,
+            frameRate: 9,
             repeat: -1,
         });
         this.scene.anims.create({
@@ -114,7 +137,7 @@ export class ShooterGroup {
         // make enemies
         this.group = this.scene.physics.add.group({
             createCallback: (enemy) => {
-                enemy.health = ENEMY_START_HEALTH;
+                enemy.health = this.MAX_HEALTH;
                 enemy.isSpawned = false;
                 enemy.attacking = false;
                 enemy.attackcount = 0;
@@ -128,36 +151,27 @@ export class ShooterGroup {
             if (!this.scene.active) {
                 return;
             }
+            if (this.group.length >= this.MAX_SHOOTER_COUNT) {
+                return;
+            };
             const x = this.scene.player.gameObject.x
             const y = this.scene.player.gameObject.y
             this.spawnShooterNear({x: x, y: y})
-        }).bind(this), ENEMY_SPAWN_TIMER);
+        }).bind(this), this.SPAWN_INTERVAL);
 
         this.scene.postCreateHooks.push(this.postCreate.bind(this))
     }
 
     postCreate() {
-
         for(let i = 0; i < shooterNumInitialSpawns; i++) {
             this.spawnShooterNear({
                 x: this.scene.player.gameObject.x,
                 y: this.scene.player.gameObject.y,
             });
-        }
-        
+        } 
         // Prevent bugs from stacking
         this.scene.physics.add.collider(this.group, this.group); 
 
-        // this.scene.physics.add.collider(
-        //     this.scene.player.gameObject,
-        //     this.group,
-        //     (_player, enemy) => {this.attack(enemy)},
-        //     null,
-        //     this,
-        // );
-        
-        
-        
     }
 
     // Update is called once per tick
@@ -167,7 +181,7 @@ export class ShooterGroup {
             return;
         }
         this.group.children.iterate(this.moveShooter.bind(this));
-        let SHOOTER_DISTANCE = 30000;
+        let SHOOTER_DISTANCE = 170*170;
         for(const shooter of this.group.getChildren())
         {
             if(Phaser.Math.Distance.Squared(shooter.x, shooter.y, this.scene.player.gameObject.x, this.scene.player.gameObject.y) < SHOOTER_DISTANCE){
@@ -181,27 +195,29 @@ export class ShooterGroup {
             return;
         }
         shooter.attackcount += 1;
+
         shooter.attacking = true;
         shooter.setVelocity(0);
         shooter.play('shooterAttackAnimation');
+        this.shooterShootSound.play();
+        this.shooterShootSound.setVolume(0.2);
         this.projectile = this.scene.physics.add.image(shooter.x, shooter.y, 'shooterProjectile');
         const {x, y} = this.scene.player.gameObject;
         this.scene.physics.add.collider(
             this.scene.player.gameObject,
             this.projectile,
-            (_player, projectile) => {this.scene.player.damage(this.projectileDamage)},
+            (_player, projectile) => {
+                this.scene.player.damage(this.projectileDamage);
+                this.scene.player.slow('shooter', this.projectileSlow, this.projectileSlowDurationMillis);
+                projectile.destroy();
+            },
             null,
             this,
         );
-        // const vector = new Phaser.Math.Vector2(x - this.projectile.x, y - this.projectile.y);
-        // this.projectile.rotation = vector.clone().normalizeRightHand().angle();
-        // this.projectile.setVelocity(x, y);
         this.scene.physics.moveTo(this.projectile, x, y, 100);
         this.scene.time.delayedCall(this.attackCooldownMillis, (b) => { 
             b.attacking = false;
         }, [shooter], this);
-        // this.scene.player.damage(this.attackDamage);
-        // this.scene.player.slow("shooterSlow", this.shooterSlowReduction, this.shooterSlowDurationMillis);
     }
 
     damageShooter(shooter, damage) {
@@ -210,8 +226,9 @@ export class ShooterGroup {
         }
         shooter.health = shooter.health - damage;
         if (shooter.health <= 0) {
-            this.shooterSquishSound.play();
-            this.group.remove(bug);
+            this.shooterDeathSound.play();
+            this.shooterDeathSound.setVolume(0.5);
+            this.group.remove(shooter);
             shooter.destroy();
         }
         shooter.setTint(0xff0000); // Tint the sprite red
@@ -232,7 +249,7 @@ export class ShooterGroup {
         shooter.setVelocity(vector.x, vector.y)
     }
 
-    slowshooter(shooter, reason, speedReduction, durationMillis) {
+    slowShooter(shooter, reason, speedReduction, durationMillis) {
         if (shooter.effects.contains(reason)) {
             return;
         }

@@ -1,6 +1,5 @@
 import { HealthbarV2 } from '../lib/healthbar.js'
-import { playerSpawn, playerSpeed, summonForFree, MIN_SWIPE_DISTANCE, MOUSE_SAMPLE_RATE } from '../constants.js'
-import { AttackingAlly } from '../lib/attackingally.js'
+import { playerSpawn, playerSpeed, MOUSE_SAMPLE_RATE } from '../constants.js'
 import { guess } from '../main.js';
 
 /**
@@ -21,6 +20,7 @@ export class Player {
         this.scene = scene
         this.firstUpdate = true
         this.playerSpeed = playerSpeed;
+        this.glyphSequence = []
     }
 
     // Preload is called before scene load, with a copy of the scene
@@ -34,7 +34,10 @@ export class Player {
         })
         this.scene.load.spritesheet('walkBack', 'assets/main_character_walking_back_v1.png', {
             frameWidth: 32, frameHeight: 32,
-        })
+        });
+        this.scene.load.spritesheet('summon', 'assets/main-character-summoning-inuse.png', {
+            frameWidth: 32, frameHeight: 32,
+        });
         this.scene.load.spritesheet('oasisHeal', 'assets/oasis-heal-particle-v3.png', {
             frameWidth: 8, frameHeight: 8,
         })
@@ -93,6 +96,11 @@ export class Player {
             frames: this.gameObject.anims.generateFrameNumbers('walkBack', { start: 0, end: 3}),
             frameRate: 8,
         });
+        this.gameObject.anims.create({
+            key: 'summonAnimation',
+            frames: this.gameObject.anims.generateFrameNumbers('summon', { start: 0, end: 6}),
+            frameRate: 14,
+        });
 
         // this one goes in scene since it's a particle
         this.scene.anims.create({
@@ -126,42 +134,93 @@ export class Player {
     }
 
     detectGesture(glyphData){
+        if (!glyphData) return;
         const { glyph, spellAccuracy } = glyphData;
-        // horizontal right swipe
+        this.scene.scene.get('Scoreboard').updateLastSpellAccuracy(spellAccuracy);
+        let result = [false, 0xff0000];
 
-        if (!glyph) return;
+        // keep track of combos
+        if (spellAccuracy >= 0.9) {
+            this.glyphSequence.push(glyph);
+        } else if (spellAccuracy >= 0.7) {
+            this.glyphSequence = [];
+        } else {
+            // bad confidence score, missed spell
+            return result;
+        }
+        this.scene.scene.get('Scoreboard').updateGlyphSequence(this.glyphSequence);
 
-        let hasMana = true;
-        if(glyph === 'Glyph: ƨ'){
-            let gruntManaCost = this.scene.attackingAllies.getManaCost();
-            if (this.hasMana(gruntManaCost)) {
-                this.mana = this.mana - gruntManaCost;
-                this.scene.attackingAllies.createAttackingAlly(upEvent.worldX, upEvent.worldY);
-                return [true, 0x00ff00];
-            }
-            hasMana = false;
+        if (this.glyphSequence.length == 3) {
+            result = this.summonElk();
+            this.glyphSequence = [];
+        } else if (glyph === 'Glyph: ƨ') {
+            result = this.summonGrunt();
         } else if (glyph === 'Glyph: -') {
-            let bushManaCost = this.scene.bushes.getManaCost();
-            if (this.hasMana(bushManaCost)) {
-                this.mana = this.mana - bushManaCost;
-                this.scene.bushes.addBush(upEvent.worldX, upEvent.worldY);
-                return [true, 0x00ff00];;
-            }
-            hasMana = false;
+            result = this.summonBush();
+        } else if (glyph === 'Glyph: ¬') {
+            result = this.summonExploder();
         }
-        else if (glyph === 'Glyph: ¬') {
-            let explosionManaCost = this.scene.explodingAllies.getManaCost();
-            if (this.hasMana(explosionManaCost)) {
-                this.mana = this.mana - explosionManaCost;
-                this.scene.explodingAllies.createExplodingAlly(upEvent.worldX, upEvent.worldY);
-                return [true, 0x00ff00];
-            }
-            hasMana = false;
+        return result;
+    }
+
+    summonElk() {
+        this.mana += 50;
+        this.summonBush();
+        this.summonExploder();
+        this.summonGrunt();
+        return [true, 0x00ff00];
+    }
+
+    summonDeer() {
+        let manaCost = this.scene.deers.getManaCost();
+        if (this.hasMana(manaCost)) {
+            this.mana = this.mana - manaCost;
+            // Tu update these to correct positions pls
+            let positions = [
+                [upEvent.worldX, upEvent.worldY],
+                [upEvent.worldX + 20, upEvent.worldY + 20],
+                [upEvent.worldX + 40, upEvent.worldY + 40],
+                [upEvent.worldX + 60, upEvent.worldY + 60],
+                [upEvent.worldX + 80, upEvent.worldY + 80],
+                [upEvent.worldX + 100, upEvent.worldY + 100],
+                [upEvent.worldX + 120, upEvent.worldY + 120],
+                [upEvent.worldX + 140, upEvent.worldY + 140],
+            ];
+            console.log(positions)
+            this.scene.deers.createDeer(upEvent.worldX, upEvent.worldY, positions);
+            return [true, 0x00ff00];
         }
-        if (!hasMana) {
-            return [false, 0x0000ff];
+        return [false, 0x0000ff];
+    }
+
+    summonGrunt() {
+        let gruntManaCost = this.scene.attackingAllies.getManaCost();
+        if (this.hasMana(gruntManaCost)) {
+            this.mana = this.mana - gruntManaCost;
+            this.scene.attackingAllies.createAttackingAlly(upEvent.worldX, upEvent.worldY);
+            return [true, 0x00ff00];
         }
-        return [false, 0xff0000];
+        return [false, 0x0000ff];
+    }
+
+    summonBush() {
+        let bushManaCost = this.scene.bushes.getManaCost();
+        if (this.hasMana(bushManaCost)) {
+            this.mana = this.mana - bushManaCost;
+            this.scene.bushes.addBush(upEvent.worldX, upEvent.worldY);
+            return [true, 0x00ff00];
+        }
+        return [false, 0x0000ff];
+    }
+
+    summonExploder() {
+        let explosionManaCost = this.scene.explodingAllies.getManaCost();
+        if (this.hasMana(explosionManaCost)) {
+            this.mana = this.mana - explosionManaCost;
+            this.scene.explodingAllies.createExplodingAlly(upEvent.worldX, upEvent.worldY);
+            return [true, 0x00ff00];
+        }
+        return [false, 0x0000ff];
     }
 
     // upSwipe()
@@ -264,7 +323,7 @@ export class Player {
         const canvas = document.createElement("canvas");
         canvas.style.display = "none";
         document.body.appendChild(canvas);
-        const ctx = canvas.getContext("2d");
+        const ctx = canvas.getContext("2d", { willReadFrequently: true });
         ctx.canvas.width  = size;
         ctx.canvas.height = size;
         ctx.lineCap = 'round';
@@ -304,16 +363,16 @@ export class Player {
         mousePositions = [];
         mouseCurrentlyDown = false;
         upEvent = e;
-
         if (this.isDead()) {
             return
         }
-        this.detectGesture(glyph);
-        // // Iterate over the array
-        // for (let i = 0; i < this.particles.length; i++) {
-        //     this.particles[i].setParticleTint(result[1]);
-        // }
-        // this.particles = [];
+        this.gameObject.anims.play('summonAnimation', true)
+        let result = this.detectGesture(glyph);
+        // Iterate over the array
+        for (let i = 0; i < this.particles.length; i++) {
+            this.particles[i].setParticleTint(result[1]);
+        }
+        this.particles = [];
     }
 
     // Update is called once per tick
@@ -339,23 +398,36 @@ export class Player {
         if (cursor.left.isDown) {
             this.gameObject.setFlipX(true);
             this.gameObject.setVelocityX(-this.playerSpeed);
-            this.gameObject.anims.play('walkFrontAnimation', true)
+            if (mouseCurrentlyDown) {
+                this.gameObject.anims.play('summonAnimation', true)
+            } else {
+                this.gameObject.anims.play('walkFrontAnimation', true)
+            }
         }
 
         if (cursor.right.isDown) {
             this.gameObject.setFlipX(false);
             this.gameObject.setVelocityX(this.playerSpeed);
-            this.gameObject.anims.play('walkFrontAnimation', true)
+            if (mouseCurrentlyDown) {
+                this.gameObject.anims.play('summonAnimation', true)
+            } else {
+                this.gameObject.anims.play('walkFrontAnimation', true)
+            }        }
+
+        if (cursor.down.isDown) {
+            this.gameObject.setVelocityY(this.playerSpeed);
+            if (mouseCurrentlyDown) {
+                this.gameObject.anims.play('summonAnimation', true)
+            } else {
+                this.gameObject.anims.play('walkFrontAnimation', true)
+            }
         }
+
+
 
         if (cursor.up.isDown) {
             this.gameObject.anims.play('walkBackAnimation', true)
             this.gameObject.setVelocityY(-this.playerSpeed);
-        }
-
-        if (cursor.down.isDown) {
-            this.gameObject.setVelocityY(this.playerSpeed);
-            this.gameObject.anims.play('walkFrontAnimation', true)
         }
 
         // normalize the speed
@@ -368,7 +440,7 @@ export class Player {
         this.gameObject.setVelocity(velocity.x, velocity.y);
 
         if (!cursor.left.isDown && !cursor.right.isDown && !cursor.up.isDown && !cursor.down.isDown) {
-            this.gameObject.setTexture('me')
+            // this.gameObject.setTexture('me')
         }
     }
 
@@ -377,8 +449,8 @@ export class Player {
             return;
         }
         let reduction = speedReduction;
-        if (this.playSpeed - speedReduction <= 0) {
-            reduction = this.playerSpeed
+        if (this.playerSpeed - speedReduction <= 0) {
+            reduction = this.playerSpeed;
         }
         if (reduction == 0) {
             return;
@@ -415,10 +487,21 @@ export class Player {
         this.mana = Math.min(this.mana + amount, this.MAX_MANA);
     }
 
+    updateSpeed(reason, amount, durationMillis) {
+        if (this.effects.contains(reason)) {
+            return;
+        }
+        this.effects.set(reason);
+        this.playerSpeed += amount;
+        setTimeout(() => {
+            this.playerSpeed -= amount;
+        }, durationMillis);
+    }
+
     pickUp(drop) {
         if(drop.type == "speed")
         {
-            this.playerSpeed = this.playerSpeed + 20;
+            this.updateSpeed('powerup', 100, 5000);
         }
         if(drop.type == "mana")
         {

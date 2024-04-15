@@ -24,8 +24,6 @@ export class AttackingAlly {
         this.attackCooldownMillis = 500;
         this.attackSlow = 50;
         this.attackSlowDurationMillis = 250;
-
-        // Attacking allies engage with enemies
         this.attackingAllies = this.scene.physics.add.group({
             createCallback: (grunt) => {
                 grunt.spawned = false;
@@ -85,7 +83,6 @@ export class AttackingAlly {
                     this.scene.physics.moveToObject(grunt, bug, 60);
                 }
             }
-            
         }
     }
     createAttackingAlly(posX, posY)
@@ -101,7 +98,7 @@ export class AttackingAlly {
         });
         this.scene.time.delayedCall(1000, (e) => { 
             e.spawned = true;
-            this.attackingAllies.playAnimation('gruntWalkAnimation');
+            e.play('gruntWalkAnimation');
         }, [grunt], this);
 
         this.scene.time.delayedCall(this.gruntMaxLifetimeMillis, (g) => { 
