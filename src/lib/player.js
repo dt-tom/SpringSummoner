@@ -35,7 +35,10 @@ export class Player {
         })
         this.scene.load.spritesheet('walkBack', 'assets/main_character_walking_back_v1.png', {
             frameWidth: 32, frameHeight: 32,
-        })
+        });
+        this.scene.load.spritesheet('summon', 'assets/main-character-summoning-inuse.png', {
+            frameWidth: 32, frameHeight: 32,
+        });
         this.scene.load.spritesheet('oasisHeal', 'assets/oasis-heal-particle-v3.png', {
             frameWidth: 8, frameHeight: 8,
         })
@@ -93,6 +96,11 @@ export class Player {
             key: 'walkBackAnimation',
             frames: this.gameObject.anims.generateFrameNumbers('walkBack', { start: 0, end: 3}),
             frameRate: 8,
+        });
+        this.gameObject.anims.create({
+            key: 'summonAnimation',
+            frames: this.gameObject.anims.generateFrameNumbers('summon', { start: 0, end: 6}),
+            frameRate: 14,
         });
 
         // this one goes in scene since it's a particle
@@ -330,10 +338,10 @@ export class Player {
         mousePositions = [];
         mouseCurrentlyDown = false;
         upEvent = e;
-
         if (this.isDead()) {
             return
         }
+        this.gameObject.anims.play('summonAnimation', true)
         this.detectGesture(glyph);
         // // Iterate over the array
         // for (let i = 0; i < this.particles.length; i++) {
@@ -365,23 +373,36 @@ export class Player {
         if (cursor.left.isDown) {
             this.gameObject.setFlipX(true);
             this.gameObject.setVelocityX(-this.playerSpeed);
-            this.gameObject.anims.play('walkFrontAnimation', true)
+            if (mouseCurrentlyDown) {
+                this.gameObject.anims.play('summonAnimation', true)
+            } else {
+                this.gameObject.anims.play('walkFrontAnimation', true)
+            }
         }
 
         if (cursor.right.isDown) {
             this.gameObject.setFlipX(false);
             this.gameObject.setVelocityX(this.playerSpeed);
-            this.gameObject.anims.play('walkFrontAnimation', true)
+            if (mouseCurrentlyDown) {
+                this.gameObject.anims.play('summonAnimation', true)
+            } else {
+                this.gameObject.anims.play('walkFrontAnimation', true)
+            }        }
+
+        if (cursor.down.isDown) {
+            this.gameObject.setVelocityY(this.playerSpeed);
+            if (mouseCurrentlyDown) {
+                this.gameObject.anims.play('summonAnimation', true)
+            } else {
+                this.gameObject.anims.play('walkFrontAnimation', true)
+            }
         }
+
+
 
         if (cursor.up.isDown) {
             this.gameObject.anims.play('walkBackAnimation', true)
             this.gameObject.setVelocityY(-this.playerSpeed);
-        }
-
-        if (cursor.down.isDown) {
-            this.gameObject.setVelocityY(this.playerSpeed);
-            this.gameObject.anims.play('walkFrontAnimation', true)
         }
 
         // normalize the speed
@@ -394,7 +415,7 @@ export class Player {
         this.gameObject.setVelocity(velocity.x, velocity.y);
 
         if (!cursor.left.isDown && !cursor.right.isDown && !cursor.up.isDown && !cursor.down.isDown) {
-            this.gameObject.setTexture('me')
+            // this.gameObject.setTexture('me')
         }
     }
 

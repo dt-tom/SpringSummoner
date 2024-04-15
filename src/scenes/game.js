@@ -65,12 +65,6 @@ export class GameScene extends Phaser.Scene {
         //     // progressBox.destroy();
         //     // progressBar.destroy();
         // });
-
-        this.time.delayedCall(1000, () => {
-            console.log("second after load");
-        })
-
-
     }
 
     createDrop(posX, posY) {

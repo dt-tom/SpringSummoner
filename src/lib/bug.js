@@ -72,6 +72,9 @@ export class BugGroup {
         }, [bug], this);
 
         bug.intervalId = setInterval(() => {
+            if (!bug.hasSpawned || !this.group.contains(bug)) {
+                return;
+            }
             bug.hasSpawned = false;
             bug?.playReverse('bugSpawnAnimation');
             bug?.setVelocity(0);
