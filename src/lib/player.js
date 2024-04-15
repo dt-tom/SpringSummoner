@@ -135,18 +135,21 @@ export class Player {
 
     detectGesture(glyphData){
         if (!glyphData) return;
-
         const { glyph, spellAccuracy } = glyphData;
         this.scene.scene.get('Scoreboard').updateLastSpellAccuracy(spellAccuracy);
+        let result = [false, 0xff0000];
 
+        // keep track of combos
         if (spellAccuracy >= 0.9) {
             this.glyphSequence.push(glyph);
-        } else {
+        } else if (spellAccuracy >= 0.7) {
             this.glyphSequence = [];
+        } else {
+            // bad confidence score, missed spell
+            return result;
         }
         this.scene.scene.get('Scoreboard').updateGlyphSequence(this.glyphSequence);
 
-        let result = [false, 0xff0000];
         if (this.glyphSequence.length == 3) {
             result = this.summonElk();
             this.glyphSequence = [];
@@ -166,6 +169,28 @@ export class Player {
         this.summonExploder();
         this.summonGrunt();
         return [true, 0x00ff00];
+    }
+
+    summonDeer() {
+        let manaCost = this.scene.deers.getManaCost();
+        if (this.hasMana(manaCost)) {
+            this.mana = this.mana - manaCost;
+            // Tu update these to correct positions pls
+            let positions = [
+                [upEvent.worldX, upEvent.worldY],
+                [upEvent.worldX + 20, upEvent.worldY + 20],
+                [upEvent.worldX + 40, upEvent.worldY + 40],
+                [upEvent.worldX + 60, upEvent.worldY + 60],
+                [upEvent.worldX + 80, upEvent.worldY + 80],
+                [upEvent.worldX + 100, upEvent.worldY + 100],
+                [upEvent.worldX + 120, upEvent.worldY + 120],
+                [upEvent.worldX + 140, upEvent.worldY + 140],
+            ];
+            console.log(positions)
+            this.scene.deers.createDeer(upEvent.worldX, upEvent.worldY, positions);
+            return [true, 0x00ff00];
+        }
+        return [false, 0x0000ff];
     }
 
     summonGrunt() {

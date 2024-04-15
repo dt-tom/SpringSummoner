@@ -6,6 +6,7 @@ import { ExplodingAlly } from '../lib/explodingally.js';
 import { Bush } from '../lib/bush.js';
 import { BugGroup } from '../lib/bug.js'
 import { ShooterGroup } from '../lib/shooter.js';
+import { DeerManager } from '../lib/deer.js';
 
 /**
  * GameScene is the main scene of Spring Summoner; it's where the actual game
@@ -21,7 +22,7 @@ export class GameScene extends Phaser.Scene {
         this.bushes = new Bush(this);
         this.bugs = new BugGroup(this);
         this.shooters = new ShooterGroup(this);
-
+        this.deers = new DeerManager(this);
         this.tick = 0;
         this.active = true;
 
@@ -42,6 +43,7 @@ export class GameScene extends Phaser.Scene {
         this.oasis.preload();
         this.bugs.preload();
         this.shooters.preload();
+        this.deers.preload();
         this.bushes.preload();
         this.attackingAllies.preload();
         this.explodingAllies.preload();
@@ -106,6 +108,7 @@ export class GameScene extends Phaser.Scene {
         this.bushes.create();
         this.bugs.create();
         this.shooters.create();
+        this.deers.create();
 
         this.cameras.main.startFollow(this.player.gameObject, true, 0.1, 0.1);  // Should this be in player.js?
 
@@ -260,6 +263,7 @@ export class GameScene extends Phaser.Scene {
         this.bushes.update();
         this.bugs.update();
         this.shooters.update();
+        this.deers.update();
     }
 
     // called when player health is zero
@@ -271,6 +275,7 @@ export class GameScene extends Phaser.Scene {
         for (let enemy of this.shooters.group.getChildren()) {
             enemy.body.setVelocity(0, 0);
         }
+        this.deers.end();
         // wait one second so death animation can finish
         this.time.delayedCall(1000, (enemies) => { 
             for (let enemy of enemies.getChildren()) {
