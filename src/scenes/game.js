@@ -301,6 +301,10 @@ export class GameScene extends Phaser.Scene {
                 enemy.body.enable = false;
             }
         }, [this.shooters.group], this);
-        this.attackingAllies.end()
+        this.attackingAllies.end();
+        this.time.delayedCall(3000, () => {
+            this.scene.launch('DeathScene');
+        });
+        
     }
 }

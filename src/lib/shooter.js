@@ -61,7 +61,7 @@ export class ShooterGroup {
         // spawn animation
         let shooter = this.group.create(x, y, 'shooterSpawn')
         let currentScale = shooter.scaleX; // Get the current scale
-        shooter.setScale(currentScale * 0.7); // Increase the scale by 50;
+        //shooter.setScale(currentScale * 0.7); // Increase the scale by 50;
         this.scene.add.particles(x, y, 'dirtParticle', {
             speed: { min: 1, max: 20 },
             maxParticles: 20,
