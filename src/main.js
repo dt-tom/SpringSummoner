@@ -2,6 +2,8 @@ import * as constants from './constants.js';
 import { TitleScene } from './scenes/title.js'
 import { GameScene } from './scenes/game.js'
 import { Scoreboard } from './scenes/scoreboard.js'
+import { DeathScene } from './scenes/deathscreen.js'
+import { TutorialScene } from './scenes/tutorial.js'
 
 const config = {
     type: Phaser.AUTO,
@@ -11,7 +13,7 @@ const config = {
     physics: {
         default: 'arcade',
     },
-    scene: [TitleScene, GameScene, Scoreboard],
+    scene: [TitleScene, GameScene, Scoreboard, DeathScene, TutorialScene],
 };
 
 const CLASSES = ['Glyph: ¬', 'Glyph: -', 'Glyph: ƨ'];

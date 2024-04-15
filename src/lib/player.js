@@ -476,6 +476,7 @@ export class Player {
             this.gameObject.setTexture('death');
             this.gameObject.anims.play('deathAnimation', true);
             this.scene.end();
+            
         }
     }
 

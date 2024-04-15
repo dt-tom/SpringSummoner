@@ -11,6 +11,7 @@ import {
 export class ShooterGroup {
     constructor(scene) {
         this.scene = scene
+        this.tick = 0;
     }
 
     // Preload is called before scene load, with a copy of the scene
@@ -59,7 +60,7 @@ export class ShooterGroup {
         // spawn animation
         let shooter = this.group.create(x, y, 'shooterSpawn')
         let currentScale = shooter.scaleX; // Get the current scale
-        shooter.setScale(currentScale * 0.7); // Increase the scale by 50;
+        //shooter.setScale(currentScale * 0.7); // Increase the scale by 50;
         this.scene.add.particles(x, y, 'dirtParticle', {
             speed: { min: 1, max: 20 },
             maxParticles: 20,
@@ -139,6 +140,7 @@ export class ShooterGroup {
                 enemy.health = this.MAX_HEALTH;
                 enemy.isSpawned = false;
                 enemy.attacking = false;
+                enemy.attackcount = 0;
                 enemy.setCollideWorldBounds(true);
                 enemy.speed = shooterMovespeed;
                 enemy.effects = new Phaser.Structs.Set();
@@ -174,6 +176,10 @@ export class ShooterGroup {
 
     // Update is called once per tick
     update() {
+        this.tick += 1;
+        if(this.tick % 10 != 0){
+            return;
+        }
         this.group.children.iterate(this.moveShooter.bind(this));
         let SHOOTER_DISTANCE = 170*170;
         for(const shooter of this.group.getChildren())
@@ -188,6 +194,8 @@ export class ShooterGroup {
         if (shooter.attacking) {
             return;
         }
+        shooter.attackcount += 1;
+
         shooter.attacking = true;
         shooter.setVelocity(0);
         shooter.play('shooterAttackAnimation');

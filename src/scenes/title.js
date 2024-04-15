@@ -18,6 +18,8 @@ export class TitleScene extends Phaser.Scene {
     create() {
         this.cameras.main.setBackgroundColor('#D2B48C'); // Dusty yellow color
 
+        this.tutorialTimer = 5;
+
         // Title
         this.add.text(constants.canvasWidth / 2, constants.canvasHeight / 2, 'Spring Summoner', {
             fontSize: '32px', fill: '#000'
@@ -25,6 +27,11 @@ export class TitleScene extends Phaser.Scene {
 
         // Subtitle
         this.add.text(constants.canvasWidth / 2, constants.canvasHeight / 2 + 40, 'Click anywhere to start', {
+            fontSize: '16px', fill: '#000'
+        }).setOrigin(0.5);
+
+        // Tutorial subtitle
+        this.tutorialText = this.add.text(constants.canvasWidth / 2, constants.canvasHeight / 2 + 80, 'Tutorial in ' + this.tutorialTimer.toString(), {
             fontSize: '16px', fill: '#000'
         }).setOrigin(0.5);
 
@@ -46,5 +53,18 @@ export class TitleScene extends Phaser.Scene {
             })
             setTimeout(() => {this.scene.start('GameScene')}, 1000);  // Time is in milliseconds
         }, this);
+
+        this.interval = setInterval(() => {
+
+            this.tutorialTimer -= 1;
+            
+            this.tutorialText.setText('Tutorial in ' + this.tutorialTimer.toString());
+            if(this.tutorialTimer <= 0){
+                clearInterval(this.interval);
+                this.scene.stop();
+                this.scene.start('TutorialScene');
+            }
+        }, 1000)
+    
     }
 }
