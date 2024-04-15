@@ -12,7 +12,7 @@ import { guess } from '../main.js';
 let downEvent = 0;
 let upEvent = 0;
 let mouseCurrentlyDown = false;
-const MIN_SWIPE_DISTANCE = 100;
+const MIN_SWIPE_DISTANCE = 50;
 
 let mousePositions = [];
 export class Player {
@@ -106,6 +106,8 @@ export class Player {
         this.scene.input.mouse.disableContextMenu();
         this.scene.input.on('pointerdown', this.clickDownHandler.bind(this))  // maybe this has a context param??
         this.scene.input.on('pointerup', this.clickUpHandler.bind(this))
+        this.scene.input.on('mouseout', this.mouseOutFunction.bind(this))
+        document.querySelectorAll('canvas')[0].addEventListener('mouseout', this.mouseOutFunction.bind(this))
         setInterval(this.trackMousePositionAndSpawnParticles.bind(this), MOUSE_SAMPLE_RATE);
         
         // passively game mana over time
@@ -114,6 +116,7 @@ export class Player {
         }, this.MANA_REGEN_INTERVAL);
     }
 
+   
     hasMana(amount) {
         return this.mana >= amount;
     }
@@ -137,12 +140,13 @@ export class Player {
         if (this.deerFlag) {        
             if(this.anySwipe){
                 this.glyphSequence = [];
+                
                 result = this.summonDeer();
                 this.scene.scene.get('Scoreboard').updateGlyphSequence(this.glyphSequence);
                 this.deerFlag = false;
+
             }
         } else if (this.glyphSequence.length == 2) {
-            console.log("deer flag true");
             this.deerFlag = true;
         } else if (this.leftSwipe()) {
             result = this.summonGrunt();
@@ -151,6 +155,7 @@ export class Player {
         } else if (glyph === 'Glyph: ¬') {
             result = this.summonExploder();
         }
+        this.wPosPath = [];
         return result;
     }
 
@@ -167,8 +172,8 @@ export class Player {
         if (this.hasMana(manaCost)) {
             this.mana = this.mana - manaCost;
             this.velocity = [upEvent.upX - downEvent.downX , downEvent.upY - upEvent.downY ];
-            this.scene.deers.createDeer(this.velocity, downEvent.X, downEvent.Y);
-            this.wPosPath = []
+            this.scene.deers.createDeer(this.velocity, this.wPosPath[0][0], this.wPosPath[0][1]);
+            
             return [true, 0x00ff00];
         }
         return [false, 0x0000ff];
@@ -341,6 +346,12 @@ export class Player {
         document.body.removeChild(canvas);
         return res;
     }
+
+    mouseOutFunction()
+    {
+        mouseCurrentlyDown = false;
+    }
+
 
     clickDownHandler(e) {
         mouseCurrentlyDown = true;

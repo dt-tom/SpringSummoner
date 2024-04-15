@@ -27,12 +27,12 @@ export class DeerManager {
         this.scene.anims.create({
             key: 'deerSpawnAnimation',
             frames: this.scene.anims.generateFrameNumbers('deerSpawn', { start: 0, end: 30}),
-            frameRate: 3,
+            frameRate: 45,
         });
         this.scene.anims.create({
             key: 'deerAttackAnimation',
             frames: this.scene.anims.generateFrameNumbers('deerAttack', { start: 0, end: 19}),
-            frameRate: 5,
+            frameRate: 15,
             repeat: -1,
         });
     }
@@ -71,7 +71,7 @@ export class DeerManager {
         setTimeout(() => {
             deer.destroy();
         }, this.spawnAnimationDurationMillis);
-        deer.play('deerAttack');
+        deer.play('deerAttackAnimation');
         deer.spawned = false;
         deer.setVelocity(velocity[0], velocity[1]);
         // this.scene.add.particles(posX, posY, 'dirtParticle', {
@@ -88,14 +88,21 @@ export class DeerManager {
         console.log("creating deer");
         let deer = this.deers.create(posX, posY, 'deerSpawn');
         //deer.setVelocity(velocity[0], velocity[1]);
-        deer.play('deerAttackAnimation');
-        setTimeout(() => {
-            console.log("moving deer");
-            let index = 0;
-            let intervalMillis = this.attackDurationMillis;
-            deer.spawned = true;
-            this.moveDeer(deer, velocity, index, intervalMillis);
-        }, this.spawnAnimationDurationMillis);
+        deer.play('deerSpawnAnimation');
+        deer.on('animationcomplete', () => {
+            deer.play('deerAttackAnimation');
+            this.scene.time.delayedCall(300, () => {
+                console.log("moving deer");
+                let index = 0;
+                let intervalMillis = this.attackDurationMillis;
+                deer.spawned = true;
+                this.moveDeer(deer, velocity, index, intervalMillis);
+            });
+            
+           
+        })
+       
+
         // this.scene.add.particles(posX, posY, 'dirtParticle', {
         //     speed: { min: 1, max: 20 },
         //     maxParticles: 20,
