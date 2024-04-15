@@ -64,15 +64,44 @@ export class AttackingAlly {
             let shooterClosest = this.scene.getClosestObject(grunt, this.scene.shooters.group);
             let wormClosest = this.scene.getClosestObject(grunt, this.scene.worm.group);
             // get closest enemy
-            let closest = bugClosest[1] < shooterClosest[1] ? bugClosest : shooterClosest;
-            let bug = closest[1] < wormClosest[1] ? closest[0] : wormClosest[0];
+            let damageType = "";
+            let bug;
+        
+            if(bugClosest[1] < shooterClosest[1] && bugClosest[1] < wormClosest[1])
+            {
+                bug = bugClosest[0];
+                damageType = "bug";
+            }
+            if(shooterClosest[1] < bugClosest[1] && shooterClosest[1] < wormClosest[1])
+            {
+                bug = shooterClosest[0];
+                damageType = "shooter";
+            }
+            if(wormClosest[1] < shooterClosest[1] && wormClosest[1] < bugClosest[1])
+            {
+                bug = wormClosest[0];
+                damageType = "worm";
+            }
             if (bug) {
                 const bugBounds = bug.getBounds();
                 if (Phaser.Geom.Intersects.RectangleToRectangle(gruntBounds, bugBounds)) {
                     grunt.attacking = true;
                     this.slashSound.play();
-                    this.scene.bugs.damageBug(bug, this.attackDamage);
-                    this.scene.bugs.slowBug(bug, "gruntAttack", this.attackSlow, this.attackSlowDurationMillis);
+                    if(damageType == "bug")
+                    {
+                        this.scene.bugs.damageBug(bug, this.attackDamage);
+                        this.scene.bugs.slowBug(bug, "gruntAttack", this.attackSlow, this.attackSlowDurationMillis);
+                    }
+                    if(damageType == "shooter")
+                    {
+                        this.scene.shooters.damageShooter(bug, this.attackDamage);
+                        this.scene.shooters.slowShooter(bug, "gruntAttack", this.attackSlow, this.attackSlowDurationMillis);
+                    }
+                    if(damageType == "worm")
+                    {
+                        this.scene.worm.damageworm(bug, this.attackDamage);
+                        this.scene.worm.slowworm(bug, "gruntAttack", this.attackSlow, this.attackSlowDurationMillis);
+                    }
                     grunt.play('gruntAttackAnimation');
                     grunt.setVelocity(0);
                     this.scene.time.delayedCall(this.attackCooldownMillis, (g) => { 

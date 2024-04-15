@@ -55,6 +55,12 @@ export class DeerManager {
                     this.scene.shooters.damageShooter(shooter, this.attackDamage);
                 }
             }
+            for (let worm of this.scene.worm.group.getChildren()) {
+                let wormBounds = worm.getBounds();
+                if (Phaser.Geom.Intersects.RectangleToRectangle(deerBounds, wormBounds)) {
+                    this.scene.worm.damageWorm(worm, this.attackDamage);
+                }
+            }
         }
     }
 

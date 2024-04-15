@@ -12,6 +12,7 @@ import { guess } from '../main.js';
 let downEvent = 0;
 let upEvent = 0;
 let mouseCurrentlyDown = false;
+const MIN_SWIPE_DISTANCE = 200;
 
 let mousePositions = [];
 export class Player {
@@ -136,7 +137,7 @@ export class Player {
         if (this.glyphSequence.length == 3) {
             result = this.summonElk();
             this.glyphSequence = [];
-        } else if (glyph === 'Glyph: ƨ') {
+        } else if (this.leftSwipe()) {
             result = this.summonGrunt();
         } else if (glyph === 'Glyph: -') {
             result = this.summonBush();
@@ -230,13 +231,13 @@ export class Player {
     //     && Math.abs(downEvent.downX - upEvent.upX) > Math.abs(downEvent.downY - upEvent.upY)
     // }
 
-    // leftSwipe()
-    // {
-    //     return downEvent.downX > upEvent.upX 
-    //     && Math.abs(downEvent.downX - upEvent.upX) > MIN_SWIPE_DISTANCE
-    //     && Math.abs(downEvent.downY - upEvent.upY) < MIN_SWIPE_DISTANCE
-    //     && Math.abs(downEvent.downX - upEvent.upX) > Math.abs(downEvent.downY - upEvent.upY)
-    // }
+    leftSwipe()
+    {
+        return downEvent.downX > upEvent.upX 
+        && Math.abs(downEvent.downX - upEvent.upX) > MIN_SWIPE_DISTANCE
+        && Math.abs(downEvent.downY - upEvent.upY) < MIN_SWIPE_DISTANCE
+        && Math.abs(downEvent.downX - upEvent.upX) > Math.abs(downEvent.downY - upEvent.upY)
+    }
 
     // downLeftSwipe()
     // {

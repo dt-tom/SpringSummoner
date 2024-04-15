@@ -106,7 +106,7 @@ export class Worm {
         this.MAX_worm_COUNT = 1;
         this.MAX_worm_LIFESPAN_MILLIS = 30_000;
         this.SPAWN_INTERVAL = 10000;
-        this.MAX_HEALTH = 50;
+        this.MAX_HEALTH = 1000;
         this.scene.anims.create({
             key: 'wormMoveAnimation',
             frames: this.scene.anims.generateFrameNumbers('wormMove', { start: 0, end: 3}),
@@ -171,9 +171,12 @@ export class Worm {
         // Prevent bugs from stacking
         this.scene.physics.add.collider(this.group, this.group); 
 
-        // this.scene.physics.add.collider(
-        //     this.scene.player.gameObject,
-        //     this.group);
+        this.scene.physics.add.collider(
+            this.scene.player.gameObject,
+            this.group, (_player, worm) => {
+                this.scene.player.damage(this.attackDamage);
+                this.scene.player.slow('worm', this.projectileSlow, this.projectileSlowDurationMillis);
+            });
 
     }
 
@@ -194,13 +197,14 @@ export class Worm {
     }
 
     attack(worm) {     
-        if (worm.attacking) {
+        if (worm.attacking || worm.health <= 0) {
             return;
         }
         worm.attackcount += 1;
 
         worm.attacking = true;
         worm.setVelocity(0);
+        worm.setImmovable();
         worm.play('wormSpawnAnimation');
         this.scene.add.particles(worm.x, worm.y, 'dirtParticle', {
             speed: { min: 1, max: 20 },
@@ -211,6 +215,11 @@ export class Worm {
         })
         this.scene.time.delayedCall(1000, (b) => { 
             console.log("WORM ATTACK");
+            // worm could be dead
+            if(!worm)
+            {
+                return;
+            }
             
             let vVector = Math.sqrt(this.scene.player.gameObject.body.velocity.x ** 2, this.scene.player.gameObject.body.velocity.y ** 2);
             console.log(vVector);
@@ -224,7 +233,10 @@ export class Worm {
                 worm.x = this.scene.player.gameObject.x + this.scene.player.gameObject.body.velocity.x;
                 worm.y = this.scene.player.gameObject.y + this.scene.player.gameObject.body.velocity.y;
             }
-            worm.play('wormAttackAnimation');
+            if(worm !== undefined)
+            {
+                worm.play('wormAttackAnimation');
+            }
             worm.on('animationcomplete', () => {
                 console.log("destroying worm");
                 worm.destroy();

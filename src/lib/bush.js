@@ -54,6 +54,13 @@ export class Bush {
                     this.scene.shooters.damageShooter(shooter, this.bushTickDamage);
                 }
             }
+            for (let worm of this.scene.worm.group.getChildren()) {
+                const wormBounds = worm.getBounds();
+                if (Phaser.Geom.Intersects.RectangleToRectangle(bushBounds, wormBounds)) {
+                    this.scene.worm.slowworm(worm, "bushSlow", this.bushSpeedReduction, this.bushSlowDurationMillis);
+                    this.scene.worm.damageworm(worm, this.bushTickDamage);
+                }
+            }
         }
     }
 
