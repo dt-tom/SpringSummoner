@@ -135,10 +135,10 @@ export class Player {
     }
 
     detectGesture(glyphData){
+        if (!glyphData) return;
+
         const { glyph, spellAccuracy } = glyphData;
         // horizontal right swipe
-
-        if (!glyph) return;
 
         if (spellAccuracy >= 0.9) {
             this.glyphSequence.push(glyph);
