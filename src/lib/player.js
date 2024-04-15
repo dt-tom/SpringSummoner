@@ -125,10 +125,14 @@ export class Player {
         return this.mana >= amount;
     }
 
-    detectGesture(){
+    detectGesture(glyphData){
+        const { glyph, spellAccuracy } = glyphData;
         // horizontal right swipe
+
+        if (!glyph) return;
+
         let hasMana = true;
-        if(this.rightSwipe() || this.leftSwipe()){
+        if(glyph === 'Glyph: ƨ'){
             let gruntManaCost = this.scene.attackingAllies.getManaCost();
             if (this.hasMana(gruntManaCost)) {
                 this.mana = this.mana - gruntManaCost;
@@ -136,7 +140,7 @@ export class Player {
                 return [true, 0x00ff00];
             }
             hasMana = false;
-        } else if (this.upSwipe()) {
+        } else if (glyph === 'Glyph: -') {
             let bushManaCost = this.scene.bushes.getManaCost();
             if (this.hasMana(bushManaCost)) {
                 this.mana = this.mana - bushManaCost;
@@ -145,7 +149,7 @@ export class Player {
             }
             hasMana = false;
         }
-        else if (this.downSwipe()) {
+        else if (glyph === 'Glyph: ¬') {
             let explosionManaCost = this.scene.explodingAllies.getManaCost();
             if (this.hasMana(explosionManaCost)) {
                 this.mana = this.mana - explosionManaCost;
@@ -160,69 +164,69 @@ export class Player {
         return [false, 0xff0000];
     }
 
-    upSwipe()
-    {
-        return downEvent.downY > upEvent.upY 
-        && Math.abs(downEvent.downY - upEvent.upY) > MIN_SWIPE_DISTANCE
-        && Math.abs(downEvent.downX - upEvent.upX) < MIN_SWIPE_DISTANCE
-        && Math.abs(downEvent.downY - upEvent.upY) > Math.abs(downEvent.downX - upEvent.upX);
-    }
+    // upSwipe()
+    // {
+    //     return downEvent.downY > upEvent.upY 
+    //     && Math.abs(downEvent.downY - upEvent.upY) > MIN_SWIPE_DISTANCE
+    //     && Math.abs(downEvent.downX - upEvent.upX) < MIN_SWIPE_DISTANCE
+    //     && Math.abs(downEvent.downY - upEvent.upY) > Math.abs(downEvent.downX - upEvent.upX);
+    // }
 
-    downSwipe()
-    {
-        return downEvent.downY < upEvent.upY 
-        && Math.abs(downEvent.downY - upEvent.upY) > MIN_SWIPE_DISTANCE
-        && Math.abs(downEvent.downX - upEvent.upX) < MIN_SWIPE_DISTANCE
-        && Math.abs(downEvent.downY - upEvent.upY) > Math.abs(downEvent.downX - upEvent.upX);
-    }
+    // downSwipe()
+    // {
+    //     return downEvent.downY < upEvent.upY 
+    //     && Math.abs(downEvent.downY - upEvent.upY) > MIN_SWIPE_DISTANCE
+    //     && Math.abs(downEvent.downX - upEvent.upX) < MIN_SWIPE_DISTANCE
+    //     && Math.abs(downEvent.downY - upEvent.upY) > Math.abs(downEvent.downX - upEvent.upX);
+    // }
 
-    rightSwipe()
-    {
-        return downEvent.downX < upEvent.upX 
-        && Math.abs(downEvent.downX - upEvent.upX) > MIN_SWIPE_DISTANCE
-        && Math.abs(downEvent.downY - upEvent.upY) < MIN_SWIPE_DISTANCE
-        && Math.abs(downEvent.downX - upEvent.upX) > Math.abs(downEvent.downY - upEvent.upY)
-    }
+    // rightSwipe()
+    // {
+    //     return downEvent.downX < upEvent.upX 
+    //     && Math.abs(downEvent.downX - upEvent.upX) > MIN_SWIPE_DISTANCE
+    //     && Math.abs(downEvent.downY - upEvent.upY) < MIN_SWIPE_DISTANCE
+    //     && Math.abs(downEvent.downX - upEvent.upX) > Math.abs(downEvent.downY - upEvent.upY)
+    // }
 
-    leftSwipe()
-    {
-        return downEvent.downX > upEvent.upX 
-        && Math.abs(downEvent.downX - upEvent.upX) > MIN_SWIPE_DISTANCE
-        && Math.abs(downEvent.downY - upEvent.upY) < MIN_SWIPE_DISTANCE
-        && Math.abs(downEvent.downX - upEvent.upX) > Math.abs(downEvent.downY - upEvent.upY)
-    }
+    // leftSwipe()
+    // {
+    //     return downEvent.downX > upEvent.upX 
+    //     && Math.abs(downEvent.downX - upEvent.upX) > MIN_SWIPE_DISTANCE
+    //     && Math.abs(downEvent.downY - upEvent.upY) < MIN_SWIPE_DISTANCE
+    //     && Math.abs(downEvent.downX - upEvent.upX) > Math.abs(downEvent.downY - upEvent.upY)
+    // }
 
-    downLeftSwipe()
-    {
-        return downEvent.downX > upEvent.upX 
-        && downEvent.downY < upEvent.upY 
-        && Math.abs(downEvent.downX - upEvent.upX) > MIN_SWIPE_DISTANCE
-        && Math.abs(downEvent.downY - upEvent.upY) > MIN_SWIPE_DISTANCE
-    }
+    // downLeftSwipe()
+    // {
+    //     return downEvent.downX > upEvent.upX 
+    //     && downEvent.downY < upEvent.upY 
+    //     && Math.abs(downEvent.downX - upEvent.upX) > MIN_SWIPE_DISTANCE
+    //     && Math.abs(downEvent.downY - upEvent.upY) > MIN_SWIPE_DISTANCE
+    // }
 
-    downRightSwipe()
-    {
-        return downEvent.downX < upEvent.upX 
-        && downEvent.downY < upEvent.upY 
-        && Math.abs(downEvent.downX - upEvent.upX) > MIN_SWIPE_DISTANCE
-        && Math.abs(downEvent.downY - upEvent.upY) > MIN_SWIPE_DISTANCE
-    }
+    // downRightSwipe()
+    // {
+    //     return downEvent.downX < upEvent.upX 
+    //     && downEvent.downY < upEvent.upY 
+    //     && Math.abs(downEvent.downX - upEvent.upX) > MIN_SWIPE_DISTANCE
+    //     && Math.abs(downEvent.downY - upEvent.upY) > MIN_SWIPE_DISTANCE
+    // }
 
-    upLeftSwipe()
-    {
-        return downEvent.downX > upEvent.upX 
-        && downEvent.downY > upEvent.upY 
-        && Math.abs(downEvent.downX - upEvent.upX) > MIN_SWIPE_DISTANCE
-        && Math.abs(downEvent.downY - upEvent.upY) > MIN_SWIPE_DISTANCE
-    }
+    // upLeftSwipe()
+    // {
+    //     return downEvent.downX > upEvent.upX 
+    //     && downEvent.downY > upEvent.upY 
+    //     && Math.abs(downEvent.downX - upEvent.upX) > MIN_SWIPE_DISTANCE
+    //     && Math.abs(downEvent.downY - upEvent.upY) > MIN_SWIPE_DISTANCE
+    // }
 
-    upRightSwipe()
-    {
-        return downEvent.downX < upEvent.upX 
-        && downEvent.downY > upEvent.upY 
-        && Math.abs(downEvent.downX - upEvent.upX) > MIN_SWIPE_DISTANCE
-        && Math.abs(downEvent.downY - upEvent.upY) > MIN_SWIPE_DISTANCE
-    }
+    // upRightSwipe()
+    // {
+    //     return downEvent.downX < upEvent.upX 
+    //     && downEvent.downY > upEvent.upY 
+    //     && Math.abs(downEvent.downX - upEvent.upX) > MIN_SWIPE_DISTANCE
+    //     && Math.abs(downEvent.downY - upEvent.upY) > MIN_SWIPE_DISTANCE
+    // }
 
     trackMousePositionAndSpawnParticles()
     {
@@ -268,9 +272,9 @@ export class Player {
         ctx.fillStyle= "white";
         ctx.fillRect(0, 0, size, size);
 
+        const tx = size/1024;
+        const ty = size/768;
         for (let i = 0; i < mousePositions.length - 1; i++) {
-            const tx = size/1024;
-            const ty = size/768;
             const [x1, y1, x2, y2] = [mousePositions[i][0] * tx, mousePositions[i][1] * ty,mousePositions[i+1][0] * tx,mousePositions[i + 1][1] * ty];
             drawLine(ctx, x1, y1, x2, y2);
         }
@@ -280,8 +284,11 @@ export class Player {
                 bright.push(ctx.getImageData(x,y,1,1).data[0]/255)
             }
         }
-        console.log(`Result: ${bright.filter(d=>d<1).length > 10 ? guess(bright): 'Not enough input'}`)
+
+        const res = bright.filter(d=>d<1).length > 10 ? guess(bright): null;
+
         document.body.removeChild(canvas);
+        return res;
     }
 
     clickDownHandler(e) {
@@ -293,7 +300,7 @@ export class Player {
     }
 
     clickUpHandler(e) {
-        this.classifySummmon();
+        const glyph = this.classifySummmon();
         mousePositions = [];
         mouseCurrentlyDown = false;
         upEvent = e;
@@ -301,12 +308,12 @@ export class Player {
         if (this.isDead()) {
             return
         }
-        let result = this.detectGesture();
-        // Iterate over the array
-        for (let i = 0; i < this.particles.length; i++) {
-            this.particles[i].setParticleTint(result[1]);
-        }
-        this.particles = [];
+        this.detectGesture(glyph);
+        // // Iterate over the array
+        // for (let i = 0; i < this.particles.length; i++) {
+        //     this.particles[i].setParticleTint(result[1]);
+        // }
+        // this.particles = [];
     }
 
     // Update is called once per tick
