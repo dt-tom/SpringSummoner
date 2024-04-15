@@ -202,12 +202,12 @@ export class Worm {
         worm.attacking = true;
         worm.setVelocity(0);
         worm.play('wormSpawnAnimation');
-        this.scene.add.particles(x, y, 'dirtParticle', {
+        this.scene.add.particles(worm.x, worm.y, 'dirtParticle', {
             speed: { min: 1, max: 20 },
-            maxParticles: 20,
+            maxParticles: 50,
             anim: 'dirtTumble',
             duration: 3000,
-            emitZone: { source: new Phaser.Geom.Circle(0, 0, 30) }  // Emit particles within a 4 pixel radius
+            emitZone: { source: new Phaser.Geom.Circle(0, 0, 60) }  // Emit particles within a 4 pixel radius
         })
         this.scene.time.delayedCall(1000, (b) => { 
             console.log("WORM ATTACK");

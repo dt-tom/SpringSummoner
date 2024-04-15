@@ -54,7 +54,7 @@ export class ExplodingAlly {
             if(!ally.exploding){
                 let bugClosest = this.scene.getClosestObject(ally, this.scene.bugs.group);
                 let shooterClosest = this.scene.getClosestObject(ally, this.scene.shooters.group);
-                let wormClosest = this.scene.getClosestObject(grunt, this.scene.worm.group);
+                let wormClosest = this.scene.getClosestObject(ally, this.scene.worm.group);
                 // get closest enemy
                 let closest = bugClosest[1] < shooterClosest[1] ? bugClosest : shooterClosest;
                 let closestEnemy = closest[1] < wormClosest[1] ? closest[0] : wormClosest[0];
