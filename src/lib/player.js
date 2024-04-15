@@ -138,7 +138,6 @@ export class Player {
         if (!glyphData) return;
 
         const { glyph, spellAccuracy } = glyphData;
-        // horizontal right swipe
 
         if (spellAccuracy >= 0.9) {
             this.glyphSequence.push(glyph);
@@ -146,19 +145,18 @@ export class Player {
             this.glyphSequence = [];
         }
 
-        let hasMana = true;
+        let result = [false, 0xff0000];
         if (this.glyphSequence.length == 3) {
-            hasMana = this.summonElk();
+            result = this.summonElk();
             this.glyphSequence = [];
         } else if (glyph === 'Glyph: ƨ') {
-            hasMana = this.summonGrunt();
+            result = this.summonGrunt();
         } else if (glyph === 'Glyph: -') {
-            hasMana = this.summonBush();
+            result = this.summonBush();
         } else if (glyph === 'Glyph: ¬') {
-            hasMana = this.summonExploder();
+            result = this.summonExploder();
         }
-
-        return hasMana || [false, 0x0000ff];// || [false, 0xff0000];
+        return result;
     }
 
     summonElk() {
@@ -176,7 +174,7 @@ export class Player {
             this.scene.attackingAllies.createAttackingAlly(upEvent.worldX, upEvent.worldY);
             return [true, 0x00ff00];
         }
-
+        return [false, 0x0000ff];
     }
 
     summonBush() {
@@ -186,6 +184,7 @@ export class Player {
             this.scene.bushes.addBush(upEvent.worldX, upEvent.worldY);
             return [true, 0x00ff00];
         }
+        return [false, 0x0000ff];
     }
 
     summonExploder() {
@@ -195,6 +194,7 @@ export class Player {
             this.scene.explodingAllies.createExplodingAlly(upEvent.worldX, upEvent.worldY);
             return [true, 0x00ff00];
         }
+        return [false, 0x0000ff];
     }
 
     // upSwipe()
@@ -341,12 +341,12 @@ export class Player {
             return
         }
         this.gameObject.anims.play('summonAnimation', true)
-        this.detectGesture(glyph);
-        // // Iterate over the array
-        // for (let i = 0; i < this.particles.length; i++) {
-        //     this.particles[i].setParticleTint(result[1]);
-        // }
-        // this.particles = [];
+        let result = this.detectGesture(glyph);
+        // Iterate over the array
+        for (let i = 0; i < this.particles.length; i++) {
+            this.particles[i].setParticleTint(result[1]);
+        }
+        this.particles = [];
     }
 
     // Update is called once per tick

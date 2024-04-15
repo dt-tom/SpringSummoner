@@ -85,7 +85,6 @@ export class AttackingAlly {
                     this.scene.physics.moveToObject(grunt, bug, 60);
                 }
             }
-            
         }
     }
     createAttackingAlly(posX, posY)
