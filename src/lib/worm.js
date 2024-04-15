@@ -95,7 +95,7 @@ export class Worm {
             }, [worm], this);
             this.scene.time.delayedCall(2000, (e) => { 
                 e.hasSpawned = true;
-                worm.canAttack = true;
+                worm.canAttack = false;
                 e.play('wormMoveAnimation');
                 this.earthquakeSound.play('shortEarthquake');
             }, [worm], this);
