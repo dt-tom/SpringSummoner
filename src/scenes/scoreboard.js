@@ -13,7 +13,7 @@ export class Scoreboard extends Phaser.Scene {
         this.wormTextActive = false;
         // Add your UI elements here
         this.scoreText = this.add.text(16, 16, 'Score: 0', { fontSize: '24px', fill: '#000' }).setScrollFactor(0);
-        
+        this.glyphLevel = this.add.text(848, 64, 'Glyph Level:   1', { fontSize: '16px', fill: '#000' }).setScrollFactor(0);
         this.glyphSequence = this.add.text(16, 40, 'Glyph Sequence: ', { fontSize: '16px', fill: '#000' }).setScrollFactor(0);
         this.lastSpellAccuracy = this.add.text(16, 56, 'Last Glyph Accuracy: -', { fontSize: '16px', fill: '#000' }).setScrollFactor(0);
         this.difficulty = this.add.text(16, 72, 'Difficulty: 0', { fontSize: '16px', fill: '#000' }).setScrollFactor(0);
@@ -76,5 +76,9 @@ export class Scoreboard extends Phaser.Scene {
 
     updateDifficulty(newDifficulty) {
         this.difficulty.setText(`Difficulty: ${newDifficulty.toFixed(2)}`);
+    }
+
+    updateGlyphLevel(newLevel) {
+        this.glyphLevel.setText(`Glyph Level: ${newLevel < 10 ? `  ${newLevel}` : newLevel < 100 ? ` ${newLevel}`: "99+"}`);
     }
 }

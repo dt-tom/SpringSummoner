@@ -21,6 +21,8 @@ export class Player {
         this.firstUpdate = true
         this.playerSpeed = playerSpeed;
         this.glyphSequence = [];
+        this.glyphLevel = 1;
+        this.prevGlyphLevel = 1;
         this.wPosPath = [];
     }
 
@@ -127,10 +129,18 @@ export class Player {
         // keep track of combos
         if (spellAccuracy >= 0.9) {
             this.glyphSequence.push(glyph);
+            this.glyphLevel += 1;
+            if (this.glyphLevel % 10 == 0) this.prevGlyphLevel = this.glyphLevel;
+            this.scene.scene.get('Scoreboard').updateGlyphLevel(this.glyphLevel);
         } else if (spellAccuracy >= 0.5) {
             this.glyphSequence = [];
+            this.glyphLevel = this.prevGlyphLevel;
+            this.scene.scene.get('Scoreboard').updateGlyphLevel(this.glyphLevel);
         } else {
             // bad confidence score, missed spell
+            this.glyphSequence = [];
+            this.glyphLevel = this.prevGlyphLevel;
+            this.scene.scene.get('Scoreboard').updateGlyphLevel(this.glyphLevel);
             return result;
         }
         this.scene.scene.get('Scoreboard').updateGlyphSequence(this.glyphSequence);
