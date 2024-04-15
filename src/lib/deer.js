@@ -14,7 +14,7 @@ export class DeerManager {
 
     create() {
         this.manaCost = 25;
-        this.attackDamage = 100;
+        this.attackDamage = 100000;
         this.attackDurationMillis = 1000;
         this.spawnAnimationDurationMillis = 1000;
         this.deers = this.scene.physics.add.group({
@@ -27,86 +27,116 @@ export class DeerManager {
         this.scene.anims.create({
             key: 'deerSpawnAnimation',
             frames: this.scene.anims.generateFrameNumbers('deerSpawn', { start: 0, end: 30}),
-            frameRate: 3,
+            frameRate: 45,
         });
         this.scene.anims.create({
             key: 'deerAttackAnimation',
             frames: this.scene.anims.generateFrameNumbers('deerAttack', { start: 0, end: 19}),
-            frameRate: 5,
+            frameRate: 15,
             repeat: -1,
         });
+
+        this.scene.physics.add.overlap(
+            this.deers,
+            this.scene.bugs.group,
+            (deer, bug) => {
+                this.scene.bugs.damageBug(bug, this.attackDamage)},
+            null,
+            this,
+        );
+        this.scene.physics.add.overlap(
+            this.deers,
+            this.scene.shooters.group,
+            (deer, shooter) => {
+                this.scene.shooters.damageShooter(shooter, this.attackDamage)},
+            null,
+            this,
+        );
+        // this.scene.physics.add.collider(
+        //     this.deers,
+        //     this.scene.worm.group,
+        //     (deer, worm) => {
+        //         console.log("WORM COLLIDE");
+        //         //this.scene.worm.damageworm(worm, this.attackDamage)},
+        //     }
+        // );
     }
 
     update() {
-        for (let deer of this.deers.getChildren()) {
-            if (!deer.spawned) {
-                continue;
-            }
-            let deerBounds = deer.getBounds();
-            for (let bug of this.scene.bugs.group.getChildren()) {
-                let bugBounds = bug.getBounds();
-                if (Phaser.Geom.Intersects.RectangleToRectangle(deerBounds, bugBounds)) {
-                    this.scene.bugs.damageBug(bug, this.attackDamage);
-                }
-            }
-            for (let shooter of this.scene.shooters.group.getChildren()) {
-                let shooterBounds = shooter.getBounds();
-                if (Phaser.Geom.Intersects.RectangleToRectangle(deerBounds, shooterBounds)) {
-                    this.scene.shooters.damageShooter(shooter, this.attackDamage);
-                }
-            }
-            for (let worm of this.scene.worm.group.getChildren()) {
-                let wormBounds = worm.getBounds();
-                if (Phaser.Geom.Intersects.RectangleToRectangle(deerBounds, wormBounds)) {
-                    this.scene.worm.damageworm(worm, this.attackDamage);
-                }
-            }
-        }
+        // for (let deer of this.deers.getChildren()) {
+        //     if (!deer.spawned) {
+        //         continue;
+        //     }
+        //     console.log("here");
+        //     let deerBounds = deer.getBounds();
+        //     for (let bug of this.scene.bugs.group.getChildren()) {
+        //         console.log(deerBounds);
+        //         let bugBounds = bug.getBounds();
+        //         console.log(bugBounds);
+        //         console.log("rectange: " + Phaser.Geom.Intersects.RectangleToRectangle(deerBounds, bugBounds));
+        //         if (Phaser.Geom.Intersects.RectangleToRectangle(deerBounds, bugBounds)) {
+        //             console.log("here4");
+        //             this.scene.bugs.damageBug(bug, this.attackDamage);
+        //         }
+        //     }
+        //     for (let shooter of this.scene.shooters.group.getChildren()) {
+        //         let shooterBounds = shooter.getBounds();
+        //         if (Phaser.Geom.Intersects.RectangleToRectangle(deerBounds, shooterBounds)) {
+        //             this.scene.shooters.damageShooter(shooter, this.attackDamage);
+        //         }
+        //     }
+        //     for (let worm of this.scene.worm.group.getChildren()) {
+        //         let wormBounds = worm.getBounds();
+        //         if (Phaser.Geom.Intersects.RectangleToRectangle(deerBounds, wormBounds)) {
+        //             this.scene.worm.damageWorm(worm, this.attackDamage);
+        //         }
+        //     }
+        // }
     }
 
-    moveDeer(deer, positions, index, intervalMillis) {
+    moveDeer(deer, velocity, index, intervalMillis) {
         console.log("in move deer");
-        let posX = positions[index][0];
-        let posY = positions[index][1];
-        this.scene.physics.moveTo(deer, posX, posY, undefined, intervalMillis);
         index = index + 1;
-        if (index < positions.length) {
-            this.scene.time.delayedCall(intervalMillis, this.moveDeer, [deer, positions, index, intervalMillis], this);
-        } else {
-            setTimeout(() => {
-                deer.destroy();
-            }, this.spawnAnimationDurationMillis);
-            deer.play('deerAttack');
-            deer.spawned = false;
-            deer.setVelocity(0);
-            this.scene.add.particles(posX, posY, 'dirtParticle', {
-                speed: { min: 1, max: 20 },
-                maxParticles: 20,
-                anim: 'dirtTumble',
-                duration: 1500,
-                emitZone: { source: new Phaser.Geom.Circle(0, 0, 30) }  // Emit particles within a 4 pixel radius
-            });
-        }
+       
+        setTimeout(() => {
+            deer.destroy();
+        }, this.spawnAnimationDurationMillis);
+        deer.play('deerAttackAnimation');
+        deer.spawned = false;
+        deer.setVelocity(velocity[0], velocity[1]);
+        // this.scene.add.particles(posX, posY, 'dirtParticle', {
+        //     speed: { min: 1, max: 20 },
+        //     maxParticles: 20,
+        //     anim: 'dirtTumble',
+        //     duration: 1500,
+        //     emitZone: { source: new Phaser.Geom.Circle(0, 0, 30) }  // Emit particles within a 4 pixel radius
+        // });
+        
     }
 
-    createDeer(posX, posY, positions) {
+    createDeer(velocity, posX, posY) {
         console.log("creating deer");
         let deer = this.deers.create(posX, posY, 'deerSpawn');
-        deer.play('deerAttackAnimation');
-        setTimeout(() => {
-            console.log("moving deer");
-            let index = 0;
-            let intervalMillis = this.attackDurationMillis / positions.length;
-            deer.spawned = true;
-            this.moveDeer(deer, positions, index, intervalMillis);
-        }, this.spawnAnimationDurationMillis);
-        this.scene.add.particles(posX, posY, 'dirtParticle', {
-            speed: { min: 1, max: 20 },
-            maxParticles: 20,
-            anim: 'dirtTumble',
-            duration: 1500,
-            emitZone: { source: new Phaser.Geom.Circle(0, 0, 30) }  // Emit particles within a 4 pixel radius
+        deer.spawned = true;
+        deer.play('deerSpawnAnimation');
+        deer.on('animationcomplete', () => {
+            deer.play('deerAttackAnimation');
+            this.scene.time.delayedCall(10, () => {
+                let index = 0;
+                let intervalMillis = this.attackDurationMillis;
+                deer.spawned = true;
+                this.moveDeer(deer, velocity, index, intervalMillis);
+            });    
         });
+       
+
+        // this.scene.add.particles(posX, posY, 'dirtParticle', {
+        //     speed: { min: 1, max: 20 },
+        //     maxParticles: 20,
+        //     anim: 'dirtTumble',
+        //     duration: 1500,
+        //     emitZone: { source: new Phaser.Geom.Circle(0, 0, 30) }  // Emit particles within a 4 pixel radius
+        // });
     }
 
     getManaCost() {

@@ -21,7 +21,7 @@ export const playerSpawn = { x: 400, y: 300 }
 
 // Killswitches (development tools)
 export const summonForFree = false;
-export const devMode = false;
+export const devMode = true;
 
 // Bug Enemies
 export const bugSpawnInnerRadius = 250;

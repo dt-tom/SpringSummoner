@@ -176,6 +176,9 @@ export class GameScene extends Phaser.Scene {
         // this.physics.add.collider(this.bugs.group, this.worm.group);
         // this.physics.add.collider(this.shooters.group, this.worm.group);
         // this.physics.add.collider(this.bugs.group, this.worm.group);
+        this.physics.add.overlap(this.deers.deers, this.worm.group, (ally, enemy) => {
+            this.worm.damageworm(enemy, this.deers.attackDamage);
+        });
         this.physics.add.collider(this.explodingAllies.explodingAllies, this.worm.group, (ally, enemy) => {
             this.explodingAllies.explode(ally, enemy);
         });
