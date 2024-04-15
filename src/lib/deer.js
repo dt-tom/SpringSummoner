@@ -76,7 +76,7 @@ export class DeerManager {
             setTimeout(() => {
                 deer.destroy();
             }, this.spawnAnimationDurationMillis);
-            deer.playReverse('deerSpawnAnimation');
+            deer.play('deerAttack');
             deer.spawned = false;
             deer.setVelocity(0);
             this.scene.add.particles(posX, posY, 'dirtParticle', {
@@ -92,7 +92,7 @@ export class DeerManager {
     createDeer(posX, posY, positions) {
         console.log("creating deer");
         let deer = this.deers.create(posX, posY, 'deerSpawn');
-        deer.play('deerSpawnAnimation');
+        deer.play('deerAttackAnimation');
         setTimeout(() => {
             console.log("moving deer");
             let index = 0;
