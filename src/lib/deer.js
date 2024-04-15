@@ -64,49 +64,45 @@ export class DeerManager {
         }
     }
 
-    moveDeer(deer, positions, index, intervalMillis) {
+    moveDeer(deer, velocity, index, intervalMillis) {
         console.log("in move deer");
-        let posX = positions[index][0];
-        let posY = positions[index][1];
-        this.scene.physics.moveTo(deer, posX, posY, undefined, intervalMillis);
         index = index + 1;
-        if (index < positions.length) {
-            this.scene.time.delayedCall(intervalMillis, this.moveDeer, [deer, positions, index, intervalMillis], this);
-        } else {
-            setTimeout(() => {
-                deer.destroy();
-            }, this.spawnAnimationDurationMillis);
-            deer.play('deerAttack');
-            deer.spawned = false;
-            deer.setVelocity(0);
-            this.scene.add.particles(posX, posY, 'dirtParticle', {
-                speed: { min: 1, max: 20 },
-                maxParticles: 20,
-                anim: 'dirtTumble',
-                duration: 1500,
-                emitZone: { source: new Phaser.Geom.Circle(0, 0, 30) }  // Emit particles within a 4 pixel radius
-            });
-        }
+       
+        setTimeout(() => {
+            deer.destroy();
+        }, this.spawnAnimationDurationMillis);
+        deer.play('deerAttack');
+        deer.spawned = false;
+        deer.setVelocity(velocity[0], velocity[1]);
+        // this.scene.add.particles(posX, posY, 'dirtParticle', {
+        //     speed: { min: 1, max: 20 },
+        //     maxParticles: 20,
+        //     anim: 'dirtTumble',
+        //     duration: 1500,
+        //     emitZone: { source: new Phaser.Geom.Circle(0, 0, 30) }  // Emit particles within a 4 pixel radius
+        // });
+        
     }
 
-    createDeer(posX, posY, positions) {
+    createDeer(velocity, posX, posY) {
         console.log("creating deer");
         let deer = this.deers.create(posX, posY, 'deerSpawn');
+        //deer.setVelocity(velocity[0], velocity[1]);
         deer.play('deerAttackAnimation');
         setTimeout(() => {
             console.log("moving deer");
             let index = 0;
-            let intervalMillis = this.attackDurationMillis / positions.length;
+            let intervalMillis = this.attackDurationMillis;
             deer.spawned = true;
-            this.moveDeer(deer, positions, index, intervalMillis);
+            this.moveDeer(deer, velocity, index, intervalMillis);
         }, this.spawnAnimationDurationMillis);
-        this.scene.add.particles(posX, posY, 'dirtParticle', {
-            speed: { min: 1, max: 20 },
-            maxParticles: 20,
-            anim: 'dirtTumble',
-            duration: 1500,
-            emitZone: { source: new Phaser.Geom.Circle(0, 0, 30) }  // Emit particles within a 4 pixel radius
-        });
+        // this.scene.add.particles(posX, posY, 'dirtParticle', {
+        //     speed: { min: 1, max: 20 },
+        //     maxParticles: 20,
+        //     anim: 'dirtTumble',
+        //     duration: 1500,
+        //     emitZone: { source: new Phaser.Geom.Circle(0, 0, 30) }  // Emit particles within a 4 pixel radius
+        // });
     }
 
     getManaCost() {

@@ -125,7 +125,7 @@ export class Player {
         let result = [false, 0xff0000];
 
         // keep track of combos
-        if (spellAccuracy >= 0.9) {
+        if (spellAccuracy >= 0.75) {
             this.glyphSequence.push(glyph);
         } else if (spellAccuracy >= 0.5) {
             this.glyphSequence = [];
@@ -134,12 +134,15 @@ export class Player {
             return result;
         }
         this.scene.scene.get('Scoreboard').updateGlyphSequence(this.glyphSequence);
-        if (this.deerFlag) {
-            this.glyphSequence = [];
-            result = this.summonDeer();
-            this.scene.scene.get('Scoreboard').updateGlyphSequence(this.glyphSequence);
-            this.deerFlag = false;
+        if (this.deerFlag) {        
+            if(this.anySwipe){
+                this.glyphSequence = [];
+                result = this.summonDeer();
+                this.scene.scene.get('Scoreboard').updateGlyphSequence(this.glyphSequence);
+                this.deerFlag = false;
+            }
         } else if (this.glyphSequence.length == 2) {
+            console.log("deer flag true");
             this.deerFlag = true;
         } else if (this.leftSwipe()) {
             result = this.summonGrunt();
@@ -163,7 +166,8 @@ export class Player {
         let manaCost = this.scene.deers.getManaCost();
         if (this.hasMana(manaCost)) {
             this.mana = this.mana - manaCost;
-            this.scene.deers.createDeer(this.wPosPath[0][0], this.wPosPath[0][1], this.wPosPath.slice(0, 100));
+            this.velocity = [upEvent.upX - downEvent.downX , downEvent.upY - upEvent.downY ];
+            this.scene.deers.createDeer(this.velocity, downEvent.X, downEvent.Y);
             this.wPosPath = []
             return [true, 0x00ff00];
         }
@@ -206,6 +210,12 @@ export class Player {
         && Math.abs(downEvent.downY - upEvent.upY) > MIN_SWIPE_DISTANCE
         && Math.abs(downEvent.downX - upEvent.upX) < MIN_SWIPE_DISTANCE
         && Math.abs(downEvent.downY - upEvent.upY) > Math.abs(downEvent.downX - upEvent.upX);
+    }
+
+    anySwipe()
+    {
+        return Math.abs(downEvent.downY - upEvent.upY) > MIN_SWIPE_DISTANCE
+        || Math.abs(downEvent.downX - upEvent.upX) > MIN_SWIPE_DISTANCE;
     }
 
     // downSwipe()

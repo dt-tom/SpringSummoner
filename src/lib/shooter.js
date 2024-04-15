@@ -107,7 +107,7 @@ export class ShooterGroup {
         this.projectileSlowDurationMillis = 350;
         this.MAX_SHOOTER_COUNT = 10;
         this.MAX_SHOOTER_LIFESPAN_MILLIS = 30_000;
-        this.SPAWN_INTERVAL = 10000;
+        this.SPAWN_INTERVAL = 1000000;
         this.MAX_HEALTH = 50;
         this.scene.anims.create({
             key: 'shooterMoveAnimation',

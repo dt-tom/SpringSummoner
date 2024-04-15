@@ -26,12 +26,12 @@ export const devMode = false;
 // Bug Enemies
 export const bugSpawnInnerRadius = 250;
 export const bugSpawnOuterRadius = 800;
-export const bugNumInitialSpawns = 10;
+export const bugNumInitialSpawns = 0;
 
 // Shooter Enemies
 export const shooterSpawnInnerRadius = 250;
 export const shooterSpawnOuterRadius = 800;
-export const shooterNumInitialSpawns = 2;
+export const shooterNumInitialSpawns = 0;
 
 export const wormSpawnInnerRadius = 650;
 export const wormSpawnOuterRadius = 1000;
@@ -41,4 +41,4 @@ export const wormNumInitialSpawns = 0;
 export const MIN_SWIPE_DISTANCE = 200;
 export const MOUSE_SAMPLE_RATE = 10;
 
-export const wormScore = 1000;
+export const wormScore = 20000;
