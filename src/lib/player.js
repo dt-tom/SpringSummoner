@@ -64,6 +64,7 @@ export class Player {
         })
         this.MAX_MANA = 100;
         this.mana = this.MAX_MANA;
+        this.MANA_REGEN_INTERVAL = 200;
         this.manabar = new HealthbarV2({
             scene: this.scene,
             height: 6,
@@ -113,10 +114,11 @@ export class Player {
         this.scene.input.on('pointerdown', this.clickDownHandler.bind(this))  // maybe this has a context param??
         this.scene.input.on('pointerup', this.clickUpHandler.bind(this))
         setInterval(this.trackMousePositionAndSpawnParticles.bind(this), MOUSE_SAMPLE_RATE);
-    }
-
-    addMana(amount) {
-        this.mana = Math.min(this.mana + amount, this.MAX_MANA)
+        
+        // passively game mana over time
+        setInterval(() => {
+            this.updateMana(0.2);
+        }, this.MANA_REGEN_INTERVAL);
     }
 
     hasMana(amount) {
@@ -398,6 +400,13 @@ export class Player {
         }
     }
 
+    updateMana(amount) {
+        if (this.mana < this.MAX_MANA && amount > 5) {
+            this.spawnManaParticles();
+        }
+        this.mana = Math.min(this.mana + amount, this.MAX_MANA);
+    }
+
     pickUp(drop) {
         if(drop.type == "speed")
         {
@@ -405,7 +414,7 @@ export class Player {
         }
         if(drop.type == "mana")
         {
-            this.mana = Math.min(this.mana + 100, this.MAX_MANA);
+            this.updateMana(50);
         }
         if(drop.type == "health")
         {
@@ -418,16 +427,16 @@ export class Player {
         return this.health <= 0 || !this.gameObject.body.enable;
     }
 
-    spawnOasisParticles () {
+    spawnManaParticles () {
         this.scene.add.particles(this.gameObject.x + Math.random() * 10, this.gameObject.y + Math.random() * 10, 'oasisHeal', {
             speed: { min: 1, max: 2 },
-            maxParticles: 2,
+            maxParticles: 20,
             anim: 'oasisHealAnimation',
-            duration: 100,
+            duration: 2000,
             accelerationY: Math.random() * -900,
             accelerationX: Math.random() * -50,
             speed: Math.random() * 100,
-            lifespan: 200,
+            lifespan: 500,
             //emitZone: { source: new Phaser.Geom.Rectangle(0, 0, 30, 30) }  // Emit particles within a 4 pixel radius
         });
     }

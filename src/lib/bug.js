@@ -73,8 +73,8 @@ export class BugGroup {
 
         bug.intervalId = setInterval(() => {
             bug.hasSpawned = false;
-            bug.playReverse('bugSpawnAnimation');
-            bug.setVelocity(0);
+            bug?.playReverse('bugSpawnAnimation');
+            bug?.setVelocity(0);
             this.scene.time.delayedCall(800, (e) => { 
                 e.x = this.scene.player.gameObject.x + Math.random() * 400 - 200;
                 e.y = this.scene.player.gameObject.y + Math.random() * 400 - 200;

@@ -13,6 +13,10 @@ export class Oasis {
     }
 
     create() {
+        this.manaHealed = false;
+        this.manaHealAmount = 10;
+        this.manaHealCooldownMillis = 1000;
+
         // Oasis
         this.gameObject = this.scene.physics.add.image(400, 300, 'oasis');
 
@@ -48,11 +52,19 @@ export class Oasis {
     }
 
     overlapPlayer() {
-        this.scene.player.addMana(1);
-        this.scene.player.spawnOasisParticles();
-        this.auraSound.setVolume(0.1);
+
         if(!this.auraSound.isPlaying) {
             this.auraSound.play();
+            this.auraSound.setVolume(0.1);
         }
+        if (this.manaHealed) {
+            return;
+        }
+        this.manaHealed = true;
+        this.scene.player.updateMana(this.manaHealAmount);
+        setTimeout(() => {
+            this.manaHealed = false;
+        }, this.manaHealCooldownMillis);
+        this.scene.player.spawnManaParticles();
     }
 }

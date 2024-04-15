@@ -29,7 +29,7 @@ export class GameScene extends Phaser.Scene {
     preload () {
         this.load.scenePlugin('AnimatedTiles', 'https://raw.githubusercontent.com/nkholski/phaser-animated-tiles/master/dist/AnimatedTiles.js', 'animatedTiles', 'animatedTiles'); 
         this.load.image('me', 'assets/main-character-inuse.png')
-        this.load.image('speedDrop', 'assets/white_fruit.png');
+        this.load.image('speedDrop', 'assets/special_fruit.png');
         this.load.image('healthDrop', 'assets/pink_fruit.png');
         this.load.image('manaDrop', 'assets/blue_fruit.png');
         this.load.image('sand', 'assets/desert-block.png');
