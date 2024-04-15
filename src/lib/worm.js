@@ -11,8 +11,6 @@ import {
 export class Worm {
     constructor(scene) {
         this.scene = scene
-        this.tick = 0;
-        this.allowSpawn = false;
     }
 
     // Preload is called before scene load, with a copy of the scene
@@ -108,6 +106,8 @@ export class Worm {
     // Create is called when the scene becomes active, once, after assets are
     // preloaded. It's expected that this scene will have aleady called preload
     create() {
+        this.tick = 0;
+        this.allowSpawn = false;
         this.earthquakeSound = this.scene.sound.add('earthquake');
         this.earthquakeSound.setVolume(0.4);
         this.roarSound = this.scene.sound.add('roar');
@@ -262,6 +262,7 @@ export class Worm {
                 }, this.ATTACK_SPAWN_DELAY_MILLIS);
             }
             worm.on('animationcomplete', () => {
+                clearInterval(worm.intervalId)
                 worm.destroy();
             });
         }, [worm], this);
