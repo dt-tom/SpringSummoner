@@ -491,6 +491,7 @@ export class Player {
         this.playerSpeed += amount;
         setTimeout(() => {
             this.playerSpeed -= amount;
+            this.effects.delete(reason);
         }, durationMillis);
     }
 
