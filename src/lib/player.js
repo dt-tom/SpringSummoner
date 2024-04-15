@@ -12,7 +12,7 @@ import { guess } from '../main.js';
 let downEvent = 0;
 let upEvent = 0;
 let mouseCurrentlyDown = false;
-const MIN_SWIPE_DISTANCE = 200;
+const MIN_SWIPE_DISTANCE = 100;
 
 let mousePositions = [];
 export class Player {
@@ -20,7 +20,8 @@ export class Player {
         this.scene = scene
         this.firstUpdate = true
         this.playerSpeed = playerSpeed;
-        this.glyphSequence = []
+        this.glyphSequence = [];
+        this.wPosPath = [];
     }
 
     // Preload is called before scene load, with a copy of the scene
@@ -126,18 +127,20 @@ export class Player {
         // keep track of combos
         if (spellAccuracy >= 0.9) {
             this.glyphSequence.push(glyph);
-        } else if (spellAccuracy >= 0.7) {
+        } else if (spellAccuracy >= 0.5) {
             this.glyphSequence = [];
         } else {
             // bad confidence score, missed spell
             return result;
         }
         this.scene.scene.get('Scoreboard').updateGlyphSequence(this.glyphSequence);
-
-        if (this.upSwipe()) {
-            console.log("SUMMON ELK");
-            result = this.summonDeer();
+        if (this.deerFlag) {
             this.glyphSequence = [];
+            result = this.summonDeer();
+            this.scene.scene.get('Scoreboard').updateGlyphSequence(this.glyphSequence);
+            this.deerFlag = false;
+        } else if (this.glyphSequence.length == 2) {
+            this.deerFlag = true;
         } else if (this.leftSwipe()) {
             result = this.summonGrunt();
         } else if (glyph === 'Glyph: -') {
@@ -160,19 +163,8 @@ export class Player {
         let manaCost = this.scene.deers.getManaCost();
         if (this.hasMana(manaCost)) {
             this.mana = this.mana - manaCost;
-            // Tu update these to correct positions pls
-            let positions = [
-                [upEvent.worldX, upEvent.worldY],
-                [upEvent.worldX + 20, upEvent.worldY + 20],
-                [upEvent.worldX + 40, upEvent.worldY + 40],
-                [upEvent.worldX + 60, upEvent.worldY + 60],
-                [upEvent.worldX + 80, upEvent.worldY + 80],
-                [upEvent.worldX + 100, upEvent.worldY + 100],
-                [upEvent.worldX + 120, upEvent.worldY + 120],
-                [upEvent.worldX + 140, upEvent.worldY + 140],
-            ];
-            console.log(positions)
-            this.scene.deers.createDeer(upEvent.worldX, upEvent.worldY, positions);
+            this.scene.deers.createDeer(this.wPosPath[0][0], this.wPosPath[0][1], this.wPosPath.slice(0, 100));
+            this.wPosPath = []
             return [true, 0x00ff00];
         }
         return [false, 0x0000ff];
@@ -280,7 +272,12 @@ export class Player {
 
             //let mPos = new Vector2(this.scene.input.mousePointer.x, this.scene.input.mousePointer.y);
             let wPos = this.scene.cameras.main.getWorldPoint(this.scene.input.mousePointer.x, this.scene.input.mousePointer.y);
-        
+            if (this.wPosPath.length > 1) {
+                let prevPoint = this.wPosPath[this.wPosPath?.length-1];
+                if (prevPoint[0] !== wPos.x && prevPoint[1] !== wPos.y) this.wPosPath.push([wPos.x, wPos.y]);
+            } else {
+                this.wPosPath.push([wPos.x, wPos.y]);
+            }
             let p = this.scene.add.particles(wPos.x, wPos.y, 'mouseParticle', {
                 speed: { min: 1, max: 20 },
                 maxParticles: 10,
