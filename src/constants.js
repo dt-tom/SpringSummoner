@@ -9,10 +9,12 @@ export const canvasHeight = 768;
 // Speeds
 export const playerSpeed = 200;
 export const bugMovespeed = 75;
+export const shooterMovespeed = 75;
 export const bushSlow = 0.25;
 
 // Timings
 export const ENEMY_SPAWN_TIMER = 1000;
+export const SHOOTER_ENEMY_SPAWN_TIMER = 5000;
 export const GRASS_GROW_SPEED = 3;
 
 // Startup values
@@ -26,6 +28,11 @@ export const devMode = false;
 export const bugSpawnInnerRadius = 250;
 export const bugSpawnOuterRadius = 800;
 export const bugNumInitialSpawns = 10;
+
+// Shooter Enemies
+export const shooterSpawnInnerRadius = 250;
+export const shooterSpawnOuterRadius = 800;
+export const shooterNumInitialSpawns = 2;
 
 export const ENEMY_START_HEALTH = 100;
 

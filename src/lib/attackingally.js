@@ -60,7 +60,11 @@ export class AttackingAlly {
                 continue;
             }
             const gruntBounds = grunt.getBounds();
-            let bug = this.scene.getClosestObject(grunt, this.scene.bugs.group);
+            // Get closest enemy
+
+            let bugClosest = this.scene.getClosestObject(grunt, this.scene.bugs.group);
+            let shooterClosest = this.scene.getClosestObject(grunt, this.scene.shooters.group);
+            let bug = bugClosest[1] < shooterClosest[1] ? bugClosest[0] : shooterClosest[0];
             if (bug) {
                 const bugBounds = bug.getBounds();
                 if (Phaser.Geom.Intersects.RectangleToRectangle(gruntBounds, bugBounds)) {
