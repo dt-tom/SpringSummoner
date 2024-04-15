@@ -182,7 +182,7 @@ export class GameScene extends Phaser.Scene {
                 min_item = item;
             }
         }
-        return min_item;
+        return [min_item, min_distance];
     }
     /**
      * Create the tiled background and static foreground elements. Expects

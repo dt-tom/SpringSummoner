@@ -52,7 +52,9 @@ export class ExplodingAlly {
     {
         for (let ally of this.explodingAllies.getChildren()) {
             if(!ally.exploding){
-                let closestEnemy = this.scene.getClosestObject(ally, this.scene.bugs.group);
+                let bugClosest = this.scene.getClosestObject(ally, this.scene.bugs.group);
+                let shooterClosest = this.scene.getClosestObject(ally, this.scene.shooters.group);
+                let closestEnemy = bugClosest[1] < shooterClosest[1] ? bugClosest[0] : shooterClosest[0];
                 if (closestEnemy) {
                     this.scene.physics.moveToObject(ally, closestEnemy, 120);
                 }

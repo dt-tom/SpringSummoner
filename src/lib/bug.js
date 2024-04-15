@@ -36,7 +36,6 @@ export class BugGroup {
      * @param loc has x and y members
      */
     spawnBugNear({x, y}) {
-        return;
         const direction = Math.random() * 2 * Math.PI;
         const range = bugSpawnOuterRadius - bugSpawnInnerRadius
         const distance = (Math.random() * range) + bugSpawnInnerRadius

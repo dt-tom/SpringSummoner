@@ -27,6 +27,10 @@ export class ShooterGroup {
         this.scene.load.spritesheet('shooterSpawn', 'assets/viperess_spawn.png', {
             frameWidth: 32, frameHeight: 32,
         });
+        this.scene.load.spritesheet('shooterAttack', 'assets/viperess_attack.png', {
+            frameWidth: 32, frameHeight: 32,
+        });
+        this.scene.load.image('shooterProjectile', 'assets/viperess_projectile.png');
     }
 
     /*
@@ -36,7 +40,6 @@ export class ShooterGroup {
      * @param loc has x and y members
      */
     spawnShooterNear({x, y}) {
-        console.log("SPAWNING");
         const direction = Math.random() * 2 * Math.PI;
         const range = shooterSpawnOuterRadius - shooterSpawnInnerRadius
         const  distance = (Math.random() * range) + shooterSpawnInnerRadius
@@ -56,7 +59,6 @@ export class ShooterGroup {
      */
     spawnShooterAt({x, y}) {
         // spawn animation
-        console.log("SPAWNING SHOOTER");
         let shooter = this.group.create(x, y, 'shooterSpawn')
         let currentScale = shooter.scaleX; // Get the current scale
         shooter.setScale(currentScale * 0.7); // Increase the scale by 50;
@@ -80,7 +82,8 @@ export class ShooterGroup {
         this.shooterSlowReduction = 20;
         this.shooterSlowDurationMillis = 500;
         this.attackDamage = 2;
-        this.attackCooldownMillis = 250;
+        this.attackCooldownMillis = 10000;
+        this.projectileDamage = 1;
         //this.shooterSquishSound = this.scene.sound.add('shooterSquishSound');
         this.scene.anims.create({
             key: 'shooterMoveAnimation',
@@ -91,6 +94,12 @@ export class ShooterGroup {
         this.scene.anims.create({
             key: 'shooterSpawnAnimation',
             frames: this.scene.anims.generateFrameNumbers('shooterSpawn', { start: 0, end: 8}),
+            frameRate: 10,
+            repeat: -1,
+        });
+        this.scene.anims.create({
+            key: 'shooterAttackAnimation',
+            frames: this.scene.anims.generateFrameNumbers('shooterAttack', { start: 0, end: 5}),
             frameRate: 10,
             repeat: -1,
         });
@@ -137,26 +146,51 @@ export class ShooterGroup {
         // Prevent bugs from stacking
         this.scene.physics.add.collider(this.group, this.group); 
 
-        this.scene.physics.add.collider(
-            this.scene.player.gameObject,
-            this.group,
-            (_player, enemy) => {this.attack(enemy)},
-            null,
-            this,
-        );
+        // this.scene.physics.add.collider(
+        //     this.scene.player.gameObject,
+        //     this.group,
+        //     (_player, enemy) => {this.attack(enemy)},
+        //     null,
+        //     this,
+        // );
+        
+        
+        
     }
 
     // Update is called once per tick
     update() {
-        this.group.children.iterate(this.moveShooter.bind(this))
+        this.group.children.iterate(this.moveShooter.bind(this));
+        let SHOOTER_DISTANCE = 30000;
+        for(const shooter of this.group.getChildren())
+        {
+            if(Phaser.Math.Distance.Squared(shooter.x, shooter.y, this.scene.player.gameObject.x, this.scene.player.gameObject.y) < SHOOTER_DISTANCE){
+                this.attack(shooter);
+            }
+        };
     }
 
     attack(shooter) {
         if (shooter.attacking) {
             return;
         }
+        
         shooter.attacking = true;
         shooter.setVelocity(0);
+        shooter.play('shooterAttackAnimation');
+        this.projectile = this.scene.physics.add.image(shooter.x, shooter.y, 'shooterProjectile');
+        const {x, y} = this.scene.player.gameObject;
+        this.scene.physics.add.collider(
+            this.scene.player.gameObject,
+            this.projectile,
+            (_player, projectile) => {this.scene.player.damage(this.projectileDamage)},
+            null,
+            this,
+        );
+        // const vector = new Phaser.Math.Vector2(x - this.projectile.x, y - this.projectile.y);
+        // this.projectile.rotation = vector.clone().normalizeRightHand().angle();
+        // this.projectile.setVelocity(x, y);
+        this.scene.physics.moveTo(this.projectile, x, y, 100);
         this.scene.time.delayedCall(this.attackCooldownMillis, (b) => { 
             b.attacking = false;
         }, [shooter], this);
