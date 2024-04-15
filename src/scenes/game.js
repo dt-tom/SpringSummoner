@@ -113,7 +113,7 @@ export class GameScene extends Phaser.Scene {
         this.bugs.create();
         this.shooters.create();
 
-        this.cameras.main.startFollow(this.player.gameObject, true, 0.1, 0.1);  // Should this be in player.js?
+        this.cameras.main.startFollow(this.player.gameObject, false, 1, 1, 0, 0 );
 
         this.drops = this.physics.add.group({
             createCallback: (drop) => {

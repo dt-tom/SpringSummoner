@@ -13,6 +13,7 @@ import {
 export class ShooterGroup {
     constructor(scene) {
         this.scene = scene
+        this.tick = 0;
     }
 
     // Preload is called before scene load, with a copy of the scene
@@ -160,6 +161,10 @@ export class ShooterGroup {
 
     // Update is called once per tick
     update() {
+        this.tick += 1;
+        if(this.tick % 10 != 0){
+            return;
+        }
         this.group.children.iterate(this.moveShooter.bind(this));
         let SHOOTER_DISTANCE = 30000;
         for(const shooter of this.group.getChildren())
@@ -174,7 +179,7 @@ export class ShooterGroup {
         if (shooter.attacking) {
             return;
         }
-        
+        console.log("attacking " + shooter.attackcount);
         shooter.attacking = true;
         shooter.setVelocity(0);
         shooter.play('shooterAttackAnimation');
