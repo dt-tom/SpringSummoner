@@ -237,7 +237,7 @@ export class Worm {
                 worm.x = this.scene.player.gameObject.x + this.scene.player.gameObject.body.velocity.x;
                 worm.y = this.scene.player.gameObject.y + this.scene.player.gameObject.body.velocity.y;
             }
-            if(worm !== undefined)
+            if(worm !== undefined && !worm.health <= 0)
             {
                 worm.play('wormAttackAnimation');
             }
