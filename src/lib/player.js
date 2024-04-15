@@ -423,8 +423,8 @@ export class Player {
             return;
         }
         let reduction = speedReduction;
-        if (this.playSpeed - speedReduction <= 0) {
-            reduction = this.playerSpeed
+        if (this.playerSpeed - speedReduction <= 0) {
+            reduction = this.playerSpeed;
         }
         if (reduction == 0) {
             return;

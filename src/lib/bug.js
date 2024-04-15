@@ -2,8 +2,6 @@ import {
     bugSpawnInnerRadius,
     bugSpawnOuterRadius,
     bugNumInitialSpawns,
-    ENEMY_SPAWN_TIMER,
-    ENEMY_START_HEALTH,
     bugMovespeed,
 } from "../constants.js";
 
@@ -96,6 +94,8 @@ export class BugGroup {
     create() {
         this.MAX_BUG_COUNT = 40;
         this.MAX_BUG_LIFESPAN_MILLIS = 20_000;
+        this.SPAWN_INTERVAL = 5_000;
+        this.MAX_HEALTH = 100;
         this.bugSlowReduction = 20;
         this.bugSlowDurationMillis = 500;
         this.attackDamage = 2;
@@ -122,7 +122,7 @@ export class BugGroup {
         // make enemies
         this.group = this.scene.physics.add.group({
             createCallback: (enemy) => {
-                enemy.health = ENEMY_START_HEALTH;
+                enemy.health = this.MAX_HEALTH;
                 enemy.isSpawned = false;
                 enemy.attacking = false;
                 enemy.setCollideWorldBounds(true);
@@ -141,7 +141,7 @@ export class BugGroup {
                 return;
             };
             this.spawnBugNear({x: x, y: y})
-        }).bind(this), ENEMY_SPAWN_TIMER);
+        }).bind(this), this.SPAWN_INTERVAL);
 
         this.scene.postCreateHooks.push(this.postCreate.bind(this))
     }
