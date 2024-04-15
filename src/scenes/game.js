@@ -27,8 +27,49 @@ export class GameScene extends Phaser.Scene {
         this.worm = new Worm(this)
         this.tick = 0;
         this.active = true;
+        this.difficulty = 1;
+        this.previousDifficulty = 1;
 
         this.score = 0;
+    }
+
+    scaleEnemies(difficulty) {
+        const { spawnIntervalX, maxEnemyCountX, attackDamageX,
+                projectileDamageX, lifespanMilliX, maxHealthX } = this.scalingFunction(difficulty);
+
+        // scale the bugs
+        this.bugs.attackDamage += attackDamageX;
+        // this.bugs.MAX_BUG_COUNT += maxEnemyCountX;
+        // this.bugs.MAX_BUG_LIFESPAN_MILLIS *= lifespanMilliX;
+        // this.bugs.SPAWN_INTERVAL *= spawnIntervalX;
+        this.bugs.MAX_HEALTH += maxHealthX;
+
+        // scale the shooters
+        this.shooters.attackDamage += attackDamageX;
+        this.shooters.projectileDamage += projectileDamageX;
+        // this.shooters.MAX_SHOOTER_COUNT += maxEnemyCountX;
+        // this.shooters.MAX_SHOOTER_LIFESPAN_MILLIS *= lifespanMilliX;
+        // this.shooters.SPAWN_INTERVAL *= spawnIntervalX;
+        this.shooters.MAX_HEALTH += maxHealthX;
+
+        // scale the worm
+        this.worm.attackDamage += attackDamageX;
+        this.worm.projectileDamage += projectileDamageX;
+        // this.worm.MAX_worm_COUNT += maxEnemyCountX;
+        // this.worm.MAX_worm_LIFESPAN_MILLIS *= lifespanMilliX;
+        // this.worm.SPAWN_INTERVAL *= spawnIntervalX;
+        this.worm.MAX_HEALTH += maxHealthX;
+    }
+
+    scalingFunction(difficulty) {
+        return {
+            spawnIntervalX: 1 / difficulty,
+            maxEnemyCountX: difficulty,
+            attackDamageX: difficulty,
+            projectileDamageX: difficulty,
+            lifespanMilliX: difficulty,
+            maxHealthX: difficulty
+        }
     }
 
     preload () {
@@ -256,6 +297,17 @@ export class GameScene extends Phaser.Scene {
 
     update () {
         this.tick += 1;
+        // slow down difficulty by obtaining score, 600 tick grace period
+        if (this.tick > 600) {
+            this.difficulty += (this.tick - 600)/(this.score + 1)/100;
+        }
+        this.scene.get("Scoreboard").updateDifficulty(this.difficulty);
+        // check next integer difficulty
+        if (this.difficulty > this.previousDifficulty + 1) {
+            this.previousDifficulty = Math.floor(this.difficulty);
+            this.scaleEnemies(this.previousDifficulty);
+        }
+
         if (!this.active) {
             return;
         }

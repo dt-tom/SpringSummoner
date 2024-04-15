@@ -11,8 +11,9 @@ export class Scoreboard extends Phaser.Scene {
     create() {
         // Add your UI elements here
         this.scoreText = this.add.text(16, 16, 'Score: 0', { fontSize: '24px', fill: '#000' }).setScrollFactor(0);
-        this.glyphSequence = this.add.text(16, 40, 'Glyph Sequence: -', { fontSize: '16px', fill: '#000' }).setScrollFactor(0);
+        this.glyphSequence = this.add.text(16, 40, 'Glyph Sequence: ', { fontSize: '16px', fill: '#000' }).setScrollFactor(0);
         this.lastSpellAccuracy = this.add.text(16, 56, 'Last Glyph Accuracy: -', { fontSize: '16px', fill: '#000' }).setScrollFactor(0);
+        this.difficulty = this.add.text(16, 72, 'Difficulty: 0', { fontSize: '16px', fill: '#000' }).setScrollFactor(0);
         this.healthbar = new HealthbarV2({
             scene: this.scene.scene,
             height: 24,
@@ -41,7 +42,7 @@ export class Scoreboard extends Phaser.Scene {
     }
 
     updateScore(newScore) {
-        this.scoreText.setText('Score: ' + newScore);
+        this.scoreText.setText(`Score: ${newScore}`);
     }
 
     updateHP(newHP) {
@@ -50,5 +51,9 @@ export class Scoreboard extends Phaser.Scene {
 
     updateMana(newMana) {
         this.manabar.redraw({ x: 802, y: 48, value: newMana });
+    }
+
+    updateDifficulty(newDifficulty) {
+        this.difficulty.setText(`Difficulty: ${newDifficulty.toFixed(2)}`);
     }
 }
