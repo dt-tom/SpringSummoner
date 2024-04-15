@@ -62,7 +62,10 @@ export class AttackingAlly {
 
             let bugClosest = this.scene.getClosestObject(grunt, this.scene.bugs.group);
             let shooterClosest = this.scene.getClosestObject(grunt, this.scene.shooters.group);
-            let bug = bugClosest[1] < shooterClosest[1] ? bugClosest[0] : shooterClosest[0];
+            let wormClosest = this.scene.getClosestObject(grunt, this.scene.worm.group);
+            // get closest enemy
+            let closest = bugClosest[1] < shooterClosest[1] ? bugClosest : shooterClosest;
+            let bug = closest[1] < wormClosest[1] ? closest[0] : wormClosest[0];
             if (bug) {
                 const bugBounds = bug.getBounds();
                 if (Phaser.Geom.Intersects.RectangleToRectangle(gruntBounds, bugBounds)) {

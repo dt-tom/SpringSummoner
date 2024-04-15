@@ -94,7 +94,7 @@ export class BugGroup {
     create() {
         this.MAX_BUG_COUNT = 40;
         this.MAX_BUG_LIFESPAN_MILLIS = 20_000;
-        this.SPAWN_INTERVAL = 5_000;
+        this.SPAWN_INTERVAL = 5000;
         this.MAX_HEALTH = 100;
         this.bugSlowReduction = 20;
         this.bugSlowDurationMillis = 500;

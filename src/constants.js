@@ -9,6 +9,7 @@ export const canvasHeight = 768;
 // Speeds
 export const playerSpeed = 200;
 export const bugMovespeed = 75;
+export const wormMovespeed = 200;
 export const shooterMovespeed = 75;
 export const bushSlow = 0.25;
 
@@ -31,6 +32,10 @@ export const bugNumInitialSpawns = 10;
 export const shooterSpawnInnerRadius = 250;
 export const shooterSpawnOuterRadius = 800;
 export const shooterNumInitialSpawns = 2;
+
+export const wormSpawnInnerRadius = 150;
+export const wormSpawnOuterRadius = 300;
+export const wormNumInitialSpawns = 0;
 
 // gestures
 export const MIN_SWIPE_DISTANCE = 200;

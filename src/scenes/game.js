@@ -7,6 +7,7 @@ import { Bush } from '../lib/bush.js';
 import { BugGroup } from '../lib/bug.js'
 import { ShooterGroup } from '../lib/shooter.js';
 import { DeerManager } from '../lib/deer.js';
+import { Worm } from '../lib/worm.js';
 
 /**
  * GameScene is the main scene of Spring Summoner; it's where the actual game
@@ -23,6 +24,7 @@ export class GameScene extends Phaser.Scene {
         this.bugs = new BugGroup(this);
         this.shooters = new ShooterGroup(this);
         this.deers = new DeerManager(this);
+        this.worm = new Worm(this)
         this.tick = 0;
         this.active = true;
 
@@ -47,6 +49,7 @@ export class GameScene extends Phaser.Scene {
         this.bushes.preload();
         this.attackingAllies.preload();
         this.explodingAllies.preload();
+        this.worm.preload();
 
         // var progressBar = this.add.graphics();
         // var progressBox = this.add.graphics();
@@ -109,6 +112,7 @@ export class GameScene extends Phaser.Scene {
         this.bugs.create();
         this.shooters.create();
         this.deers.create();
+        this.worm.create();
 
         this.cameras.main.startFollow(this.player.gameObject, false, 1, 1, 0, 0 );
 
@@ -125,6 +129,12 @@ export class GameScene extends Phaser.Scene {
         this.physics.add.collider(this.attackingAllies.attackingAllies, this.bugs.group);
         this.physics.add.collider(this.attackingAllies.attackingAllies, this.shooters.group);
         this.physics.add.collider(this.bugs.group, this.shooters.group);
+        // this.physics.add.collider(this.bugs.group, this.worm.group);
+        // this.physics.add.collider(this.shooters.group, this.worm.group);
+        // this.physics.add.collider(this.bugs.group, this.worm.group);
+        // this.physics.add.collider(this.explodingAllies.group, this.worm.group, (ally, enemy) => {
+        //     this.explodingAllies.explode(ally, enemy);
+        // });
         this.physics.add.collider(this.explodingAllies.explodingAllies, this.bugs.group, (ally, enemy) => {
             this.explodingAllies.explode(ally, enemy);
         });
@@ -264,6 +274,7 @@ export class GameScene extends Phaser.Scene {
         this.bugs.update();
         this.shooters.update();
         this.deers.update();
+        this.worm.update();
     }
 
     // called when player health is zero
