@@ -297,7 +297,7 @@ export class Player {
         const canvas = document.createElement("canvas");
         canvas.style.display = "none";
         document.body.appendChild(canvas);
-        const ctx = canvas.getContext("2d");
+        const ctx = canvas.getContext("2d", { willReadFrequently: true });
         ctx.canvas.width  = size;
         ctx.canvas.height = size;
         ctx.lineCap = 'round';
