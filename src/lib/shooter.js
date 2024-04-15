@@ -107,7 +107,7 @@ export class ShooterGroup {
         this.projectileSlowDurationMillis = 350;
         this.MAX_SHOOTER_COUNT = 10;
         this.MAX_SHOOTER_LIFESPAN_MILLIS = 30_000;
-        this.SPAWN_INTERVAL = 10000;
+        this.SPAWN_INTERVAL = 8_000;
         this.MAX_HEALTH = 50;
         this.scene.anims.create({
             key: 'shooterMoveAnimation',
@@ -123,16 +123,11 @@ export class ShooterGroup {
         });
         this.scene.anims.create({
             key: 'shooterAttackAnimation',
-            frames: this.scene.anims.generateFrameNumbers('shooterAttack', { start: 0, end: 5}),
+            frames: this.scene.anims.generateFrameNumbers('shooterAttack', { start: 0, end: 4}),
             frameRate: 10,
             repeat: -1,
         });
-        this.scene.anims.create({
-            key: 'dirtTumble',
-            frames: this.scene.anims.generateFrameNumbers('dirtParticle', { start: 0, end: 7}),
-            frameRate: 10,
-            repeat: -1,
-        });
+        // Don't recreate dirtTumble (it's in bug.js)
 
         // make enemies
         this.group = this.scene.physics.add.group({
@@ -147,7 +142,7 @@ export class ShooterGroup {
             }
         });
 
-        setInterval((() => {
+        this.shooterSpawnInterval = setInterval((() => {
             if (!this.scene.active) {
                 return;
             }
@@ -259,5 +254,9 @@ export class ShooterGroup {
             shooter.speed = shooter.speed + speedReduction;
             shooter.effects.delete(reason);
         }, durationMillis);
+    }
+    end() {
+        this.group.children.iterate(s => clearInterval(s.intervalId))
+        clearInterval(this.shooterSpawnInterval)
     }
 };

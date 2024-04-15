@@ -94,7 +94,7 @@ export class BugGroup {
     create() {
         this.MAX_BUG_COUNT = 40;
         this.MAX_BUG_LIFESPAN_MILLIS = 20_000;
-        this.SPAWN_INTERVAL = 5000;
+        this.SPAWN_INTERVAL = 3000;
         this.MAX_HEALTH = 100;
         this.bugSlowReduction = 20;
         this.bugSlowDurationMillis = 500;
@@ -109,7 +109,7 @@ export class BugGroup {
         });
         this.scene.anims.create({
             key: 'bugSpawnAnimation',
-            frames: this.scene.anims.generateFrameNumbers('bugSpawn', { start: 0, end: 8}),
+            frames: this.scene.anims.generateFrameNumbers('bugSpawn', { start: 0, end: 5}),
             frameRate: 8,
         });
         this.scene.anims.create({
@@ -131,7 +131,7 @@ export class BugGroup {
             }
         });
 
-        setInterval((() => {
+        this.bugSpawnInterval = setInterval((() => {
             if (!this.scene.active) {
                 return;
             }
@@ -225,5 +225,10 @@ export class BugGroup {
             bug.speed = bug.speed + speedReduction;
             bug.effects.delete(reason);
         }, durationMillis);
+    }
+    
+    end() {
+        this.group.children.iterate(bug => clearInterval(bug.intervalId))
+        clearInterval(this.bugSpawnInterval)
     }
 };

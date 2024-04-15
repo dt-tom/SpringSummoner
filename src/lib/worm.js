@@ -29,11 +29,15 @@ export class Worm {
         this.scene.load.spritesheet('wormAttack', 'assets/sandworm-attack.png', {
             frameWidth: 64, frameHeight: 64,
         });
-        
+        this.scene.load.audio('earthquake', 'assets/sounds/earthquake.wav');
+        this.scene.load.audio('roar', 'assets/sounds/roar.wav');
     }
 
     setAllowSpawn(){
-        this.allowSpawn = true;
+        if (!this.allowSpawn) {
+            this.allowSpawn = true;
+            this.earthquakeSound.play('longEarthquake');
+        }
     }
 
     /*
@@ -45,7 +49,7 @@ export class Worm {
     spawnwormNear({x, y}) {
         const direction = Math.random() * 2 * Math.PI;
         const range = wormSpawnOuterRadius - wormSpawnInnerRadius
-        const  distance = (Math.random() * range) + wormSpawnInnerRadius
+        const distance = (Math.random() * range) + wormSpawnInnerRadius
 
         const xOut = x + (distance * Math.cos(direction))
         const yOut = y + (distance * Math.sin(direction))
@@ -60,7 +64,6 @@ export class Worm {
      * Spawn a single bug exactly at (x, y)
      */
     spawnwormAt({x, y}) {
-        console.log("SPAWNING WORM");
         // spawn animation
         let worm = this.group.create(x, y, 'wormSpawn');
         worm.setScale(2);
@@ -73,6 +76,7 @@ export class Worm {
         })
         this.scene.time.delayedCall(1000, (e) => { 
             e.hasSpawned = true;
+            e.canAttack = false;
             this.group.playAnimation('wormMoveAnimation');
         }, [worm], this);
 
@@ -80,17 +84,22 @@ export class Worm {
             if (!worm.hasSpawned || !this.group.contains(worm)) {
                 return;
             }
+            worm.canAttack = false;
             worm.hasSpawned = false;
             worm?.playReverse('wormSpawnAnimation');
+            this.earthquakeSound.play('shortEarthquake');
             worm?.setVelocity(0);
             this.scene.time.delayedCall(1000, (e) => { 
                 e.x = this.scene.player.gameObject.x + Math.random() * 400 - 200;
                 e.y = this.scene.player.gameObject.y + Math.random() * 400 - 200;
                 e.play('wormSpawnAnimation');
+                this.earthquakeSound.play('shortEarthquake');
             }, [worm], this);
             this.scene.time.delayedCall(2000, (e) => { 
                 e.hasSpawned = true;
+                worm.canAttack = true;
                 e.play('wormMoveAnimation');
+                this.earthquakeSound.play('shortEarthquake');
             }, [worm], this);
         }, this.MAX_worm_LIFESPAN_MILLIS + Math.random() * 1000);
     }
@@ -99,23 +108,29 @@ export class Worm {
     // Create is called when the scene becomes active, once, after assets are
     // preloaded. It's expected that this scene will have aleady called preload
     create() {
-        this.wormSlowReduction = 20;
-        this.wormSlowDurationMillis = 500;
+        this.earthquakeSound = this.scene.sound.add('earthquake');
+        this.earthquakeSound.setVolume(0.4);
+        this.roarSound = this.scene.sound.add('roar');
+        this.roarSound.setVolume(0.4);
+        this.earthquakeSound.addMarker({name: 'shortEarthquake', start: 0, duration: 2});
+        this.earthquakeSound.addMarker({name: 'attackEarthquake', start: 0, duration: 2.75});
+        this.earthquakeSound.addMarker({name: 'longEarthquake', start: 0, duration: 4.5});
+        this.wormSlow = 140;
+        this.wormSlowDurationMillis = 1250;
         this.attackDamage = 8;
         this.attackCooldownMillis = 3000;
         this.projectileDamage = 1;
+        this.ATTACK_SPAWN_DELAY_MILLIS = 1_700;
         //this.wormDeathSound = this.scene.sound.add('wormDeathSound');
         //this.wormShootSound = this.scene.sound.add('wormShootSound');
-        this.projectileSlow = 170;
-        this.projectileSlowDurationMillis = 350;
         this.MAX_worm_COUNT = 1;
         this.MAX_worm_LIFESPAN_MILLIS = 30_000;
         this.SPAWN_INTERVAL = 10000;
         this.MAX_HEALTH = 1000;
         this.scene.anims.create({
             key: 'wormMoveAnimation',
-            frames: this.scene.anims.generateFrameNumbers('wormMove', { start: 0, end: 3}),
-            frameRate: 10,
+            frames: this.scene.anims.generateFrameNumbers('wormMove', { start: 0, end: 2}),
+            frameRate: 9,
             repeat: -1,
         });
         this.scene.anims.create({
@@ -127,21 +142,17 @@ export class Worm {
         this.scene.anims.create({
             key: 'wormAttackAnimation',
             frames: this.scene.anims.generateFrameNumbers('wormAttack', { start: 0, end: 35}),
-            frameRate: 10,
+            frameRate: 9,
             repeat: 0,
         });
-        this.scene.anims.create({
-            key: 'dirtTumble',
-            frames: this.scene.anims.generateFrameNumbers('dirtParticle', { start: 0, end: 7}),
-            frameRate: 10,
-            repeat: -1,
-        });
+        // Don't recreate dirtTumble (it's in bug.js)
 
         // make enemies
         this.group = this.scene.physics.add.group({
             createCallback: (enemy) => {
                 enemy.health = this.MAX_HEALTH;
                 enemy.isSpawned = false;
+                enemy.canAttack = false;
                 enemy.attacking = false;
                 enemy.attackcount = 0;
                 enemy.setCollideWorldBounds(true);
@@ -150,7 +161,7 @@ export class Worm {
             }
         });
 
-        setInterval((() => {
+        this.wormSpawnInterval = setInterval((() => {
             if(!this.allowSpawn)
             {
                 return;
@@ -182,8 +193,10 @@ export class Worm {
         this.scene.physics.add.collider(
             this.scene.player.gameObject,
             this.group, (_player, worm) => {
-                this.scene.player.damage(this.attackDamage);
-                this.scene.player.slow('worm', this.projectileSlow, this.projectileSlowDurationMillis);
+                this.scene.player.slow('worm', this.wormSlow, this.wormSlowDurationMillis);
+                if (worm.canAttack) {
+                    this.scene.player.damage(this.attackDamage);
+                }
             });
 
     }
@@ -214,6 +227,7 @@ export class Worm {
         worm.setVelocity(0);
         worm.setImmovable();
         worm.play('wormSpawnAnimation');
+        this.earthquakeSound.play('shortEarthquake');
         this.scene.add.particles(worm.x, worm.y, 'dirtParticle', {
             speed: { min: 1, max: 20 },
             maxParticles: 50,
@@ -239,7 +253,13 @@ export class Worm {
             }
             if(worm !== undefined && !worm.health <= 0)
             {
+                worm.canAttack = false;
                 worm.play('wormAttackAnimation');
+                this.earthquakeSound.play('attackEarthquake');
+                setTimeout(() => {
+                    this.roarSound.play();
+                    worm.canAttack = true;
+                }, this.ATTACK_SPAWN_DELAY_MILLIS);
             }
             worm.on('animationcomplete', () => {
                 worm.destroy();
@@ -257,6 +277,7 @@ export class Worm {
             // this.wormDeathSound.play();
             // this.wormDeathSound.setVolume(0.5);
             this.group.remove(worm);
+            clearInterval(worm.intervalId)
             worm.destroy();
         }
         worm.setTint(0xff0000); // Tint the sprite red
@@ -287,5 +308,10 @@ export class Worm {
             worm.speed = worm.speed + speedReduction;
             worm.effects.delete(reason);
         }, durationMillis);
+    }
+
+    end() {
+        clearInterval(this.wormSpawnInterval)
+        this.group.children.iterate(w => clearInterval(w.intervalId))
     }
 };

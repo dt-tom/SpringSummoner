@@ -13,7 +13,7 @@ export class Scoreboard extends Phaser.Scene {
         this.wormTextActive = false;
         // Add your UI elements here
         this.scoreText = this.add.text(16, 16, 'Score: 0', { fontSize: '24px', fill: '#000' }).setScrollFactor(0);
-        
+        this.glyphLevel = this.add.text(848, 64, 'Glyph Level:   1', { fontSize: '16px', fill: '#000' }).setScrollFactor(0);
         this.glyphSequence = this.add.text(16, 40, 'Glyph Sequence: ', { fontSize: '16px', fill: '#000' }).setScrollFactor(0);
         this.lastSpellAccuracy = this.add.text(16, 56, 'Last Glyph Accuracy: -', { fontSize: '16px', fill: '#000' }).setScrollFactor(0);
         this.difficulty = this.add.text(16, 72, 'Difficulty: 0', { fontSize: '16px', fill: '#000' }).setScrollFactor(0);
@@ -43,6 +43,26 @@ export class Scoreboard extends Phaser.Scene {
             colorFunc: () => ({ fg: 0x000000, bg: 0xffffff }),
             offsets: { x: 0, y: 0 },
         })
+    }
+
+    levelBreakpoint(health, mana) {
+        this.healthbar = new HealthbarV2({
+            scene: this.scene.scene,
+            height: 24,
+            width: 400,
+            startingValue: health,
+            maxValue: health,
+            offsets: { x: 0, y: 0 },
+        });
+        this.manabar = new HealthbarV2({
+            scene: this.scene.scene,
+            height: 16,
+            width: 400,
+            startingValue: mana,
+            maxValue: mana,
+            colorFunc: () => ({ fg: 0x0000ff, bg: 0xffffff }),
+            offsets: { x: 0, y: 0 },
+        });
     }
 
     updateLastSpellAccuracy(newSpellAccuracy) {
@@ -76,5 +96,9 @@ export class Scoreboard extends Phaser.Scene {
 
     updateDifficulty(newDifficulty) {
         this.difficulty.setText(`Difficulty: ${newDifficulty.toFixed(2)}`);
+    }
+
+    updateGlyphLevel(newLevel) {
+        this.glyphLevel.setText(`Glyph Level: ${newLevel < 10 ? `  ${newLevel}` : newLevel < 100 ? ` ${newLevel}`: "99+"}`);
     }
 }

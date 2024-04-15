@@ -21,6 +21,8 @@ export class Player {
         this.firstUpdate = true
         this.playerSpeed = playerSpeed;
         this.glyphSequence = [];
+        this.glyphLevel = 1;
+        this.prevGlyphLevel = 1;
         this.wPosPath = [];
     }
 
@@ -45,7 +47,6 @@ export class Player {
         this.scene.load.spritesheet('mouseParticle', 'assets/mouse-particle-v1.png', {
             frameWidth: 8, frameHeight: 8,
         })
-        this.scene.load.audio('leavesSound', 'assets/sounds/bush-sound.mp3');
     }
 
     // Create is called when the scene becomes active, once, after assets are
@@ -130,10 +131,22 @@ export class Player {
         // keep track of combos
         if (spellAccuracy >= 0.75) {
             this.glyphSequence.push(glyph);
+            this.glyphLevel += 1;
+            if (this.glyphLevel % 10 == 0) {
+                this.prevGlyphLevel = this.glyphLevel;
+                this.scalePlayer();
+                this.scaleSummons();
+            }
+            this.scene.scene.get('Scoreboard').updateGlyphLevel(this.glyphLevel);
         } else if (spellAccuracy >= 0.5) {
             this.glyphSequence = [];
+            this.glyphLevel = this.prevGlyphLevel;
+            this.scene.scene.get('Scoreboard').updateGlyphLevel(this.glyphLevel);
         } else {
             // bad confidence score, missed spell
+            this.glyphSequence = [];
+            this.glyphLevel = this.prevGlyphLevel;
+            this.scene.scene.get('Scoreboard').updateGlyphLevel(this.glyphLevel);
             return result;
         }
         this.scene.scene.get('Scoreboard').updateGlyphSequence(this.glyphSequence);
@@ -159,12 +172,15 @@ export class Player {
         return result;
     }
 
-    summonElk() {
+    scalePlayer() {
+        this.health += 200;
         this.mana += 50;
-        this.summonBush();
-        this.summonExploder();
-        this.summonGrunt();
-        return [true, 0x00ff00];
+        this.speed += 5;
+        this.scene.scene.get("Scoreboard").levelBreakpoint(this.health, this.mana)
+    }
+
+    scaleSummons() {
+
     }
 
     summonDeer() {
@@ -495,6 +511,7 @@ export class Player {
         this.playerSpeed += amount;
         setTimeout(() => {
             this.playerSpeed -= amount;
+            this.effects.delete(reason);
         }, durationMillis);
     }
 

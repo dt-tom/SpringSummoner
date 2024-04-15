@@ -16,21 +16,6 @@ import { Worm } from '../lib/worm.js';
 export class GameScene extends Phaser.Scene {
     constructor () {
         super('GameScene');
-        this.player = new Player(this)
-        this.oasis = new Oasis(this)
-        this.attackingAllies = new AttackingAlly(this);
-        this.explodingAllies = new ExplodingAlly(this);
-        this.bushes = new Bush(this);
-        this.bugs = new BugGroup(this);
-        this.shooters = new ShooterGroup(this);
-        this.deers = new DeerManager(this);
-        this.worm = new Worm(this)
-        this.tick = 0;
-        this.active = true;
-        this.difficulty = 1;
-        this.previousDifficulty = 1;
-
-        this.score = 0;
     }
 
     scaleEnemies(difficulty) {
@@ -115,6 +100,25 @@ export class GameScene extends Phaser.Scene {
         // });
     }
 
+    // Called before create, even on stop/restart
+    init() {
+        this.player = new Player(this)
+        this.oasis = new Oasis(this)
+        this.attackingAllies = new AttackingAlly(this);
+        this.explodingAllies = new ExplodingAlly(this);
+        this.bushes = new Bush(this);
+        this.bugs = new BugGroup(this);
+        this.shooters = new ShooterGroup(this);
+        this.deers = new DeerManager(this);
+        this.worm = new Worm(this)
+        this.tick = 0;
+        this.active = true;
+        this.difficulty = 1;
+        this.previousDifficulty = 1;
+
+        this.score = 0;
+    }
+
     createDrop(posX, posY) {
         
         let random = Math.random();
@@ -185,17 +189,6 @@ export class GameScene extends Phaser.Scene {
             this.explodingAllies.explode(ally, enemy);
         });
 
-        this.anims.create({
-            key: 'bushSpawnAnimation',
-            frames: this.anims.generateFrameNumbers('bushSpawn', { start: 0, end: 10}),
-            frameRate: 15,
-        });
-        this.anims.create({
-            key: 'scorpion-move',
-            frames: this.anims.generateFrameNumbers('attackingAlly', { start: 0, end: 4}),
-            frameRate: 20,
-            repeat: -1,
-        });
 
         if (constants.devMode) {
             this.physics.world.createDebugGraphic()
@@ -280,7 +273,7 @@ export class GameScene extends Phaser.Scene {
         this.score += tile.index + 1;
         if(this.score > constants.wormScore)
         {
-            this.worm.allowSpawn = true;
+            this.worm.setAllowSpawn()
         }
         this.scene.get('Scoreboard').updateScore(this.score);
     }
@@ -344,7 +337,10 @@ export class GameScene extends Phaser.Scene {
         for (let enemy of this.shooters.group.getChildren()) {
             enemy.body.setVelocity(0, 0);
         }
+        this.bugs.end();
         this.deers.end();
+        this.shooters.end();
+        this.worm.end();
         // wait one second so death animation can finish
         this.time.delayedCall(1000, (enemies) => { 
             for (let enemy of enemies.getChildren()) {
@@ -373,6 +369,5 @@ export class GameScene extends Phaser.Scene {
         this.time.delayedCall(3000, () => {
             this.scene.launch('DeathScene');
         });
-        
     }
 }

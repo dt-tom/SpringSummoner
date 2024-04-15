@@ -9,7 +9,6 @@ export class DeathScene extends Phaser.Scene {
     preload () {
         this.load.audio('soundtrack', 'assets/sounds/soundtrack.mp3');
         this.load.audio('sandstorm', 'assets/sounds/sandstorm.wav');
-        this.load.audio('leavesSound', 'assets/sounds/bush-sound.mp3');
     }
 
     create() {
@@ -22,7 +21,7 @@ export class DeathScene extends Phaser.Scene {
         }).setOrigin(0.5);
 
         // Subtitle
-        this.add.text(constants.canvasWidth / 2, constants.canvasHeight / 2 + 40, 'Refresh to play again', {
+        this.add.text(constants.canvasWidth / 2, constants.canvasHeight / 2 + 40, 'Click to play again', {
             fontSize: '16px', fill: '#000'
         }).setOrigin(0.5);
 
@@ -35,6 +34,17 @@ export class DeathScene extends Phaser.Scene {
         sandstorm.play('sandstormWhoosh');
         sandstorm.setVolume(0.03);
 
-        
+        this.input.on('pointerup', this.clickUpHandler.bind(this))
+    }
+
+    clickUpHandler() {
+        this.restartGame()
+    }
+
+    restartGame() {
+        this.scene.get('GameScene').scene.stop()
+        this.scene.get('Scoreboard').scene.stop()
+        this.scene.start('GameScene', { reset: true })
+        this.scene.stop()
     }
 }
