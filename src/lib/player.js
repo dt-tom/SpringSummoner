@@ -21,6 +21,7 @@ export class Player {
         this.scene = scene
         this.firstUpdate = true
         this.playerSpeed = playerSpeed;
+        this.glyphSequence = []
     }
 
     // Preload is called before scene load, with a copy of the scene
@@ -131,37 +132,62 @@ export class Player {
 
         if (!glyph) return;
 
+        console.log(this.glyphSequence);
+
+        if (spellAccuracy >= 0.9) {
+            this.glyphSequence.push(glyph);
+        } else {
+            this.glyphSequence = [];
+        }
+
         let hasMana = true;
-        if(glyph === 'Glyph: ƨ'){
-            let gruntManaCost = this.scene.attackingAllies.getManaCost();
-            if (this.hasMana(gruntManaCost)) {
-                this.mana = this.mana - gruntManaCost;
-                this.scene.attackingAllies.createAttackingAlly(upEvent.worldX, upEvent.worldY);
-                return [true, 0x00ff00];
-            }
-            hasMana = false;
+        if (this.glyphSequence.length == 3) {
+            hasMana = this.summonElk();
+        } else if (glyph === 'Glyph: ƨ') {
+            hasMana = this.summonGrunt();
         } else if (glyph === 'Glyph: -') {
-            let bushManaCost = this.scene.bushes.getManaCost();
-            if (this.hasMana(bushManaCost)) {
-                this.mana = this.mana - bushManaCost;
-                this.scene.bushes.addBush(upEvent.worldX, upEvent.worldY);
-                return [true, 0x00ff00];;
-            }
-            hasMana = false;
+            hasMana = this.summonBush();
+        } else if (glyph === 'Glyph: ¬') {
+            hasMana = this.summonExploder();
         }
-        else if (glyph === 'Glyph: ¬') {
-            let explosionManaCost = this.scene.explodingAllies.getManaCost();
-            if (this.hasMana(explosionManaCost)) {
-                this.mana = this.mana - explosionManaCost;
-                this.scene.explodingAllies.createExplodingAlly(upEvent.worldX, upEvent.worldY);
-                return [true, 0x00ff00];
-            }
-            hasMana = false;
+
+        return hasMana || [false, 0x0000ff];// || [false, 0xff0000];
+    }
+
+    summonElk() {
+        this.mana += 50;
+        this.summonBush();
+        this.summonExploder();
+        this.summonGrunt();
+        return [true, 0x00ff00];
+    }
+
+    summonGrunt() {
+        let gruntManaCost = this.scene.attackingAllies.getManaCost();
+        if (this.hasMana(gruntManaCost)) {
+            this.mana = this.mana - gruntManaCost;
+            this.scene.attackingAllies.createAttackingAlly(upEvent.worldX, upEvent.worldY);
+            return [true, 0x00ff00];
         }
-        if (!hasMana) {
-            return [false, 0x0000ff];
+
+    }
+
+    summonBush() {
+        let bushManaCost = this.scene.bushes.getManaCost();
+        if (this.hasMana(bushManaCost)) {
+            this.mana = this.mana - bushManaCost;
+            this.scene.bushes.addBush(upEvent.worldX, upEvent.worldY);
+            return [true, 0x00ff00];
         }
-        return [false, 0xff0000];
+    }
+
+    summonExploder() {
+        let explosionManaCost = this.scene.explodingAllies.getManaCost();
+        if (this.hasMana(explosionManaCost)) {
+            this.mana = this.mana - explosionManaCost;
+            this.scene.explodingAllies.createExplodingAlly(upEvent.worldX, upEvent.worldY);
+            return [true, 0x00ff00];
+        }
     }
 
     // upSwipe()
