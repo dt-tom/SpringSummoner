@@ -1,4 +1,3 @@
-import { HealthbarV2 } from '../lib/healthbar.js'
 import { playerSpawn, playerSpeed, MOUSE_SAMPLE_RATE } from '../constants.js'
 import { guess } from '../main.js';
 
@@ -58,25 +57,9 @@ export class Player {
         this.gameObject.setCollideWorldBounds(true);
         this.MAX_HEALTH = 100;
         this.health = this.MAX_HEALTH;
-        this.healthbar = new HealthbarV2({
-            scene: this.scene,
-            height: 12,
-            startingValue: 100,
-            maxValue: 100,
-            offsets: { x: 0, y: -35 },
-        })
         this.MAX_MANA = 100;
         this.mana = this.MAX_MANA;
         this.MANA_REGEN_INTERVAL = 200;
-        this.manabar = new HealthbarV2({
-            scene: this.scene,
-            height: 6,
-            startingValue: this.MAX_MANA,
-            maxValue: this.MAX_MANA,
-            colorFunc: () => ({ fg: 0x0000ff, bg: 0xffffff }),
-            offsets: { x: 0, y: -28 },
-        })
-
         let { wasd, arrowkeys } = createCursors(this.scene)
         this.wasd = wasd
         this.arrowkeys = arrowkeys
@@ -367,7 +350,7 @@ export class Player {
             return
         }
         this.gameObject.anims.play('summonAnimation', true)
-        let result = this.detectGesture(glyph);
+        let result = this.detectGesture(glyph) || [false, 0x0];
         // Iterate over the array
         for (let i = 0; i < this.particles.length; i++) {
             this.particles[i].setParticleTint(result[1]);
@@ -382,9 +365,8 @@ export class Player {
         this.gameObject.setVelocity(0);
         this.updateMovement(this.wasd)
         this.updateMovement(this.arrowkeys)
-
-        this.healthbar.redraw({ x: this.gameObject.x, y: this.gameObject.y, value: this.health })
-        this.manabar.redraw({ x: this.gameObject.x, y: this.gameObject.y, value: this.mana })
+        this.scene.scene.get('Scoreboard').updateHP(this.health);
+        this.scene.scene.get('Scoreboard').updateMana(this.mana);
     }
     /**
      * @param cursors is an object with up down left and right as properties where the
@@ -470,8 +452,6 @@ export class Player {
             this.gameObject.clearTint(); // Clear the tint after a delay
         }, 100);
         if(this.health <= 0) {
-            this.healthbar.gfx.destroy();
-            this.manabar.gfx.destroy();
             this.gameObject.body.enable = false;
             this.gameObject.setTexture('death');
             this.gameObject.anims.play('deathAnimation', true);
