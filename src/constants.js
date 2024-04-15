@@ -40,3 +40,5 @@ export const wormNumInitialSpawns = 0;
 // gestures
 export const MIN_SWIPE_DISTANCE = 200;
 export const MOUSE_SAMPLE_RATE = 10;
+
+export const wormScore = 1000;

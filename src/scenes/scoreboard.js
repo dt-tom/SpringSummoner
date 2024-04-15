@@ -1,4 +1,5 @@
 import { HealthbarV2 } from "../lib/healthbar.js";
+import { canvasHeight, canvasWidth, wormScore } from "../constants.js";
 /**
  * Scoreboard displays the player's score to them. It maintains no score
  * calculation logic, and simply updates its text when instructed to.
@@ -9,8 +10,10 @@ export class Scoreboard extends Phaser.Scene {
     }
 
     create() {
+        this.wormTextActive = false;
         // Add your UI elements here
         this.scoreText = this.add.text(16, 16, 'Score: 0', { fontSize: '24px', fill: '#000' }).setScrollFactor(0);
+        
         this.glyphSequence = this.add.text(16, 40, 'Glyph Sequence: ', { fontSize: '16px', fill: '#000' }).setScrollFactor(0);
         this.lastSpellAccuracy = this.add.text(16, 56, 'Last Glyph Accuracy: -', { fontSize: '16px', fill: '#000' }).setScrollFactor(0);
         this.difficulty = this.add.text(16, 72, 'Difficulty: 0', { fontSize: '16px', fill: '#000' }).setScrollFactor(0);
@@ -53,6 +56,14 @@ export class Scoreboard extends Phaser.Scene {
     updateScore(newScore) {
         this.scoreText.setText('Score: ' + newScore);
         this.scorebar.redraw({ x: 240, y: 28, value: newScore });
+        if(newScore > wormScore && !this.wormTextActive)
+        {
+            this.wormTextActive = true;
+            this.wormText = this.add.text(canvasWidth / 2, canvasHeight / 2 - 200, 'You feel the ground rumbling...', { fontSize: '24px', fill: '#000' }).setScrollFactor(0).setOrigin(0.5);
+            this.time.delayedCall(4000, (e) => { 
+                this.wormText.destroy();
+            });
+        }
     }
 
     updateHP(newHP) {

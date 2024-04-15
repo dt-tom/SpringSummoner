@@ -276,6 +276,10 @@ export class GameScene extends Phaser.Scene {
     replaceTileIndex(tile){
         this.grassMap.replaceByIndex(tile.index, tile.index + 1, tile.x, tile.y, 1, 1);
         this.score += tile.index + 1;
+        if(this.score > constants.wormScore)
+        {
+            this.worm.allowSpawn = true;
+        }
         this.scene.get('Scoreboard').updateScore(this.score);
     }
 
