@@ -55,11 +55,13 @@ export class TitleScene extends Phaser.Scene {
         }, this);
 
         this.interval = setInterval(() => {
+
             this.tutorialTimer -= 1;
+            
             this.tutorialText.setText('Tutorial in ' + this.tutorialTimer.toString());
-            if(this.tutorialTimer == 0){
-                this.scene.stop();
+            if(this.tutorialTimer <= 0){
                 clearInterval(this.interval);
+                this.scene.stop();
                 this.scene.start('TutorialScene');
             }
         }, 1000)

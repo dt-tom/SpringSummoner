@@ -117,6 +117,7 @@ export class ShooterGroup {
                 enemy.health = ENEMY_START_HEALTH;
                 enemy.isSpawned = false;
                 enemy.attacking = false;
+                enemy.attackcount = 0;
                 enemy.setCollideWorldBounds(true);
                 enemy.speed = shooterMovespeed;
                 enemy.effects = new Phaser.Structs.Set();
@@ -179,7 +180,7 @@ export class ShooterGroup {
         if (shooter.attacking) {
             return;
         }
-        console.log("attacking " + shooter.attackcount);
+        shooter.attackcount += 1;
         shooter.attacking = true;
         shooter.setVelocity(0);
         shooter.play('shooterAttackAnimation');

@@ -101,7 +101,7 @@ export class TutorialScene extends Phaser.Scene {
         sandstorm.setVolume(0.03);
 
         this.swipeDirection = 0;
-        setInterval(() => {
+        this.interval = setInterval(() => {
             if(this.swipeDirection == -1){
                 return;
             }
@@ -164,6 +164,7 @@ export class TutorialScene extends Phaser.Scene {
                     this.text3.setText("Click to begin game.");
                     break;
                 case 7:
+                    clearInterval(this.interval);
                     this.tweens.add({
                         targets: sandstorm,
                         volume: 0,
