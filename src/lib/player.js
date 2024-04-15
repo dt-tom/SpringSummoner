@@ -148,12 +148,12 @@ export class Player {
             if (this.hasMana(explosionManaCost)) {
                 this.mana = this.mana - explosionManaCost;
                 this.scene.explodingAllies.createExplodingAlly(upEvent.worldX, upEvent.worldY);
-                return [true, 0x00ff00];;
+                return [true, 0x00ff00];
             }
             hasMana = false;
         }
         if (!hasMana) {
-            return [false, 0x0000ff]
+            return [false, 0x0000ff];
         }
         return [false, 0xff0000];
     }

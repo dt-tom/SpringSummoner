@@ -38,7 +38,7 @@ export class BugGroup {
     spawnBugNear({x, y}) {
         const direction = Math.random() * 2 * Math.PI;
         const range = bugSpawnOuterRadius - bugSpawnInnerRadius
-        const  distance = (Math.random() * range) + bugSpawnInnerRadius
+        const distance = (Math.random() * range) + bugSpawnInnerRadius
 
         const xOut = x + (distance * Math.cos(direction))
         const yOut = y + (distance * Math.sin(direction))
@@ -58,6 +58,7 @@ export class BugGroup {
         let bug = this.group.create(x, y, 'bugSpawn')
         let currentScale = bug.scaleX; // Get the current scale
         bug.setScale(currentScale * 0.7); // Increase the scale by 50;
+        bug.play('bugSpawnAnimation');
         this.scene.add.particles(x, y, 'dirtParticle', {
             speed: { min: 1, max: 20 },
             maxParticles: 20,
@@ -67,14 +68,31 @@ export class BugGroup {
         })
         this.scene.time.delayedCall(1000, (e) => { 
             e.hasSpawned = true;
-            this.group.playAnimation('bugMoveAnimation');
+            e.play('bugMoveAnimation');
         }, [bug], this);
+
+        bug.intervalId = setInterval(() => {
+            bug.hasSpawned = false;
+            bug.playReverse('bugSpawnAnimation');
+            bug.setVelocity(0);
+            this.scene.time.delayedCall(800, (e) => { 
+                e.x = this.scene.player.gameObject.x + Math.random() * 400 - 200;
+                e.y = this.scene.player.gameObject.y + Math.random() * 400 - 200;
+                e.play('bugSpawnAnimation');
+            }, [bug], this);
+            this.scene.time.delayedCall(1600, (e) => { 
+                e.hasSpawned = true;
+                e.play('bugMoveAnimation');
+            }, [bug], this);
+        }, this.MAX_BUG_LIFESPAN_MILLIS + Math.random() * 1000);
     }
 
 
     // Create is called when the scene becomes active, once, after assets are
     // preloaded. It's expected that this scene will have aleady called preload
     create() {
+        this.MAX_BUG_COUNT = 40;
+        this.MAX_BUG_LIFESPAN_MILLIS = 20_000;
         this.bugSlowReduction = 20;
         this.bugSlowDurationMillis = 500;
         this.attackDamage = 2;
@@ -89,8 +107,7 @@ export class BugGroup {
         this.scene.anims.create({
             key: 'bugSpawnAnimation',
             frames: this.scene.anims.generateFrameNumbers('bugSpawn', { start: 0, end: 8}),
-            frameRate: 10,
-            repeat: -1,
+            frameRate: 8,
         });
         this.scene.anims.create({
             key: 'dirtTumble',
@@ -117,6 +134,9 @@ export class BugGroup {
             }
             const x = this.scene.player.gameObject.x
             const y = this.scene.player.gameObject.y
+            if (this.group.length >= this.MAX_BUG_COUNT) {
+                return;
+            };
             this.spawnBugNear({x: x, y: y})
         }).bind(this), ENEMY_SPAWN_TIMER);
 
@@ -168,6 +188,7 @@ export class BugGroup {
         }
         bug.health = bug.health - damage;
         if (bug.health <= 0) {
+            clearInterval(bug.intervalId);
             this.bugSquishSound.play();
             this.group.remove(bug);
             bug.destroy();
