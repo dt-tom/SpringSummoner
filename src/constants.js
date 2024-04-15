@@ -26,7 +26,7 @@ export const devMode = false;
 // Bug Enemies
 export const bugSpawnInnerRadius = 250;
 export const bugSpawnOuterRadius = 800;
-export const bugNumInitialSpawns = 0;
+export const bugNumInitialSpawns = 10;
 
 // Shooter Enemies
 export const shooterSpawnInnerRadius = 250;
