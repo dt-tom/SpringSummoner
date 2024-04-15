@@ -159,7 +159,7 @@ export class Player {
                 this.deerFlag = false;
 
             }
-        } else if (this.glyphSequence.length == 2) {
+        } else if (this.glyphSequence.length == 2 && this.glyphSequence[0] == 'Glyph: ƨ' && this.glyphSequence[0] == 'Glyph: ¬') {
             this.deerFlag = true;
         } else if (this.leftSwipe()) {
             result = this.summonGrunt();

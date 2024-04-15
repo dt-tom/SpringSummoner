@@ -14,7 +14,7 @@ export class DeerManager {
 
     create() {
         this.manaCost = 25;
-        this.attackDamage = 100000;
+        this.attackDamage = 100;
         this.attackDurationMillis = 1000;
         this.spawnAnimationDurationMillis = 1000;
         this.deers = this.scene.physics.add.group({
