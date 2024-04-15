@@ -270,7 +270,7 @@ export class GameScene extends Phaser.Scene {
         this.score += tile.index + 1;
         if(this.score > constants.wormScore)
         {
-            this.worm.allowSpawn = true;
+            this.worm.setAllowSpawn()
         }
         this.scene.get('Scoreboard').updateScore(this.score);
     }

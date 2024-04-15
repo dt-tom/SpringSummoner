@@ -47,7 +47,6 @@ export class Player {
         this.scene.load.spritesheet('mouseParticle', 'assets/mouse-particle-v1.png', {
             frameWidth: 8, frameHeight: 8,
         })
-        this.scene.load.audio('leavesSound', 'assets/sounds/bush-sound.mp3');
     }
 
     // Create is called when the scene becomes active, once, after assets are

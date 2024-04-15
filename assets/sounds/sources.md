@@ -12,3 +12,9 @@ https://freesound.org/people/OtisJames/sounds/233343/
 
 # Slash
 https://freesound.org/people/qubodup/sounds/442903/
+
+# Earthquake
+https://freesound.org/people/Bertsz/sounds/524307/
+
+# Roar
+https://freesound.org/people/jacobalcook/sounds/195568/

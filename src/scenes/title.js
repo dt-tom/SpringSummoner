@@ -12,7 +12,6 @@ export class TitleScene extends Phaser.Scene {
     preload () {
         this.load.audio('soundtrack', 'assets/sounds/soundtrack.mp3');
         this.load.audio('sandstorm', 'assets/sounds/sandstorm.wav');
-        this.load.audio('leavesSound', 'assets/sounds/bush-sound.mp3');
     }
 
     create() {
