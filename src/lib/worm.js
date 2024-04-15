@@ -115,8 +115,8 @@ export class Worm {
         this.MAX_HEALTH = 1000;
         this.scene.anims.create({
             key: 'wormMoveAnimation',
-            frames: this.scene.anims.generateFrameNumbers('wormMove', { start: 0, end: 3}),
-            frameRate: 10,
+            frames: this.scene.anims.generateFrameNumbers('wormMove', { start: 0, end: 2}),
+            frameRate: 9,
             repeat: -1,
         });
         this.scene.anims.create({
