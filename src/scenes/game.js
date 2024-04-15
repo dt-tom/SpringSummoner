@@ -5,6 +5,7 @@ import { AttackingAlly } from '../lib/attackingally.js';
 import { ExplodingAlly } from '../lib/explodingally.js';
 import { Bush } from '../lib/bush.js';
 import { BugGroup } from '../lib/bug.js'
+import { ShooterGroup } from '../lib/shooter.js';
 
 /**
  * GameScene is the main scene of Spring Summoner; it's where the actual game
@@ -18,7 +19,8 @@ export class GameScene extends Phaser.Scene {
         this.attackingAllies = new AttackingAlly(this);
         this.explodingAllies = new ExplodingAlly(this);
         this.bushes = new Bush(this);
-        this.bugs = new BugGroup(this)
+        this.bugs = new BugGroup(this);
+        this.shooters = new ShooterGroup(this);
 
         this.tick = 0;
         this.active = true;
@@ -39,6 +41,7 @@ export class GameScene extends Phaser.Scene {
         this.player.preload();
         this.oasis.preload();
         this.bugs.preload();
+        this.shooters.preload();
         this.bushes.preload();
         this.attackingAllies.preload();
         this.explodingAllies.preload();
@@ -108,6 +111,7 @@ export class GameScene extends Phaser.Scene {
         this.explodingAllies.create();
         this.bushes.create();
         this.bugs.create();
+        this.shooters.create();
 
         this.cameras.main.startFollow(this.player.gameObject, true, 0.1, 0.1);  // Should this be in player.js?
 
@@ -122,7 +126,12 @@ export class GameScene extends Phaser.Scene {
             this.player.pickUp(drop)
         }, null, this);
         this.physics.add.collider(this.attackingAllies.attackingAllies, this.bugs.group);
+        this.physics.add.collider(this.attackingAllies.attackingAllies, this.shooters.group);
+        this.physics.add.collider(this.bugs.group, this.shooters.group);
         this.physics.add.collider(this.explodingAllies.explodingAllies, this.bugs.group, (ally, enemy) => {
+            this.explodingAllies.explode(ally, enemy);
+        });
+        this.physics.add.collider(this.explodingAllies.explodingAllies, this.shooters.group, (ally, enemy) => {
             this.explodingAllies.explode(ally, enemy);
         });
 
@@ -256,6 +265,7 @@ export class GameScene extends Phaser.Scene {
         this.explodingAllies.update();
         this.bushes.update();
         this.bugs.update();
+        this.shooters.update();
     }
 
     // called when player health is zero
@@ -264,12 +274,20 @@ export class GameScene extends Phaser.Scene {
         for (let enemy of this.bugs.group.getChildren()) {
             enemy.body.setVelocity(0, 0);
         }
+        for (let enemy of this.shooters.group.getChildren()) {
+            enemy.body.setVelocity(0, 0);
+        }
         // wait one second so death animation can finish
         this.time.delayedCall(1000, (enemies) => { 
             for (let enemy of enemies.getChildren()) {
                 enemy.playReverse('bugSpawnAnimation');
             }
         }, [this.bugs.group], this);
+        this.time.delayedCall(1000, (enemies) => { 
+            for (let enemy of enemies.getChildren()) {
+                enemy.playReverse('shooterSpawnAnimation');
+            }
+        }, [this.shooters.group], this);
         // wait 1.8 seconds before removing enemies (not 2s to avoid overlapping frames)
         this.time.delayedCall(1800, (enemies) => { 
             for (let enemy of enemies.getChildren()) {
@@ -277,6 +295,12 @@ export class GameScene extends Phaser.Scene {
                 enemy.body.enable = false;
             }
         }, [this.bugs.group], this);
+        this.time.delayedCall(1800, (enemies) => { 
+            for (let enemy of enemies.getChildren()) {
+                enemy.setVisible(false);
+                enemy.body.enable = false;
+            }
+        }, [this.shooters.group], this);
         this.attackingAllies.end()
     }
 }
