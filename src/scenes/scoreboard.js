@@ -21,7 +21,7 @@ export class Scoreboard extends Phaser.Scene {
             startingValue: 100,
             maxValue: 100,
             offsets: { x: 0, y: 0 },
-        })
+        });
         this.manabar = new HealthbarV2({
             scene: this.scene.scene,
             height: 16,
@@ -29,6 +29,15 @@ export class Scoreboard extends Phaser.Scene {
             startingValue: this.MAX_MANA,
             maxValue: this.MAX_MANA,
             colorFunc: () => ({ fg: 0x0000ff, bg: 0xffffff }),
+            offsets: { x: 0, y: 0 },
+        });
+        this.scorebar = new HealthbarV2({
+            scene: this.scene.scene,
+            height: 16,
+            width: 100,
+            startingValue: 0,
+            maxValue: 60000,
+            colorFunc: () => ({ fg: 0x000000, bg: 0xffffff }),
             offsets: { x: 0, y: 0 },
         })
     }
@@ -42,7 +51,8 @@ export class Scoreboard extends Phaser.Scene {
     }
 
     updateScore(newScore) {
-        this.scoreText.setText(`Score: ${newScore}`);
+        this.scoreText.setText('Score: ' + newScore);
+        this.scorebar.redraw({ x: 240, y: 28, value: newScore });
     }
 
     updateHP(newHP) {
