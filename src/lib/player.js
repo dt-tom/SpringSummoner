@@ -127,7 +127,7 @@ export class Player {
         const { glyph, spellAccuracy } = glyphData;
         this.scene.scene.get('Scoreboard').updateLastSpellAccuracy(spellAccuracy);
         let result = [false, 0xff0000];
-
+        if (!this.hasMana(10)) return result;
         // keep track of combos
         if (spellAccuracy >= 0.75) {
             this.glyphSequence.push(glyph);
@@ -159,7 +159,7 @@ export class Player {
                 this.deerFlag = false;
 
             }
-        } else if (this.glyphSequence.length == 2 && this.glyphSequence[0] == 'Glyph: ƨ' && this.glyphSequence[0] == 'Glyph: ¬') {
+        } else if (this.glyphSequence.length == 2 && this.glyphSequence[0] == 'Glyph: ƨ' && this.glyphSequence[1] == 'Glyph: ¬') {
             this.deerFlag = true;
         } else if (this.leftSwipe()) {
             result = this.summonGrunt();
@@ -179,8 +179,18 @@ export class Player {
         this.scene.scene.get("Scoreboard").levelBreakpoint(this.health, this.mana)
     }
 
-    scaleSummons() {
+    scaleSummons(damageBaseMulti=1.1, manaCostBaseMulti=0.95) {
+        const game = this.scene.scene.get("GameScene");
+        game.attackingAllies.attackDamage *= damageBaseMulti;
+        game.attackingAllies.gruntMaxLifetimeMillis *= damageBaseMulti;
+        game.explodingAllies.explodeDamage *= damageBaseMulti;
+        game.bushes.bushTickDamage *= damageBaseMulti;
+        game.deers.attackDamage *= damageBaseMulti;
 
+        game.deers.manaCost *= manaCostBaseMulti;
+        game.attackingAllies.manaCost *= manaCostBaseMulti;
+        game.explodingAllies.manaCost *= manaCostBaseMulti;
+        game.bushes.manaCost *= manaCostBaseMulti;
     }
 
     summonDeer() {

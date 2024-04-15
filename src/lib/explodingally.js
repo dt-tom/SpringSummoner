@@ -23,7 +23,7 @@ export class ExplodingAlly {
                 ally.exploding = false;
             }
         });
-
+        this.explodeDamage = 100;
         this.explodingSound = this.scene.sound.add('explosion');
         this.explodingSound.setVolume(0.5);
 
@@ -93,7 +93,7 @@ export class ExplodingAlly {
         }
         ally.on('animationcomplete', () => {
             ally.destroy();
-            this.scene.bugs.damageBug(enemy, 100);
+            this.scene.bugs.damageBug(enemy, this.explodeDamage);
         });
         this.scene.time.delayedCall(800, (e) => { 
             ally.destroy();
