@@ -9,7 +9,17 @@ export class Scoreboard extends Phaser.Scene {
 
     create() {
         // Add your UI elements here
-        this.scoreText = this.add.text(16, 16, 'Score: 0', { fontSize: '32px', fill: '#000' }).setScrollFactor(0);
+        this.scoreText = this.add.text(16, 16, 'Score: 0', { fontSize: '24px', fill: '#000' }).setScrollFactor(0);
+        this.glyphSequence = this.add.text(16, 40, 'Glyph Sequence: -', { fontSize: '16px', fill: '#000' }).setScrollFactor(0);
+        this.lastSpellAccuracy = this.add.text(16, 56, 'Last Glyph Accuracy: -', { fontSize: '16px', fill: '#000' }).setScrollFactor(0);
+    }
+
+    updateLastSpellAccuracy(newSpellAccuracy) {
+        this.lastSpellAccuracy.setText(`Last Glyph Accuracy: ${Math.round(newSpellAccuracy * 100, 2)}%`);
+    }
+
+    updateGlyphSequence(newGlyphSequence) {
+        this.glyphSequence.setText(`Glyph Sequence: ${newGlyphSequence.map(d => d[d.length - 1])}`);
     }
 
     updateScore(newScore) {

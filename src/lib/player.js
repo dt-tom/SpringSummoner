@@ -137,12 +137,14 @@ export class Player {
         if (!glyphData) return;
 
         const { glyph, spellAccuracy } = glyphData;
+        this.scene.scene.get('Scoreboard').updateLastSpellAccuracy(spellAccuracy);
 
         if (spellAccuracy >= 0.9) {
             this.glyphSequence.push(glyph);
         } else {
             this.glyphSequence = [];
         }
+        this.scene.scene.get('Scoreboard').updateGlyphSequence(this.glyphSequence);
 
         let result = [false, 0xff0000];
         if (this.glyphSequence.length == 3) {
