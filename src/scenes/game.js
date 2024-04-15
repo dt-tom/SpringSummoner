@@ -345,7 +345,10 @@ export class GameScene extends Phaser.Scene {
         for (let enemy of this.shooters.group.getChildren()) {
             enemy.body.setVelocity(0, 0);
         }
+        this.bugs.end();
         this.deers.end();
+        this.shooters.end();
+        this.worm.end();
         // wait one second so death animation can finish
         this.time.delayedCall(1000, (enemies) => { 
             for (let enemy of enemies.getChildren()) {
@@ -374,6 +377,5 @@ export class GameScene extends Phaser.Scene {
         this.time.delayedCall(3000, () => {
             this.scene.launch('DeathScene');
         });
-        
     }
 }

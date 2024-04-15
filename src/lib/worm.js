@@ -152,7 +152,7 @@ export class Worm {
             }
         });
 
-        setInterval((() => {
+        this.wormSpawnInterval = setInterval((() => {
             if(!this.allowSpawn)
             {
                 return;
@@ -264,6 +264,7 @@ export class Worm {
             // this.wormDeathSound.play();
             // this.wormDeathSound.setVolume(0.5);
             this.group.remove(worm);
+            clearInterval(worm.intervalId)
             worm.destroy();
         }
         worm.setTint(0xff0000); // Tint the sprite red
@@ -294,5 +295,10 @@ export class Worm {
             worm.speed = worm.speed + speedReduction;
             worm.effects.delete(reason);
         }, durationMillis);
+    }
+
+    end() {
+        clearInterval(this.wormSpawnInterval)
+        this.group.children.iterate(w => clearInterval(w.intervalId))
     }
 };

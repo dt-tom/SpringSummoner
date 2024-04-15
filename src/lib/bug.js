@@ -131,7 +131,7 @@ export class BugGroup {
             }
         });
 
-        setInterval((() => {
+        this.bugSpawnInterval = setInterval((() => {
             if (!this.scene.active) {
                 return;
             }
@@ -225,5 +225,10 @@ export class BugGroup {
             bug.speed = bug.speed + speedReduction;
             bug.effects.delete(reason);
         }, durationMillis);
+    }
+    
+    end() {
+        this.group.children.iterate(bug => clearInterval(bug.intervalId))
+        clearInterval(this.bugSpawnInterval)
     }
 };

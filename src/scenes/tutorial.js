@@ -112,7 +112,6 @@ export class TutorialScene extends Phaser.Scene {
         
         // Click handler that starts the game
         this.input.on('pointerdown', () => {
-            console.log(this.page);
             this.page += 1;
             switch (this.page){
                 case 1:

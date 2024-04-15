@@ -147,7 +147,7 @@ export class ShooterGroup {
             }
         });
 
-        setInterval((() => {
+        this.shooterSpawnInterval = setInterval((() => {
             if (!this.scene.active) {
                 return;
             }
@@ -259,5 +259,9 @@ export class ShooterGroup {
             shooter.speed = shooter.speed + speedReduction;
             shooter.effects.delete(reason);
         }, durationMillis);
+    }
+    end() {
+        this.group.children.iterate(s => clearInterval(s.intervalId))
+        clearInterval(this.shooterSpawnInterval)
     }
 };
