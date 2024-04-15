@@ -58,7 +58,7 @@ export class DeerManager {
             for (let worm of this.scene.worm.group.getChildren()) {
                 let wormBounds = worm.getBounds();
                 if (Phaser.Geom.Intersects.RectangleToRectangle(deerBounds, wormBounds)) {
-                    this.scene.worm.damageWorm(worm, this.attackDamage);
+                    this.scene.worm.damageworm(worm, this.attackDamage);
                 }
             }
         }
