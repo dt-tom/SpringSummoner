@@ -35,22 +35,23 @@ export class Bush {
 
     update() {
         // slow bugs
-        for(const bug of this.scene.bugs.group.getChildren()) {
-            const vector = new Phaser.Math.Vector2(
-                this.scene.player.gameObject.x - bug.x,
-                this.scene.player.gameObject.y - bug.y
-            );
-            vector.normalizeRightHand();
-            bug.rotation = vector.angle();
-            for (let bush of this.bushes.getChildren()) {
-                if (!bush.isSpawned) {
-                    continue;
-                }
-                const bushBounds = bush.getBounds();
+        for (let bush of this.bushes.getChildren()) {
+            if (!bush.isSpawned) {
+                continue;
+            }
+            const bushBounds = bush.getBounds();
+            for (let bug of this.scene.bugs.group.getChildren()) {
                 const bugBounds = bug.getBounds();
                 if (Phaser.Geom.Intersects.RectangleToRectangle(bushBounds, bugBounds)) {
                     this.scene.bugs.slowBug(bug, "bushSlow", this.bushSpeedReduction, this.bushSlowDurationMillis);
                     this.scene.bugs.damageBug(bug, this.bushTickDamage);
+                }
+            }
+            for (let shooter of this.scene.shooters.group.getChildren()) {
+                const shooterBounds = shooter.getBounds();
+                if (Phaser.Geom.Intersects.RectangleToRectangle(bushBounds, shooterBounds)) {
+                    this.scene.shooters.slowShooter(shooter, "bushSlow", this.bushSpeedReduction, this.bushSlowDurationMillis);
+                    this.scene.shooters.damageShooter(shooter, this.bushTickDamage);
                 }
             }
         }
@@ -112,6 +113,13 @@ export class Bush {
                 const bugBounds = bug.getBounds();
                 if (Phaser.Geom.Intersects.RectangleToRectangle(bushBounds, bugBounds)) {
                     this.scene.bugs.damageBug(bug, 1000);
+                }
+            }
+            for (let shooter of this.scene.shooters.group.getChildren()) {
+                const bushBounds = ally.getBounds();
+                const shooterBounds = shooter.getBounds();
+                if (Phaser.Geom.Intersects.RectangleToRectangle(bushBounds, shooterBounds)) {
+                    this.scene.shooters.damageShooter(shooter, 1000);
                 }
             }
             ally.isSpawned = true;

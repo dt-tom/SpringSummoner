@@ -28,6 +28,8 @@ export class ShooterGroup {
             frameWidth: 32, frameHeight: 32,
         });
         this.scene.load.image('shooterProjectile', 'assets/viperess_projectile.png');
+        this.scene.load.audio('shooterShootSound', 'assets/sounds/viper-spit.wav');
+        this.scene.load.audio('shooterDeathSound', 'assets/sounds/viper-death.wav');
     }
 
     /*
@@ -95,9 +97,11 @@ export class ShooterGroup {
     create() {
         this.shooterSlowReduction = 20;
         this.shooterSlowDurationMillis = 500;
-        this.attackDamage = 2;
-        this.attackCooldownMillis = 10000;
+        this.attackDamage = 8;
+        this.attackCooldownMillis = 3000;
         this.projectileDamage = 1;
+        this.shooterDeathSound = this.scene.sound.add('shooterDeathSound');
+        this.shooterShootSound = this.scene.sound.add('shooterShootSound');
         this.projectileSlow = 170;
         this.projectileSlowDurationMillis = 350;
         this.MAX_SHOOTER_COUNT = 10;
@@ -187,6 +191,8 @@ export class ShooterGroup {
         shooter.attacking = true;
         shooter.setVelocity(0);
         shooter.play('shooterAttackAnimation');
+        this.shooterShootSound.play();
+        this.shooterShootSound.setVolume(0.2);
         this.projectile = this.scene.physics.add.image(shooter.x, shooter.y, 'shooterProjectile');
         const {x, y} = this.scene.player.gameObject;
         this.scene.physics.add.collider(
@@ -212,8 +218,9 @@ export class ShooterGroup {
         }
         shooter.health = shooter.health - damage;
         if (shooter.health <= 0) {
-            this.shooterSquishSound.play();
-            this.group.remove(bug);
+            this.shooterDeathSound.play();
+            this.shooterDeathSound.setVolume(0.5);
+            this.group.remove(shooter);
             shooter.destroy();
         }
         shooter.setTint(0xff0000); // Tint the sprite red
@@ -234,7 +241,7 @@ export class ShooterGroup {
         shooter.setVelocity(vector.x, vector.y)
     }
 
-    slowshooter(shooter, reason, speedReduction, durationMillis) {
+    slowShooter(shooter, reason, speedReduction, durationMillis) {
         if (shooter.effects.contains(reason)) {
             return;
         }
