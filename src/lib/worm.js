@@ -248,6 +248,7 @@ export class Worm {
     }
 
     damageworm(worm, damage) {
+        console.log("DAMAGING WORM WITH: " + damage);
         if (!worm.hasSpawned) {
             return;
         }
