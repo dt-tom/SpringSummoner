@@ -1,6 +1,5 @@
 import { HealthbarV2 } from '../lib/healthbar.js'
-import { playerSpawn, playerSpeed, summonForFree, MIN_SWIPE_DISTANCE, MOUSE_SAMPLE_RATE } from '../constants.js'
-import { AttackingAlly } from '../lib/attackingally.js'
+import { playerSpawn, playerSpeed, MOUSE_SAMPLE_RATE } from '../constants.js'
 import { guess } from '../main.js';
 
 /**
@@ -460,10 +459,21 @@ export class Player {
         this.mana = Math.min(this.mana + amount, this.MAX_MANA);
     }
 
+    updateSpeed(reason, amount, durationMillis) {
+        if (this.effects.contains(reason)) {
+            return;
+        }
+        this.effects.set(reason);
+        this.playerSpeed += amount;
+        setTimeout(() => {
+            this.playerSpeed -= amount;
+        }, durationMillis);
+    }
+
     pickUp(drop) {
         if(drop.type == "speed")
         {
-            this.playerSpeed = this.playerSpeed + 20;
+            this.updateSpeed('powerup', 100, 5000);
         }
         if(drop.type == "mana")
         {
