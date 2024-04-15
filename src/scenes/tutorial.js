@@ -27,6 +27,9 @@ export class TutorialScene extends Phaser.Scene {
         this.load.spritesheet('ultrune', 'assets/ultrune.png', {
             frameWidth: 128, frameHeight: 128,
         });
+        this.load.spritesheet('lswipe', 'assets/lSwipe.png', {
+            frameWidth: 128, frameHeight: 128,
+        });
         this.load.image('oasis', 'assets/oasis-v2.png');
         this.load.image('fruit1', 'assets/special_fruit.png');
         this.load.image('fruit2', 'assets/pink_fruit.png');
@@ -62,6 +65,12 @@ export class TutorialScene extends Phaser.Scene {
         this.swipeAnimation = this.anims.create({
             key: 'swipeDownAnimation',
             frames: this.anims.generateFrameNumbers('swipedown', { start: 0, end: 6}),
+            frameRate: 10,
+            repeat: -1,
+        });
+        this.swipeAnimation = this.anims.create({
+            key: 'lswipeAnimation',
+            frames: this.anims.generateFrameNumbers('lswipe', { start: 0, end: 6}),
             frameRate: 10,
             repeat: -1,
         });
@@ -120,8 +129,8 @@ export class TutorialScene extends Phaser.Scene {
                     this.text2.setText("It will fight on your behalf");
                     break;
                 case 2:
-                    this.gameObject.play('swipeRightAnimation')
-                    this.text1.setText("Swipe right to summon a bomb ally. It also cost mana.");
+                    this.gameObject.play('lswipeAnimation')
+                    this.text1.setText("Swipe in ¬ pattern to summon a bomb ally. It also cost mana.");
                     this.text2.setText("It will fight on your behalf");
                     break;
                 case 3:
