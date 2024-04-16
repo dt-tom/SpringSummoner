@@ -157,7 +157,7 @@ export class GameScene extends Phaser.Scene {
         this.soundtrack = this.sound.add('soundtrack');
         this.soundtrack.play();
         this.soundtrack.setLoop(true);
-        this.soundtrack.setVolume(0.2 * Globals.globalVolume);
+        this.soundtrack.setVolume(0.1 * Globals.globalVolume);
 
         this.scene.launch('Scoreboard');
 
@@ -344,7 +344,7 @@ export class GameScene extends Phaser.Scene {
         this.shooters.update();
         this.deers.update();
         this.worm.update();
-        this.soundtrack.setVolume(0.2 * Globals.globalVolume);
+        this.soundtrack.setVolume(0.1 * Globals.globalVolume);
     }
 
     // called when player health is zero
