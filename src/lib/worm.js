@@ -3,7 +3,7 @@ import {
     wormSpawnOuterRadius,
     wormNumInitialSpawns,
     wormMovespeed,
-    globalVolume,
+    Globals,
 } from "../constants.js";
 
 /**
@@ -36,7 +36,7 @@ export class Worm {
         if (!this.allowSpawn) {
             this.allowSpawn = true;
             this.earthquakeSound.play('longEarthquake');
-            this.earthquakeSound.setVolume(0.4 * globalVolume);
+            this.earthquakeSound.setVolume(0.4 * Globals.globalVolume);
         }
     }
 
@@ -88,21 +88,21 @@ export class Worm {
             worm.hasSpawned = false;
             worm?.playReverse('wormSpawnAnimation');
             this.earthquakeSound.play('shortEarthquake');
-            this.earthquakeSound.setVolume(0.4 * globalVolume);
+            this.earthquakeSound.setVolume(0.4 * Globals.globalVolume);
             worm?.setVelocity(0);
             this.scene.time.delayedCall(1000, (e) => { 
                 e.x = this.scene.player.gameObject.x + Math.random() * 400 - 200;
                 e.y = this.scene.player.gameObject.y + Math.random() * 400 - 200;
                 e.play('wormSpawnAnimation');
                 this.earthquakeSound.play('shortEarthquake');
-                this.earthquakeSound.setVolume(0.4 * globalVolume);
+                this.earthquakeSound.setVolume(0.4 * Globals.globalVolume);
             }, [worm], this);
             this.scene.time.delayedCall(2000, (e) => { 
                 e.hasSpawned = true;
                 worm.canAttack = false;
                 e.play('wormMoveAnimation');
                 this.earthquakeSound.play('shortEarthquake');
-                this.earthquakeSound.setVolume(0.4 * globalVolume);
+                this.earthquakeSound.setVolume(0.4 * Globals.globalVolume);
             }, [worm], this);
         }, this.MAX_worm_LIFESPAN_MILLIS + Math.random() * 1000);
     }
@@ -114,9 +114,9 @@ export class Worm {
         this.tick = 0;
         this.allowSpawn = false;
         this.earthquakeSound = this.scene.sound.add('earthquake');
-        this.earthquakeSound.setVolume(0.4 * globalVolume);
+        this.earthquakeSound.setVolume(0.4 * Globals.globalVolume);
         this.roarSound = this.scene.sound.add('roar');
-        this.roarSound.setVolume(0.4 * globalVolume);
+        this.roarSound.setVolume(0.4 * Globals.globalVolume);
         this.earthquakeSound.addMarker({name: 'shortEarthquake', start: 0, duration: 2});
         this.earthquakeSound.addMarker({name: 'attackEarthquake', start: 0, duration: 2.75});
         this.earthquakeSound.addMarker({name: 'longEarthquake', start: 0, duration: 4.5});
@@ -208,6 +208,8 @@ export class Worm {
 
     // Update is called once per tick
     update() {
+        this.earthquakeSound.setVolume(0.4 * Globals.globalVolume);
+        this.roarSound.setVolume(0.4 * Globals.globalVolume);
         this.tick += 1;
         if(this.tick % 10 != 0){
             return;
@@ -233,7 +235,7 @@ export class Worm {
         worm.setImmovable();
         worm.play('wormSpawnAnimation');
         this.earthquakeSound.play('shortEarthquake');
-        this.earthquakeSound.setVolume(0.4 * globalVolume);
+        this.earthquakeSound.setVolume(0.4 * Globals.globalVolume);
         this.scene.add.particles(worm.x, worm.y, 'dirtParticle', {
             speed: { min: 1, max: 20 },
             maxParticles: 50,
@@ -262,9 +264,10 @@ export class Worm {
                 worm.canAttack = false;
                 worm.play('wormAttackAnimation');
                 this.earthquakeSound.play('attackEarthquake');
-                this.earthquakeSound.setVolume(0.4 * globalVolume);
+                this.earthquakeSound.setVolume(0.4 * Globals.globalVolume);
                 setTimeout(() => {
                     this.roarSound.play();
+                    this.roarSound.setVolume(0.4 * Globals.globalVolume);
                     worm.canAttack = true;
                 }, this.ATTACK_SPAWN_DELAY_MILLIS);
             }
@@ -283,7 +286,7 @@ export class Worm {
         worm.health = worm.health - damage;
         if (worm.health <= 0) {
             // this.wormDeathSound.play();
-            // this.wormDeathSound.setVolume(0.5 * globalVolume);
+            // this.wormDeathSound.setVolume(0.5 * Globals.globalVolume);
             this.group.remove(worm);
             clearInterval(worm.intervalId)
             worm.destroy();

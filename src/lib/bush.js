@@ -1,5 +1,5 @@
 import * as constants from '../constants.js'
-import { globalVolume } from "../constants.js";
+import { Globals } from "../constants.js";
 
 export class Bush {
     constructor(scene)
@@ -92,7 +92,7 @@ export class Bush {
         // Add a marker that starts at 12 second into the sound and lasts for 1 seconds
         bushSound.addMarker({name: 'bushMarker', start: 3, duration: 1});
         bushSound.play('bushMarker');
-        bushSound.setVolume(0.05 * globalVolume);
+        bushSound.setVolume(0.05 * Globals.globalVolume);
 
         // spiral green the terrain
         this.spiralGreen(posX, posY);

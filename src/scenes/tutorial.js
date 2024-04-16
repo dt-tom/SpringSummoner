@@ -10,8 +10,6 @@ export class TutorialScene extends Phaser.Scene {
     }
 
     preload () {
-        this.load.audio('soundtrack', 'assets/sounds/soundtrack.mp3');
-        this.load.audio('sandstorm', 'assets/sounds/sandstorm.wav');
         this.load.spritesheet('swipeleft', 'assets/Swipeleft-sheet.png', {
             frameWidth: 128, frameHeight: 128,
         });

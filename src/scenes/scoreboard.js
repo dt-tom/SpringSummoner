@@ -1,5 +1,5 @@
 import { HealthbarV2 } from "../lib/healthbar.js";
-import { canvasHeight, canvasWidth, wormScore } from "../constants.js";
+import { canvasHeight, canvasWidth, Globals, wormScore } from "../constants.js";
 /**
  * Scoreboard displays the player's score to them. It maintains no score
  * calculation logic, and simply updates its text when instructed to.
@@ -17,6 +17,9 @@ export class Scoreboard extends Phaser.Scene {
         this.glyphSequence = this.add.text(16, 40, 'Glyph Sequence: ', { fontSize: '16px', fill: '#000' }).setScrollFactor(0);
         this.lastSpellAccuracy = this.add.text(16, 56, 'Last Glyph Accuracy: -', { fontSize: '16px', fill: '#000' }).setScrollFactor(0);
         this.difficulty = this.add.text(16, 72, 'Difficulty: 0', { fontSize: '16px', fill: '#000' }).setScrollFactor(0);
+        this.volume = this.add.text(900, 750, 'Volume: 100', { fontSize: '16px', fill: '#000' }).setScrollFactor(0);
+        this.volume.setInteractive(new Phaser.Geom.Rectangle(0, 0, this.volume.width, this.volume.height), Phaser.Geom.Rectangle.Contains);
+        this.volume.on('pointerdown', () => {this.updateVolume();});
         this.healthbar = new HealthbarV2({
             scene: this.scene.scene,
             height: 24,
@@ -84,6 +87,19 @@ export class Scoreboard extends Phaser.Scene {
                 this.wormText.destroy();
             });
         }
+    }
+
+    updateVolume() {
+        if (Globals.globalVolume == 1) {
+            Globals.globalVolume = 0.6;
+        } else if (Globals.globalVolume == 0.6) {
+            Globals.globalVolume = 0.3;
+        } else if (Globals.globalVolume == 0.3) {
+            Globals.globalVolume = 0;
+        } else if (Globals.globalVolume == 0) {
+            Globals.globalVolume = 1;
+        }
+        this.volume.setText('Volume: ' + Globals.globalVolume * 100);
     }
 
     updateHP(newHP) {

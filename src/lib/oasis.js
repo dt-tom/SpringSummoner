@@ -1,4 +1,4 @@
-import { globalVolume } from "../constants.js";
+import { Globals } from "../constants.js";
 
 /**
  * Oasis is the spawn location that causes the player to regenerate mana
@@ -56,7 +56,7 @@ export class Oasis {
 
         if(!this.auraSound.isPlaying) {
             this.auraSound.play();
-            this.auraSound.setVolume(0.1 * globalVolume);
+            this.auraSound.setVolume(0.1 * Globals.globalVolume);
         }
         if (this.manaHealed) {
             return;

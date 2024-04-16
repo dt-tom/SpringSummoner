@@ -43,4 +43,6 @@ export const MOUSE_SAMPLE_RATE = 10;
 
 export const wormScore = 40000;
 
-export var globalVolume = 1;
+export const Globals = {
+    globalVolume: 1
+}

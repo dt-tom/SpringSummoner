@@ -8,6 +8,7 @@ import { BugGroup } from '../lib/bug.js'
 import { ShooterGroup } from '../lib/shooter.js';
 import { DeerManager } from '../lib/deer.js';
 import { Worm } from '../lib/worm.js';
+import { Globals } from "../constants.js";
 
 /**
  * GameScene is the main scene of Spring Summoner; it's where the actual game
@@ -58,6 +59,7 @@ export class GameScene extends Phaser.Scene {
     }
 
     preload () {
+        this.load.audio('soundtrack', 'assets/sounds/soundtrack.mp3');
         this.load.image('me', 'assets/main-character-inuse.png')
         this.load.image('speedDrop', 'assets/special_fruit.png');
         this.load.image('healthDrop', 'assets/pink_fruit.png');
@@ -151,6 +153,11 @@ export class GameScene extends Phaser.Scene {
         // (make sure to bind them if they're instance methods)
         this.postCreateHooks = []
         this.createWorld();
+
+        this.soundtrack = this.sound.add('soundtrack');
+        this.soundtrack.play();
+        this.soundtrack.setLoop(true);
+        this.soundtrack.setVolume(0.2 * Globals.globalVolume);
 
         this.scene.launch('Scoreboard');
 
@@ -337,6 +344,7 @@ export class GameScene extends Phaser.Scene {
         this.shooters.update();
         this.deers.update();
         this.worm.update();
+        this.soundtrack.setVolume(0.2 * Globals.globalVolume);
     }
 
     // called when player health is zero

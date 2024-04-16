@@ -1,5 +1,5 @@
 import * as constants from '../constants.js';
-import { globalVolume } from '../constants.js';
+import { Globals } from '../constants.js';
 
 
 let startingGame = false;
@@ -41,13 +41,18 @@ export class TitleScene extends Phaser.Scene {
         this.soundtrack = this.sound.add('soundtrack');
         this.soundtrack.play();
         this.soundtrack.setLoop(true);
-        this.soundtrack.setVolume(0.2 * globalVolume);
+        this.soundtrack.setVolume(0.2 * Globals.globalVolume);
         this.sandstorm = this.sound.add('sandstorm', { loop:true });
         this.sandstorm.addMarker({name: 'sandstormWhoosh'});
         this.sandstorm.play('sandstormWhoosh');
-        this.sandstorm.setVolume(0.04 * globalVolume);
+        this.sandstorm.setVolume(0.04 * Globals.globalVolume);
         this.tweens.add({
             targets: this.sandstorm,
+            volume: 0,
+            duration: 4500,
+        })
+        this.tweens.add({
+            targets: this.soundtrack,
             volume: 0,
             duration: 4500,
         })
@@ -56,6 +61,11 @@ export class TitleScene extends Phaser.Scene {
         this.input.on('pointerdown', () => {
             this.tweens.add({
                 targets: this.sandstorm,
+                volume: 0,
+                duration: 1000,
+            })
+            this.tweens.add({
+                targets: this.soundtrack,
                 volume: 0,
                 duration: 1000,
             })
@@ -80,6 +90,5 @@ export class TitleScene extends Phaser.Scene {
                 clearInterval(this.interval);
             }
         }, 1000)
-    
     }
 }
