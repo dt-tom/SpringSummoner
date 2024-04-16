@@ -41,11 +41,11 @@ export class TitleScene extends Phaser.Scene {
         this.soundtrack = this.sound.add('soundtrack');
         this.soundtrack.play();
         this.soundtrack.setLoop(true);
-        this.soundtrack.setVolume(0.2 * Globals.globalVolume);
+        this.soundtrack.setVolume(0.1 * Globals.globalVolume);
         this.sandstorm = this.sound.add('sandstorm', { loop:true });
         this.sandstorm.addMarker({name: 'sandstormWhoosh'});
         this.sandstorm.play('sandstormWhoosh');
-        this.sandstorm.setVolume(0.04 * Globals.globalVolume);
+        this.sandstorm.setVolume(0.01 * Globals.globalVolume);
         this.tweens.add({
             targets: this.sandstorm,
             volume: 0,
@@ -62,17 +62,19 @@ export class TitleScene extends Phaser.Scene {
             this.tweens.add({
                 targets: this.sandstorm,
                 volume: 0,
-                duration: 1000,
+                duration: 900,
             })
             this.tweens.add({
                 targets: this.soundtrack,
                 volume: 0,
-                duration: 1000,
+                duration: 900,
             })
             setTimeout(() => {
                 if (startingGame) {
                     return;
                 }
+                this.soundtrack.stop();
+                this.sandstorm.stop();
                 startingGame = true;
                 this.scene.start('GameScene')
             }, 1000);  // Time is in milliseconds

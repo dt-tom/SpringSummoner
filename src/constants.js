@@ -41,7 +41,7 @@ export const wormNumInitialSpawns = 0;
 export const MIN_SWIPE_DISTANCE = 200;
 export const MOUSE_SAMPLE_RATE = 10;
 
-export const wormScore = 40000;
+export const wormScore = 20000;
 
 export const Globals = {
     globalVolume: 1

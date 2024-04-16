@@ -16,17 +16,17 @@ export class Worm {
 
     // Preload is called before scene load, with a copy of the scene
     preload() {
-        this.scene.load.spritesheet('wormMove', 'assets/sandworm-move.png', {
-            frameWidth: 64, frameHeight: 64,
+        this.scene.load.spritesheet('wormMove', 'assets/sandworm-move-large.png', {
+            frameWidth: 128, frameHeight: 128,
         });
         this.scene.load.spritesheet('dirtParticle', 'assets/dirt-particle.png', {
             frameWidth: 6, frameHeight: 6,
         });
-        this.scene.load.spritesheet('wormSpawn', 'assets/sand-worm-burrow.png', {
-            frameWidth: 64, frameHeight: 64,
+        this.scene.load.spritesheet('wormSpawn', 'assets/sand-worm-burrow-large.png', {
+            frameWidth: 128, frameHeight: 128,
         });
-        this.scene.load.spritesheet('wormAttack', 'assets/sandworm-attack.png', {
-            frameWidth: 64, frameHeight: 64,
+        this.scene.load.spritesheet('wormAttack', 'assets/sandworm-attack-large.png', {
+            frameWidth: 128, frameHeight: 128,
         });
         this.scene.load.audio('earthquake', 'assets/sounds/earthquake.wav');
         this.scene.load.audio('roar', 'assets/sounds/roar.wav');
@@ -65,7 +65,6 @@ export class Worm {
     spawnwormAt({x, y}) {
         // spawn animation
         let worm = this.group.create(x, y, 'wormSpawn');
-        worm.setScale(2);
         this.scene.add.particles(x, y, 'dirtParticle', {
             speed: { min: 1, max: 20 },
             maxParticles: 20,
