@@ -460,7 +460,8 @@ export class Player {
                 this.gameObject.anims.play('summonAnimation', true)
             } else {
                 this.gameObject.anims.play('walkFrontAnimation', true)
-            }        }
+            }        
+        }
 
         if (cursor.down.isDown) {
             this.gameObject.setVelocityY(this.playerSpeed);
@@ -521,6 +522,7 @@ export class Player {
             this.gameObject.body.enable = false;
             this.gameObject.setTexture('death');
             this.gameObject.anims.play('deathAnimation', true);
+            this.scene.scene.get('Scoreboard').updateHP(0);
             this.scene.end();
             
         }
