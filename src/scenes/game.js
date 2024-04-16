@@ -385,6 +385,11 @@ export class GameScene extends Phaser.Scene {
             }
         }, [this.shooters.group], this);
         this.attackingAllies.end();
+        this.tweens.add({
+            targets: this.soundtrack,
+            volume: 0,
+            duration: 2800,
+        })
         if(this.won) {
             this.time.delayedCall(3000, () => {
                 this.soundtrack.stop();
