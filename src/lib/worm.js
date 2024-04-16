@@ -131,7 +131,7 @@ export class Worm {
         this.MAX_worm_COUNT = 1;
         this.MAX_worm_LIFESPAN_MILLIS = 30_000;
         this.SPAWN_INTERVAL = 10000;
-        this.MAX_HEALTH = 1;
+        this.MAX_HEALTH = 1000;
         this.scene.anims.create({
             key: 'wormMoveAnimation',
             frames: this.scene.anims.generateFrameNumbers('wormMove', { start: 0, end: 2}),
