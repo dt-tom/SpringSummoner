@@ -115,6 +115,7 @@ export class GameScene extends Phaser.Scene {
         this.active = true;
         this.difficulty = 1;
         this.previousDifficulty = 1;
+        this.won = false;
 
         this.score = 0;
     }
@@ -135,6 +136,16 @@ export class GameScene extends Phaser.Scene {
     }
 
     create () {
+        // Hack alert: we create animations here even though we shouldn't
+        // This avoids recreating animations that already exist
+        // Please don't ask why I made this so complicated
+        let origCreate = { gamescene: this, create: this.anims.create }
+        this.anims.create = function() {
+            if (!(arguments[0]['key'] in this.gamescene.anims.anims.entries)) {
+                this.create.apply(this.gamescene.anims, arguments)
+            }
+        }.bind(origCreate)
+
         // Will call each of these after everything is initialized
         // Useful for adding collision handlers when everything is ready to go
         // (make sure to bind them if they're instance methods)
@@ -366,8 +377,15 @@ export class GameScene extends Phaser.Scene {
             }
         }, [this.shooters.group], this);
         this.attackingAllies.end();
-        this.time.delayedCall(3000, () => {
-            this.scene.launch('DeathScene');
-        });
+        if(this.won) {
+            this.time.delayedCall(3000, () => {
+                this.scene.launch('WinScene');
+            });
+        } else {
+            this.time.delayedCall(3000, () => {
+                this.scene.launch('DeathScene');
+            });
+        }
+        
     }
 }

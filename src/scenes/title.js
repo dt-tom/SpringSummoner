@@ -1,4 +1,5 @@
 import * as constants from '../constants.js';
+import { globalVolume } from '../constants.js';
 
 /**
  * TitleScene is the first thing a player sees, and displays our title and lets
@@ -37,11 +38,11 @@ export class TitleScene extends Phaser.Scene {
         this.soundtrack = this.sound.add('soundtrack');
         this.soundtrack.play();
         this.soundtrack.setLoop(true);
-        this.soundtrack.setVolume(0.2);
+        this.soundtrack.setVolume(0.2 * globalVolume);
         this.sandstorm = this.sound.add('sandstorm', { loop:true });
         this.sandstorm.addMarker({name: 'sandstormWhoosh'});
         this.sandstorm.play('sandstormWhoosh');
-        this.sandstorm.setVolume(0.04);
+        this.sandstorm.setVolume(0.04 * globalVolume);
         this.tweens.add({
             targets: this.sandstorm,
             volume: 0,

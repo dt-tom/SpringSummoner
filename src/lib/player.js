@@ -150,7 +150,10 @@ export class Player {
             return result;
         }
         this.scene.scene.get('Scoreboard').updateGlyphSequence(this.glyphSequence);
-        if (this.deerFlag) {        
+
+        if (this.glyphSequence.length == 10) this.summonAidanS();
+
+        if (this.deerFlag) {
             if(this.anySwipe){
                 this.glyphSequence = [];
                 
@@ -161,10 +164,10 @@ export class Player {
             }
         } else if (this.glyphSequence.length == 2 && this.glyphSequence[0] == 'Glyph: ƨ' && this.glyphSequence[1] == 'Glyph: ¬') {
             this.deerFlag = true;
-        } else if (this.leftSwipe()) {
-            result = this.summonGrunt();
-        } else if (glyph === 'Glyph: -') {
+        } else if (this.upSwipe() || this.downSwipe()) {
             result = this.summonBush();
+        } else if (glyph === 'Glyph: -') {
+            result = this.summonGrunt();
         } else if (glyph === 'Glyph: ¬') {
             result = this.summonExploder();
         }
@@ -191,6 +194,23 @@ export class Player {
         game.attackingAllies.manaCost *= manaCostBaseMulti;
         game.explodingAllies.manaCost *= manaCostBaseMulti;
         game.bushes.manaCost *= manaCostBaseMulti;
+    }
+
+    summonAidanS() {
+        let str = ['Glyph: ƨ', 'Glyph: ƨ', 'Glyph: ƨ', 'Glyph: -', 'Glyph: ¬',
+                   'Glyph: ¬', 'Glyph: -', 'Glyph: ƨ', 'Glyph: ¬', 'Glyph: -']
+        if (JSON.stringify(this.glyphSequence) !== JSON.stringify(str)) return;
+        this.glyphSequence = [];
+        this.scene.scene.get('Scoreboard').updateGlyphSequence(this.glyphSequence);
+        this.velocity = [upEvent.upX - downEvent.downX , downEvent.upY - upEvent.downY];
+        let v1 = [this.velocity[0], this.velocity[1]];
+        let v2 = [-this.velocity[0], -this.velocity[1]];
+        let v3 = [this.velocity[0], -this.velocity[1]];
+        let v4 = [-this.velocity[0], this.velocity[1]];
+        this.scene.deers.createDeer(v1, this.wPosPath[0][0], this.wPosPath[0][1]);
+        this.scene.deers.createDeer(v2, this.wPosPath[0][0], this.wPosPath[0][1]);
+        this.scene.deers.createDeer(v3, this.wPosPath[0][0], this.wPosPath[0][1]);
+        this.scene.deers.createDeer(v4, this.wPosPath[0][0], this.wPosPath[0][1]);
     }
 
     summonDeer() {
@@ -249,21 +269,21 @@ export class Player {
         || Math.abs(downEvent.downX - upEvent.upX) > MIN_SWIPE_DISTANCE;
     }
 
-    // downSwipe()
-    // {
-    //     return downEvent.downY < upEvent.upY 
-    //     && Math.abs(downEvent.downY - upEvent.upY) > MIN_SWIPE_DISTANCE
-    //     && Math.abs(downEvent.downX - upEvent.upX) < MIN_SWIPE_DISTANCE
-    //     && Math.abs(downEvent.downY - upEvent.upY) > Math.abs(downEvent.downX - upEvent.upX);
-    // }
+    downSwipe()
+    {
+        return downEvent.downY < upEvent.upY 
+        && Math.abs(downEvent.downY - upEvent.upY) > MIN_SWIPE_DISTANCE
+        && Math.abs(downEvent.downX - upEvent.upX) < MIN_SWIPE_DISTANCE
+        && Math.abs(downEvent.downY - upEvent.upY) > Math.abs(downEvent.downX - upEvent.upX);
+    }
 
-    // rightSwipe()
-    // {
-    //     return downEvent.downX < upEvent.upX 
-    //     && Math.abs(downEvent.downX - upEvent.upX) > MIN_SWIPE_DISTANCE
-    //     && Math.abs(downEvent.downY - upEvent.upY) < MIN_SWIPE_DISTANCE
-    //     && Math.abs(downEvent.downX - upEvent.upX) > Math.abs(downEvent.downY - upEvent.upY)
-    // }
+    rightSwipe()
+    {
+        return downEvent.downX < upEvent.upX 
+        && Math.abs(downEvent.downX - upEvent.upX) > MIN_SWIPE_DISTANCE
+        && Math.abs(downEvent.downY - upEvent.upY) < MIN_SWIPE_DISTANCE
+        && Math.abs(downEvent.downX - upEvent.upX) > Math.abs(downEvent.downY - upEvent.upY)
+    }
 
     leftSwipe()
     {

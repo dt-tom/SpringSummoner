@@ -3,6 +3,7 @@ import {
     bugSpawnOuterRadius,
     bugNumInitialSpawns,
     bugMovespeed,
+    globalVolume,
 } from "../constants.js";
 
 /**
@@ -193,6 +194,7 @@ export class BugGroup {
         if (bug.health <= 0) {
             clearInterval(bug.intervalId);
             this.bugSquishSound.play();
+            this.bugSquishSound.setVolume(1 * globalVolume);
             this.group.remove(bug);
             bug.destroy();
         }

@@ -1,3 +1,5 @@
+import { globalVolume } from "../constants.js";
+
 export class ExplodingAlly {
     constructor(scene)
     {
@@ -25,7 +27,7 @@ export class ExplodingAlly {
         });
         this.explodeDamage = 100;
         this.explodingSound = this.scene.sound.add('explosion');
-        this.explodingSound.setVolume(0.5);
+        this.explodingSound.setVolume(0.5 * globalVolume);
 
         this.scene.anims.create({
             key: 'gemWalkAnimation',
@@ -90,6 +92,7 @@ export class ExplodingAlly {
             ally.exploding = true;
             ally.play('gemExplodeAnimation');
             this.explodingSound.play();
+            this.explodingSound.setVolume(1 * globalVolume);
         }
         ally.on('animationcomplete', () => {
             ally.destroy();
