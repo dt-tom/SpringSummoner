@@ -161,10 +161,10 @@ export class Player {
             }
         } else if (this.glyphSequence.length == 2 && this.glyphSequence[0] == 'Glyph: ƨ' && this.glyphSequence[0] == 'Glyph: ¬') {
             this.deerFlag = true;
-        } else if (this.leftSwipe()) {
-            result = this.summonGrunt();
-        } else if (glyph === 'Glyph: -') {
+        } else if (this.upSwipe() || this.downSwipe()) {
             result = this.summonBush();
+        } else if (glyph === 'Glyph: -') {
+            result = this.summonGrunt();
         } else if (glyph === 'Glyph: ¬') {
             result = this.summonExploder();
         }
@@ -239,21 +239,21 @@ export class Player {
         || Math.abs(downEvent.downX - upEvent.upX) > MIN_SWIPE_DISTANCE;
     }
 
-    // downSwipe()
-    // {
-    //     return downEvent.downY < upEvent.upY 
-    //     && Math.abs(downEvent.downY - upEvent.upY) > MIN_SWIPE_DISTANCE
-    //     && Math.abs(downEvent.downX - upEvent.upX) < MIN_SWIPE_DISTANCE
-    //     && Math.abs(downEvent.downY - upEvent.upY) > Math.abs(downEvent.downX - upEvent.upX);
-    // }
+    downSwipe()
+    {
+        return downEvent.downY < upEvent.upY 
+        && Math.abs(downEvent.downY - upEvent.upY) > MIN_SWIPE_DISTANCE
+        && Math.abs(downEvent.downX - upEvent.upX) < MIN_SWIPE_DISTANCE
+        && Math.abs(downEvent.downY - upEvent.upY) > Math.abs(downEvent.downX - upEvent.upX);
+    }
 
-    // rightSwipe()
-    // {
-    //     return downEvent.downX < upEvent.upX 
-    //     && Math.abs(downEvent.downX - upEvent.upX) > MIN_SWIPE_DISTANCE
-    //     && Math.abs(downEvent.downY - upEvent.upY) < MIN_SWIPE_DISTANCE
-    //     && Math.abs(downEvent.downX - upEvent.upX) > Math.abs(downEvent.downY - upEvent.upY)
-    // }
+    rightSwipe()
+    {
+        return downEvent.downX < upEvent.upX 
+        && Math.abs(downEvent.downX - upEvent.upX) > MIN_SWIPE_DISTANCE
+        && Math.abs(downEvent.downY - upEvent.upY) < MIN_SWIPE_DISTANCE
+        && Math.abs(downEvent.downX - upEvent.upX) > Math.abs(downEvent.downY - upEvent.upY)
+    }
 
     leftSwipe()
     {

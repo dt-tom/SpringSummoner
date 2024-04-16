@@ -85,15 +85,15 @@ export class TutorialScene extends Phaser.Scene {
 
 
         // Subtitle
-        this.text1 = this.add.text(constants.canvasWidth / 2, constants.canvasHeight / 2 + 40, 'Swipe up or down to summon a tree', {
+        this.text1 = this.add.text(constants.canvasWidth / 2, constants.canvasHeight / 2, 'Swipe up or down to summon a tree', {
             fontSize: '16px', fill: '#000'
         }).setOrigin(0.5);
 
-        this.text2 = this.add.text(constants.canvasWidth / 2, constants.canvasHeight / 2 + 80, 'It slows and damages enemies that run through it', {
+        this.text2 = this.add.text(constants.canvasWidth / 2, constants.canvasHeight / 2 + 40, 'It slows and damages enemies that run through it', {
             fontSize: '16px', fill: '#000'
         }).setOrigin(0.5);
 
-        this.text3 = this.add.text(constants.canvasWidth / 2, constants.canvasHeight / 2 + 120, 'Click to continue', {
+        this.text3 = this.add.text(constants.canvasWidth / 2, constants.canvasHeight / 2 + 80, 'Click to continue', {
             fontSize: '16px', fill: '#000'
         }).setOrigin(0.5);
 
@@ -110,11 +110,28 @@ export class TutorialScene extends Phaser.Scene {
 
         this.swipeDirection = 0;
         this.interval = setInterval(() => {
+            console.log("swipe direction: " + this.swipeDirection);
             if(this.swipeDirection == -1){
                 return;
             }
-            this.swipeDirection == 0 ? this.swipeDirection = 1 : this.swipeDirection = 0;
-            this.swipeDirection == 0 ? this.gameObject.play('swipeUpAnimation') : this.gameObject.play('swipeDownAnimation');
+            if(this.swipeDirection == 0)
+            {
+                this.gameObject.play('swipeUpAnimation');
+                this.swipeDirection = 1;
+            } else if (this.swipeDirection == 1)
+            {
+                this.gameObject.play('swipeDownAnimation');
+                this.swipeDirection = 0;
+            }
+            if(this.swipeDirection == 2)
+            {
+                this.gameObject.play('swipeLeftAnimation');
+                this.swipeDirection = 3;
+            } else if (this.swipeDirection == 3)
+            {
+                this.gameObject.play('swipeRightAnimation');
+                this.swipeDirection = 2;
+            }
         }, 600);
 
         
@@ -123,12 +140,13 @@ export class TutorialScene extends Phaser.Scene {
             this.page += 1;
             switch (this.page){
                 case 1:
-                    this.swipeDirection = -1;
-                    this.gameObject.play('swipeLeftAnimation');
-                    this.text1.setText("Swipe left to summon a grunt ally. It costs mana.");
+                    console.log("here");
+                    this.swipeDirection = 2;
+                    this.text1.setText("Swipe left or right to summon a grunt ally. It costs mana.");
                     this.text2.setText("It will fight on your behalf");
                     break;
                 case 2:
+                    this.swipeDirection = -1;
                     this.gameObject.play('lswipeAnimation')
                     this.text1.setText("Swipe in ¬ pattern to summon a bomb ally. It also cost mana.");
                     this.text2.setText("It will fight on your behalf");
