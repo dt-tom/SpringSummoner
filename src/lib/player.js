@@ -150,7 +150,10 @@ export class Player {
             return result;
         }
         this.scene.scene.get('Scoreboard').updateGlyphSequence(this.glyphSequence);
-        if (this.deerFlag) {        
+
+        if (this.glyphSequence.length == 10) this.summonAidanS();
+
+        if (this.deerFlag) {
             if(this.anySwipe){
                 this.glyphSequence = [];
                 
@@ -191,6 +194,23 @@ export class Player {
         game.attackingAllies.manaCost *= manaCostBaseMulti;
         game.explodingAllies.manaCost *= manaCostBaseMulti;
         game.bushes.manaCost *= manaCostBaseMulti;
+    }
+
+    summonAidanS() {
+        let str = ['Glyph: ƨ', 'Glyph: ƨ', 'Glyph: ƨ', 'Glyph: -', 'Glyph: ¬',
+                   'Glyph: ¬', 'Glyph: -', 'Glyph: ƨ', 'Glyph: ¬', 'Glyph: -']
+        if (JSON.stringify(this.glyphSequence) !== JSON.stringify(str)) return;
+        this.glyphSequence = [];
+        this.scene.scene.get('Scoreboard').updateGlyphSequence(this.glyphSequence);
+        this.velocity = [upEvent.upX - downEvent.downX , downEvent.upY - upEvent.downY];
+        let v1 = [this.velocity[0], this.velocity[1]];
+        let v2 = [-this.velocity[0], -this.velocity[1]];
+        let v3 = [this.velocity[0], -this.velocity[1]];
+        let v4 = [-this.velocity[0], this.velocity[1]];
+        this.scene.deers.createDeer(v1, this.wPosPath[0][0], this.wPosPath[0][1]);
+        this.scene.deers.createDeer(v2, this.wPosPath[0][0], this.wPosPath[0][1]);
+        this.scene.deers.createDeer(v3, this.wPosPath[0][0], this.wPosPath[0][1]);
+        this.scene.deers.createDeer(v4, this.wPosPath[0][0], this.wPosPath[0][1]);
     }
 
     summonDeer() {
