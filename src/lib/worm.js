@@ -36,7 +36,6 @@ export class Worm {
         if (!this.allowSpawn) {
             this.allowSpawn = true;
             this.earthquakeSound.play('longEarthquake');
-            this.earthquakeSound.setVolume(0.4 * Globals.globalVolume);
         }
     }
 
@@ -88,21 +87,18 @@ export class Worm {
             worm.hasSpawned = false;
             worm?.playReverse('wormSpawnAnimation');
             this.earthquakeSound.play('shortEarthquake');
-            this.earthquakeSound.setVolume(0.4 * Globals.globalVolume);
             worm?.setVelocity(0);
             this.scene.time.delayedCall(1000, (e) => { 
                 e.x = this.scene.player.gameObject.x + Math.random() * 400 - 200;
                 e.y = this.scene.player.gameObject.y + Math.random() * 400 - 200;
                 e.play('wormSpawnAnimation');
                 this.earthquakeSound.play('shortEarthquake');
-                this.earthquakeSound.setVolume(0.4 * Globals.globalVolume);
             }, [worm], this);
             this.scene.time.delayedCall(2000, (e) => { 
                 e.hasSpawned = true;
                 worm.canAttack = false;
                 e.play('wormMoveAnimation');
                 this.earthquakeSound.play('shortEarthquake');
-                this.earthquakeSound.setVolume(0.4 * Globals.globalVolume);
             }, [worm], this);
         }, this.MAX_worm_LIFESPAN_MILLIS + Math.random() * 1000);
     }
@@ -264,7 +260,6 @@ export class Worm {
                 worm.canAttack = false;
                 worm.play('wormAttackAnimation');
                 this.earthquakeSound.play('attackEarthquake');
-                this.earthquakeSound.setVolume(0.4 * Globals.globalVolume);
                 setTimeout(() => {
                     this.roarSound.play();
                     this.roarSound.setVolume(0.4 * Globals.globalVolume);

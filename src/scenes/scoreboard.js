@@ -17,7 +17,7 @@ export class Scoreboard extends Phaser.Scene {
         this.glyphSequence = this.add.text(16, 40, 'Glyph Sequence: ', { fontSize: '16px', fill: '#000' }).setScrollFactor(0);
         this.lastSpellAccuracy = this.add.text(16, 56, 'Last Glyph Accuracy: -', { fontSize: '16px', fill: '#000' }).setScrollFactor(0);
         this.difficulty = this.add.text(16, 72, 'Difficulty: 0', { fontSize: '16px', fill: '#000' }).setScrollFactor(0);
-        this.volume = this.add.text(900, 750, 'Volume: 100', { fontSize: '16px', fill: '#000' }).setScrollFactor(0);
+        this.volume = this.add.text(900, 750, 'Volume: ' + Globals.globalVolume * 100, { fontSize: '16px', fill: '#000' }).setScrollFactor(0);
         this.volume.setInteractive(new Phaser.Geom.Rectangle(0, 0, this.volume.width, this.volume.height), Phaser.Geom.Rectangle.Contains);
         this.volume.on('pointerdown', () => {this.updateVolume();});
         this.healthbar = new HealthbarV2({
