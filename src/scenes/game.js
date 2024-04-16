@@ -387,10 +387,12 @@ export class GameScene extends Phaser.Scene {
         this.attackingAllies.end();
         if(this.won) {
             this.time.delayedCall(3000, () => {
+                this.soundtrack.stop();
                 this.scene.launch('WinScene');
             });
         } else {
             this.time.delayedCall(3000, () => {
+                this.soundtrack.stop();
                 this.scene.launch('DeathScene');
             });
         }

@@ -55,6 +55,7 @@ export class AttackingAlly {
     }
     update()
     {
+        this.slashSound.setVolume(0.05 * Globals.globalVolume);
         for (let grunt of this.attackingAllies.getChildren()) {
             if (!grunt.spawned || grunt.attacking) {
                 continue;
@@ -95,7 +96,7 @@ export class AttackingAlly {
                 if (Phaser.Geom.Intersects.RectangleToRectangle(gruntBounds, bugBounds)) {
                     grunt.attacking = true;
                     this.slashSound.play();
-                    this.slashSound.setVolume(1 * Globals.globalVolume);
+                    this.slashSound.setVolume(0.05 * Globals.globalVolume);
                     if(damageType == "bug")
                     {
                         this.scene.bugs.damageBug(bug, this.attackDamage);

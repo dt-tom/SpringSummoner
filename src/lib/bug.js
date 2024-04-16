@@ -170,6 +170,7 @@ export class BugGroup {
 
     // Update is called once per tick
     update() {
+        this.bugSquishSound.setVolume(1 * Globals.globalVolume);
         this.group.children.iterate(this.moveBug.bind(this))
     }
 

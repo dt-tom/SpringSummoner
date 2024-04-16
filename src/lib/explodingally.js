@@ -52,6 +52,7 @@ export class ExplodingAlly {
     }
     update()
     {
+        this.explodingSound.setVolume(0.5 * Globals.globalVolume);
         for (let ally of this.explodingAllies.getChildren()) {
             if(!ally.exploding){
                 let bugClosest = this.scene.getClosestObject(ally, this.scene.bugs.group);
@@ -92,7 +93,7 @@ export class ExplodingAlly {
             ally.exploding = true;
             ally.play('gemExplodeAnimation');
             this.explodingSound.play();
-            this.explodingSound.setVolume(1 * Globals.globalVolume);
+            this.explodingSound.setVolume(0.5 * Globals.globalVolume);
         }
         ally.on('animationcomplete', () => {
             ally.destroy();

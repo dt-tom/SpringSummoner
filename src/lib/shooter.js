@@ -172,6 +172,8 @@ export class ShooterGroup {
 
     // Update is called once per tick
     update() {
+        this.shooterShootSound.setVolume(0.2 * Globals.globalVolume);
+        this.shooterDeathSound.setVolume(0.5 * Globals.globalVolume);
         this.tick += 1;
         if(this.tick % 10 != 0){
             return;

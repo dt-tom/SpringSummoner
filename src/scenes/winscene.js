@@ -7,8 +7,6 @@ export class WinScene extends Phaser.Scene {
     }
 
     preload () {
-        this.load.audio('soundtrack', 'assets/sounds/soundtrack.mp3');
-        this.load.audio('sandstorm', 'assets/sounds/sandstorm.wav');
     }
 
     create() {
@@ -24,16 +22,6 @@ export class WinScene extends Phaser.Scene {
         this.add.text(constants.canvasWidth / 2, constants.canvasHeight / 2 + 40, 'Click to play again', {
             fontSize: '16px', fill: '#000'
         }).setOrigin(0.5);
-
-        let soundtrack = this.sound.add('soundtrack');
-        soundtrack.play();
-        soundtrack.setLoop(true);
-        soundtrack.setVolume(0.2);
-        let sandstorm = this.sound.add('sandstorm', { loop:true });
-        sandstorm.addMarker({name: 'sandstormWhoosh'});
-        sandstorm.play('sandstormWhoosh');
-        sandstorm.setVolume(0.03);
-
         this.input.on('pointerup', this.clickUpHandler.bind(this))
     }
 

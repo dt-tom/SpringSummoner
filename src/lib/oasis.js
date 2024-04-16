@@ -43,6 +43,7 @@ export class Oasis {
     }
 
     update() {
+        this.auraSound.setVolume(0.1 * Globals.globalVolume);
         if(this.gameObject.getBounds())
         {
             if(!this.checkOverlap(this.scene.player.gameObject, this.gameObject))
