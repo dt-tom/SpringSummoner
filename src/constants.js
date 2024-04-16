@@ -42,3 +42,5 @@ export const MIN_SWIPE_DISTANCE = 200;
 export const MOUSE_SAMPLE_RATE = 10;
 
 export const wormScore = 1000;
+
+export var globalVolume = 1;

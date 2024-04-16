@@ -1,3 +1,5 @@
+import { globalVolume } from "../constants.js";
+
 export class AttackingAlly {
     constructor(scene)
     {
@@ -19,7 +21,7 @@ export class AttackingAlly {
         this.manaCost = 20;
         this.gruntMaxLifetimeMillis = 14_000
         this.slashSound = this.scene.sound.add('slash');
-        this.slashSound.setVolume(0.05);
+        this.slashSound.setVolume(0.05 * globalVolume);
         this.attackDamage = 40;
         this.attackCooldownMillis = 500;
         this.attackSlow = 50;
@@ -93,6 +95,7 @@ export class AttackingAlly {
                 if (Phaser.Geom.Intersects.RectangleToRectangle(gruntBounds, bugBounds)) {
                     grunt.attacking = true;
                     this.slashSound.play();
+                    this.slashSound.setVolume(1 * globalVolume);
                     if(damageType == "bug")
                     {
                         this.scene.bugs.damageBug(bug, this.attackDamage);

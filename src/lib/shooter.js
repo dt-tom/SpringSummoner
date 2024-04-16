@@ -3,6 +3,7 @@ import {
     shooterSpawnOuterRadius,
     shooterNumInitialSpawns,
     shooterMovespeed,
+    globalVolume,
 } from "../constants.js";
 
 /**
@@ -195,7 +196,7 @@ export class ShooterGroup {
         shooter.setVelocity(0);
         shooter.play('shooterAttackAnimation');
         this.shooterShootSound.play();
-        this.shooterShootSound.setVolume(0.2);
+        this.shooterShootSound.setVolume(0.2 * globalVolume);
         this.projectile = this.scene.physics.add.image(shooter.x, shooter.y, 'shooterProjectile');
         const {x, y} = this.scene.player.gameObject;
         this.scene.physics.add.collider(
@@ -222,7 +223,7 @@ export class ShooterGroup {
         shooter.health = shooter.health - damage;
         if (shooter.health <= 0) {
             this.shooterDeathSound.play();
-            this.shooterDeathSound.setVolume(0.5);
+            this.shooterDeathSound.setVolume(0.5 * globalVolume);
             this.group.remove(shooter);
             shooter.destroy();
         }
