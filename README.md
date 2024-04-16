@@ -1,6 +1,8 @@
-# SpringSummoner
+# SpringSummoner - Ludum Dare 55 Game Jam Entry
 
 https://dt-tom.github.io/SpringSummoner/
+
+*GAME by Jacob Baum (@jacob-baum) , ecb (@ecb) , adamag (@adamag) , twist (@twist), and tunagoo (@tunagoo)*
 
 ## Gameplay
 Movement is with WASD or arrow keys. Click to summon
