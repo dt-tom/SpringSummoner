@@ -115,6 +115,7 @@ export class GameScene extends Phaser.Scene {
         this.active = true;
         this.difficulty = 1;
         this.previousDifficulty = 1;
+        this.won = false;
 
         this.score = 0;
     }
@@ -376,8 +377,15 @@ export class GameScene extends Phaser.Scene {
             }
         }, [this.shooters.group], this);
         this.attackingAllies.end();
-        this.time.delayedCall(3000, () => {
-            this.scene.launch('DeathScene');
-        });
+        if(this.won) {
+            this.time.delayedCall(3000, () => {
+                this.scene.launch('WinScene');
+            });
+        } else {
+            this.time.delayedCall(3000, () => {
+                this.scene.launch('DeathScene');
+            });
+        }
+        
     }
 }
