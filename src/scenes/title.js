@@ -1,6 +1,9 @@
 import * as constants from '../constants.js';
 import { globalVolume } from '../constants.js';
 
+
+let startingGame = false;
+
 /**
  * TitleScene is the first thing a player sees, and displays our title and lets
  * the user start the game.
@@ -56,7 +59,13 @@ export class TitleScene extends Phaser.Scene {
                 volume: 0,
                 duration: 1000,
             })
-            setTimeout(() => {this.scene.start('GameScene')}, 1000);  // Time is in milliseconds
+            setTimeout(() => {
+                if (startingGame) {
+                    return;
+                }
+                startingGame = true;
+                this.scene.start('GameScene')
+            }, 1000);  // Time is in milliseconds
             clearInterval(this.interval);
         }, this);
 
