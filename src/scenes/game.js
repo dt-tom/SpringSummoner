@@ -316,7 +316,7 @@ export class GameScene extends Phaser.Scene {
         this.tick += 1;
         // slow down difficulty by obtaining score, 600 tick grace period
         if (this.tick > 600 && this.difficulty <= 3) {
-            this.difficulty += (this.tick - 600)/(this.score + 1)/100;
+            this.difficulty += (this.tick - 600)/(100 * this.score + 100);
         }
         this.scene.get("Scoreboard").updateDifficulty(this.difficulty);
         // check next integer difficulty
